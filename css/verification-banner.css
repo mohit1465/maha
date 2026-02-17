@@ -1,0 +1,187 @@
+/* Email Verification Banner Styles */
+.verification-banner {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    margin: 20px 0;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.15);
+    animation: slideDown 0.3s ease-out;
+}
+
+.verification-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.verification-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #ffc107;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #856404;
+    font-size: 20px;
+}
+
+.verification-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.verification-text h4 {
+    margin: 0 0 8px 0;
+    color: #856404;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.verification-text p {
+    margin: 0 0 4px 0;
+    color: #856404;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.verification-email {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.verification-email span {
+    font-weight: 600;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.verification-actions .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.verification-actions .btn-primary {
+    background: #ffc107;
+    color: #856404;
+}
+
+.verification-actions .btn-primary:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+.verification-actions .btn-secondary {
+    background: transparent;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.verification-actions .btn-secondary:hover {
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.verification-actions .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success and Error Messages */
+.verification-success,
+.verification-error {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.verification-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.verification-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .verification-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .verification-actions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .verification-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .verification-banner {
+        margin: 15px 0;
+        padding: 15px;
+    }
+    
+    .verification-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .verification-text h4 {
+        font-size: 16px;
+    }
+    
+    .verification-text p {
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,64 @@
+/* ============================================
+   CSS CUSTOM PROPERTIES (COLOR VARIABLES)
+   ============================================ */
+:root {
+    /* Brand Colors */
+    --color-brand: #FFAE00;
+    --color-brand-dark: #9A4B00;
+
+    /* Core Colors */
+    --color-#1b1b1b: #111111;
+    --color-white: #FCFCFC;
+    --color-bg: #FFF8F2;
+    --color-danger: #DE0000;
+
+    /* Text Colors */
+    --color-text-primary: #111111;
+    --color-text-secondary: #666666;
+    --color-text-muted: #999999;
+
+    /* Border Colors */
+    --color-border-light: #e5e5e5;
+    --color-border-medium: #cccccc;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(17, 17, 17, 0.06);
+    --shadow-md: 0 4px 12px rgba(17, 17, 17, 0.1);
+    --shadow-lg: 0 8px 24px rgba(17, 17, 17, 0.12);
+
+    /* Brand Gradient */
+    --gradient-brand: linear-gradient(135deg, #FFAE00 0%, #9A4B00 100%);
+
+    /* Overlays */
+    --overlay-dark: rgba(17, 17, 17, 0.5);
+}
+
+/* Reset and base styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: "Bricolage Grotesque", sans-serif;
+}
+
+body {
+    font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+button,
+li,
+span {
+    font-family: inherit;
+}

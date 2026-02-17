@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maharaja Dry Fruits - Contact</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/product.css">
+    <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/about.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body data-page="contact">
+    <header class="header">
+        <div class="top-header">
+            <div class="logo-container">
+                <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo" class="logo">
+            </div>
+            <div class="brand-name">
+                <h1>MAHARAJA</h1>
+                <p class="tagline">Dry Fruit</p>
+            </div>
+            <div class="header-icons">
+                <a href="search.html" class="icon" data-section="search"><i class="fas fa-search"></i></a>
+                <a href="wishlist.html" class="icon" data-section="wishlist"><i class="fas fa-heart"></i></a>
+                <a href="cart.html" class="icon" data-section="cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="profile.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <ul class="nav-links">
+                <li><a href="#" data-section="home">Home</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Shop <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="#" data-section="search">All</a>
+                        <a href="#" data-section="search">Almonds</a>
+                        <a href="#" data-section="search">Walnuts</a>
+                        <a href="#" data-section="search">Other Dry Fruits</a>
+                    </div>
+                </li>
+                <li><a href="#" data-section="about">About Us</a></li>
+                <li><a href="#" data-section="contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="contact-section">
+            <div class="contact-container">
+                <!-- Breadcrumb -->
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item" data-section="home">Home</span>
+                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-item current">Contact</span>
+                </div>
+
+                <!-- Page Title -->
+
+
+                <!-- Contact Content -->
+                <div class="contact-content">
+                    <!-- Contact Information -->
+                    <div class="contact-info-section">
+                        <h2 class="section-title">Get in Touch</h2>
+                        <div class="contact-info-grid">
+                            <div class="contact-info-item">
+                                <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                                <div class="contact-details">
+                                    <h3>Phone</h3>
+                                    <p>+91 98139 01648</p>
+                                    <p class="contact-subtitle">Mon-Sat: 9:00 AM - 8:00 PM</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-item">
+                                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                                <div class="contact-details">
+                                    <h3>Email</h3>
+                                    <p>haryalidryfruits@gmail.com</p>
+                                    <p class="contact-subtitle">We'll respond within 24 hours</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-item">
+                                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div class="contact-details">
+                                    <h3>Address</h3>
+                                    <p>Shop No. 5, Opp. Sec.14, Gate No. 2</p>
+                                    <p class="contact-subtitle">Hisar, Haryana, India</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="contact-form-section">
+                        <h2 class="section-title">Send us a Message</h2>
+                        <form class="contact-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contact-name">Name</label>
+                                    <input type="text" id="contact-name" name="name" autocomplete="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-email">Email</label>
+                                    <input type="email" id="contact-email" name="email" autocomplete="email" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-subject">Subject</label>
+                                <input type="text" id="contact-subject" name="subject" autocomplete="subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-message">Message</label>
+                                <textarea id="contact-message" name="message" rows="5" autocomplete="off"
+                                    required></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- Location Preview -->
+                    <div class="location-section">
+                        <h2 class="section-title">Our Location</h2>
+                        <div class="map-placeholder">
+                            <div class="map-content">
+                                <div class="map-marker"><i class="fas fa-map-marker-alt"></i></div>
+                                <p>Shop No. 5, Opp. Sec.14, Gate No. 2<br>Hisar, Haryana, India</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo">
+                    <h3> Maharaja Dry Fruits</h3>
+                </div>
+                <p class="footer-description">Maharaja Dry Fruits brings you the finest quality dry fruits and nuts,
+                    sourced directly from the best farms. We're committed to quality and freshness in every product.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" data-section="home">Home</a></li>
+                    <li><a href="#" data-section="search">Shop</a></li>
+                    <li><a href="#" data-section="about">About Us</a></li>
+                    <li><a href="#" data-section="search">Products</a></li>
+                    <li><a href="#" data-section="contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Products</h4>
+                <ul>
+                    <li><a href="#" data-section="search">Almonds</a></li>
+                    <li><a href="#" data-section="search">Walnuts</a></li>
+                    <li><a href="#" data-section="search">Dry Fruits Combo</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <div class="contact-info">
+                    <p><i class="fas fa-map-marker-alt"></i> Shop No. 5, Opp. Sec.14, Gate No. 2, Hisar, Haryana</p>
+                    <p><i class="fas fa-phone"></i> +91 98139 01648</p>
+                    <p><i class="fas fa-envelope"></i> haryalidryfruits@gmail.com</p>
+                    <p><i class="fas fa-globe"></i> maharajadryfruit.com</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sat: 9:00 AM - 8:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="mobile-nav-bg">
+            <svg viewBox="0 0 400 80" preservedAspectRatio="none">
+                <path d="M 0 20 
+                         Q 0 0 20 0 
+                         L 145 0 
+                         Q 165 0 165 20 
+                         A 35 35 0 0 0 235 20 
+                         Q 235 0 255 0 
+                         L 380 0 
+                         Q 400 0 400 20 
+                         L 400 80 
+                         L 0 80 
+                         Z" filter="url(#shadow)" />
+                <defs>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+                        <feOffset dx="0" dy="4" result="offsetblur" />
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.1" />
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+        <div class="mobile-nav-icons">
+            <a href="index.html" data-section="home" title="Home">
+                <i class="fas fa-home"></i>
+                <div class="active-dot"></div>
+            </a>
+            <a href="wishlist.html" data-section="wishlist" title="Wishlist">
+                <i class="fas fa-heart"></i>
+                <div class="active-dot"></div>
+            </a>
+
+            <div class="nav-extra-space"></div> <!-- Space for the cutout -->
+
+            <a href="search.html" data-section="search" title="Search" class="nav-item-special">
+                <i class="fas fa-search"></i>
+            </a>
+
+            <a href="cart.html" data-section="cart" title="Cart">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="cart-count">0</span>
+                <div class="active-dot"></div>
+            </a>
+            <a href="profile.html" data-section="profile" title="Profile">
+                <i class="fas fa-user"></i>
+                <div class="active-dot"></div>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/script.js"></script>
+    <script type="module" src="js/auth-state.js"></script>
+    <script type="module" src="js/cart-count.js"></script>
+    <script type="module" src="js/contact.js"></script>
+</body>
+
+</html>

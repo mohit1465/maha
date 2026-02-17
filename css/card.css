@@ -1,0 +1,453 @@
+/* Product Card Component Styles */
+
+.product-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    /* transform: translateY(-5px); */
+    /* box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); */
+    border-color: rgba(0, 0, 0, 0.1);
+    /* Subtle border change instead */
+}
+
+/* Badge (Top Left) */
+.card-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #1b1b1b;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 2px 10px rgba(203, 203, 203, 0.3);
+}
+
+.card-badge.green {
+    background: #1b1b1b;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Wishlist Icon (Top Right) */
+.card-wishlist {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #ccc;
+}
+
+.card-wishlist:hover {
+    transform: scale(1.1);
+    color: #bc0000;
+}
+
+.card-wishlist.active {
+    background: rgba(255, 0, 0, 0.9);
+    color: #ffffff;
+}
+
+/* Image Container */
+.card-image-container {
+    width: 100%;
+    padding-top: 100%;
+    /* 1:1 Aspect Ratio */
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background-color: #f8f9fa;
+}
+
+.card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+/* Content Section */
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 2px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-hindi-name {
+    font-family: 'Hind', sans-serif;
+    /* Fallback if not loaded, mostly standard sans */
+    font-size: 13px;
+    color: #a4b0be;
+    margin-bottom: 12px;
+}
+
+/* Options Row (Size Selector & Quantity) */
+.card-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.card-select-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.card-select {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 12px;
+    border: 1px solid #dfe4ea;
+    border-radius: 8px;
+    appearance: none;
+    background-color: #f1f2f6;
+    color: #57606f;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.card-select:focus {
+    border-color: #fc6e20;
+}
+
+.card-select-arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 10px;
+    color: #a4b0be;
+}
+
+
+/* Footer (Price & Add Button) */
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: auto;
+    background: #f8f8f8;
+    /* Light gray background */
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.card-price {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #323232;
+    padding: 8px 12px;
+    flex: 1;
+    min-width: fit-content;
+}
+
+.card-add-btn {
+    background: #323232;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.card-action-container {
+    flex: 1 0 110px;
+    height: 40px;
+    display: flex;
+}
+
+.card-qty-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fc6e20;
+    color: white;
+    width: 100%;
+    height: 40px;
+    transition: all 0.3s ease;
+}
+
+.card-qty-selector .qty-btn {
+    background: none;
+    border: none;
+    color: white;
+    width: 32px;
+    height: 100%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.card-qty-selector .qty-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.card-qty-selector .qty-value {
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+.card-add-btn:hover {
+    background: #1b1b1b;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+    .product-card {
+        padding: 10px;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .card-footer {
+        flex-direction: row;
+    }
+
+    .card-add-btn span {
+        display: none;
+        /* Hide text on very small screens, keep icon */
+    }
+
+    .card-add-btn {
+        padding: 10px;
+    }
+}
+
+/* Custom Dropdown Styles */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 100%;
+    flex: 1;
+}
+
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #323232;
+    background: #f8f9fa;
+    border: 1px solid #dfe6e9;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.custom-select-trigger:hover {
+    border-color: #3f3f3f;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.custom-select-wrapper.open .custom-select-trigger {
+    border-color: #929292;
+    background: #fff;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0 -4px 12px rgba(52, 52, 52, 0.05);
+}
+
+.custom-select-trigger .arrow {
+    font-size: 10px;
+    color: #b2bec3;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.custom-select-wrapper.open .custom-select-trigger .arrow {
+    transform: rotate(180deg);
+    color: #1c1c1c;
+}
+
+.custom-options {
+    position: absolute;
+    display: block;
+    bottom: 100%;
+    /* Show on top */
+    left: 0;
+    right: 0;
+    border: 1px solid #b7b7b7;
+    border-bottom: 0;
+    background: #fff;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 100;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.custom-select-wrapper.open .custom-options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.custom-option {
+    position: relative;
+    display: block;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #323232;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+}
+
+.custom-option:hover {
+    background: #f5f5f5;
+    /* Light gray hover */
+    color: #1b1b1b;
+    padding-left: 16px;
+    /* Slight movement effect */
+    border-left-color: #101010;
+}
+
+.custom-option.selected {
+    background: #2b2b2b;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Scrollbar for options */
+.custom-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-options::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.custom-options::-webkit-scrollbar-thumb {
+    background: #dfe6e9;
+    border-radius: 2px;
+}
+
+/* Minimal Product Card Styles (Home Page) */
+.minimal-product-card {
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.minimal-product-card:hover {
+    transform: translateY(-5px);
+}
+
+.minimal-card-image-container {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f8f9fa;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.minimal-card-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+.minimal-product-card:hover .minimal-card-image {
+    transform: scale(1.08);
+}
+
+.minimal-card-content {
+    text-align: center;
+}
+
+.minimal-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #323232;
+    font-family: 'Bricolage Grotesque', sans-serif;
+}
+
+.custom-options::-webkit-scrollbar-thumb:hover {
+    background: #b2bec3;
+}

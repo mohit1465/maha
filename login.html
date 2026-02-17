@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/login-signup.css">
+</head>
+
+<body data-page="login">
+
+    <section class="auth-layout">
+        <div class="auth-panel auth-panel-right">
+            <div class="auth-panel-content">
+
+                <img src="assets/MAHARAJA logo.png" class="login-logo">
+
+                <h3 id="stepTitle">Continue to buy fresh dry fruits</h3>
+
+                <div class="progress" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span id="progressText">Step 1 of 7</span>
+                </div>
+
+                <div id="unifiedAuthSection" class="auth-section active">
+                    <!-- STEP 1: Entry Screen -->
+                    <div class="step active" data-step="1">
+                        <div class="auth-action-group">
+                            <button class="google-btn" id="googleEntryBtn">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"
+                                    height="20">
+                                Continue with Google
+                            </button>
+                            <div class="divider">or</div>
+                            <button id="emailEntryBtn" class="secondary-btn">Continue with Email</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Enter Email -->
+                    <div class="step" data-step="2">
+                        <p class="auth-info-text">Enter your email address</p>
+                        <div class="auth-form-row">
+                            <input type="email" placeholder="Email address" id="emailInput">
+                        </div>
+                        <div class="auth-action-group">
+                            <button id="emailNextBtn" class="primary-btn">Continue</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Password Verification (Existing Users) -->
+                    <div class="step" data-step="3">
+                        <p class="auth-info-text" id="existingEmailDisplay"></p>
+                        <div class="auth-form-row">
+                            <input type="password" placeholder="Enter your password" id="loginPassword">
+                        </div>
+                        <p class="auth-link" id="forgotPasswordLink">Forgot Password?</p>
+                        <div class="auth-action-group">
+                            <button id="verifyPasswordBtn" class="primary-btn">Verify</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Create Password (New Users) -->
+                    <div class="step" data-step="4">
+                        <p class="auth-info-text" id="newEmailDisplay"></p>
+                        <div class="auth-form-row">
+                            <input type="password" placeholder="Enter your password" id="createPassword">
+                        </div>
+                        <div class="auth-action-group">
+                            <button id="createAccountBtn" class="primary-btn">Continue</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: Name -->
+                    <div class="step" data-step="5">
+                        <p class="auth-info-text">Enter your name</p>
+                        <div class="auth-form-row">
+                            <input placeholder="First name" id="firstName" required>
+                            <input placeholder="Last name" id="lastName">
+                        </div>
+                        <div class="auth-action-group">
+                            <button id="nameNextBtn" class="primary-btn">Next</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6: Date of Birth -->
+                    <div class="step" data-step="6">
+                        <p class="auth-info-text">Select your date of birth</p>
+                        <div class="auth-form-row">
+                            <input type="date" placeholder="Date of Birth" id="dob">
+                        </div>
+                        <div class="auth-action-group">
+                            <button id="dobNextBtn" class="primary-btn">Next</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 7: Discovery Source -->
+                    <div class="step" data-step="7">
+                        <p class="auth-info-text">How did you hear about us?</p>
+                        <div class="option-grid">
+                            <button class="option-btn" data-value="Instagram">Instagram</button>
+                            <button class="option-btn" data-value="Friend">Friend</button>
+                            <button class="option-btn" data-value="Google">Google</button>
+                            <button class="option-btn" data-value="YouTube">YouTube</button>
+                            <button class="option-btn" data-value="Other">Other</button>
+                        </div>
+                        <input type="hidden" id="discoverySource">
+                        <div class="auth-action-group">
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 8: Food Preference -->
+                    <div class="step" data-step="8">
+                        <p class="auth-info-text">What do you like the most?</p>
+                        <div class="option-grid">
+                            <button class="option-btn" data-value="Almonds">Almonds</button>
+                            <button class="option-btn" data-value="Cashews">Cashews</button>
+                            <button class="option-btn" data-value="Raisins">Raisins</button>
+                            <button class="option-btn" data-value="Mixed">Mixed Dry Fruits</button>
+                        </div>
+                        <input type="hidden" id="foodPreference">
+                        <div class="auth-action-group">
+                            <button id="startShoppingBtn" class="primary-btn">Start Shopping</button>
+                            <button class="back-btn">Back</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HIDDEN HELPERS -->
+                <div id="recaptcha-container"></div>
+
+                <!-- RECOVERY FLOW -->
+                <div id="forgotPasswordSection" class="auth-section">
+                    <p class="auth-info-text">Enter your email and we'll send you a link to reset your password.</p>
+                    <input type="email" placeholder="Email" id="recoveryEmail">
+                    <div class="auth-action-group">
+                        <button id="cancelRecoveryBtn" class="btn-secondary-small">Back</button>
+                        <button id="sendRecoveryBtn" class="primary-btn">Send Link</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="js/login-signup.js"></script>
+</body>
+
+</html>

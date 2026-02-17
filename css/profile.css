@@ -1,0 +1,402 @@
+html {
+    font-family: "Bricolage Grotesque", sans-serif;
+}
+
+body {
+    font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+button,
+li,
+span {
+    font-family: inherit;
+}
+
+
+/* Profile Section Styles */
+.profile-section {
+    display: block;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #fefefe;
+    /* Space for the fixed header */
+}
+
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+}
+
+/* Breadcrumb Styles */
+.profile-section .breadcrumb {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Profile Card (Dark Header) */
+.profile-card {
+    background-color: #1b1b1b;
+    border-radius: 40px;
+    padding: 40px;
+    margin-bottom: 24px;
+    position: relative;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.avatar-container {
+    position: relative;
+    padding: 5px;
+    border: 3px solid #fc6e20;
+    /* Orange border */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-avatar {
+    width: 130px;
+    height: 130px;
+    background-color: #fc6e20;
+    /* Brand Orange */
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.profile-email {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Quick Action Cards */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.action-card {
+    padding: 24px;
+    border-radius: 28px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.card-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.card-content h3 {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: left;
+    letter-spacing: -0.01em;
+}
+
+.insight {
+    font-size: 13px;
+    opacity: 0.85;
+    font-weight: 500;
+}
+
+.card-arrow {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.action-card:hover .card-arrow {
+    transform: translateX(4px);
+}
+
+.action-card.primary {
+    background: linear-gradient(135deg, #fc6e20 0%, #ff8e4f 100%);
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(252, 110, 32, 0.2);
+}
+
+.action-card.primary .card-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.action-card.secondary {
+    background: #ffffff;
+    color: #1b1b1b;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.action-card.secondary .card-icon {
+    background: #FFF8F2;
+    color: #fc6e20;
+}
+
+.action-card.secondary .card-arrow {
+    background: #f8f8f8;
+    color: #999;
+}
+
+.action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Verification Status Card */
+.verification-status-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 25px;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.verification-status-card .label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1b1b1b;
+}
+
+.verification-status-card .status.verified {
+    color: #4CAF50;
+    font-weight: 600;
+}
+
+/* Profile Menu */
+.profile-menu-container {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 30px;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.menu-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-row {
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: #1b1b1b;
+    border-bottom: 1px solid #fafafa;
+}
+
+.menu-row:last-child {
+    border-bottom: none;
+}
+
+.menu-row:hover {
+    background-color: #e9e9e9;
+}
+
+.menu-row span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.logout {
+    background-color: var(--color-danger);
+    color: #ffffff;
+}
+
+.logout:hover {
+    background-color: var(--color-danger-hover);
+    color: #ffffff;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    .profile-card {
+        margin-top: 80px;
+        /* Give space for overlapping avatar */
+        padding: 60px 20px 20px 20px;
+        border-radius: 40px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-content {
+        text-align: left;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        gap: 15px;
+        position: static;
+    }
+
+    .avatar-container {
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-name {
+        font-size: 28px;
+    }
+
+    .profile-email {
+        font-size: 14px;
+    }
+
+    .quick-actions {
+        width: 100%;
+        gap: 15px;
+    }
+
+    .action-card {
+        padding: 20px;
+        border-radius: 24px;
+        min-height: 130px;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .action-card h3 {
+        font-size: 17px;
+        text-align: left;
+    }
+
+    .card-arrow {
+        top: 20px;
+        right: 20px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .verification-status-card {
+        border-radius: 20px;
+        padding: 15px 20px;
+    }
+
+    .profile-menu-container {
+        padding: 5px;
+        border-radius: 25px;
+    }
+
+    .menu-row {
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-card {
+        padding: 70px 15px 15px 15px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+    }
+
+    .quick-actions {
+        gap: 10px;
+    }
+
+    .action-card {
+        padding: 15px;
+        min-height: 120px;
+    }
+
+    .action-card h3 {
+        font-size: 15px;
+    }
+}

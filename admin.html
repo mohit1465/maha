@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maharaja Admin Panel</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #fc9220;
+            --primary-dark: #fc6e20;
+            --text-color: #1b1b1b;
+            --bg-color: #FFF8F2;
+            --card-bg: #FCFCFC;
+            --border-color: #e5e5e5;
+            --danger-color: #DE0000;
+            --success-color: #28a745;
+            --shadow: 0 4px 12px rgba(17, 17, 17, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-brand h1 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: white;
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background-color: #fff1e6;
+            color: var(--primary-dark);
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(252, 146, 32, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .grid-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .list-item:hover {
+            transform: translateX(4px);
+            border-color: var(--primary-color);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .item-img {
+            width: 60px;
+            height: 60px;
+            background: #eee;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Order Status Style */
+        .status-select {
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+                display: flex;
+                overflow-x: auto;
+                border-bottom: 2px solid var(--border-color);
+                border-right: none;
+            }
+
+            .nav-item {
+                margin-bottom: 0;
+                margin-right: 10px;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .item-actions {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(17, 17, 17, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-img {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; font-weight: 600;">Processing...</p>
+    </div>
+
+    <header class="admin-header">
+        <div class="admin-brand">
+            <h1>Maharaja Admin</h1>
+        </div>
+        <div class="user-info">
+            <span id="userEmail" style="display: none; font-weight: 500; font-size: 0.9rem;">Admin</span>
+            <button class="btn btn-outline" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="nav-item active" data-tab="products">
+                <i class="fas fa-box"></i> Products
+            </div>
+            <div class="nav-item" data-tab="orders">
+                <i class="fas fa-shopping-bag"></i> Orders
+            </div>
+            <div class="nav-item" data-tab="users">
+                <i class="fas fa-users"></i> Users
+            </div>
+            <a href="index.html" class="nav-item"
+                style="margin-top: auto; border-top: 1px solid var(--border-color); border-radius: 0;">
+                <i class="fas fa-external-link-alt"></i> View Site
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <!-- Products Tab -->
+            <section id="productsTab">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Product Management</h2>
+                        <button class="btn btn-primary" id="addNewBtn">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div id="productFormContainer" class="hidden"
+                        style="margin-bottom: 2rem; padding: 1.5rem; background: #fafafa; border-radius: 12px; border: 1px dashed var(--primary-color);">
+                        <h3 id="formTitle" style="margin-bottom: 1rem;">Add New Product</h3>
+                        <form id="productForm">
+                            <input type="hidden" id="productId">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>English Name</label>
+                                    <input type="text" id="productName" required placeholder="e.g. Premium Almonds">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hindi Name</label>
+                                    <input type="text" id="productHindiName" placeholder="e.g. बादाम">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="productCategory">
+                                        <option value="Almonds">Almonds</option>
+                                        <option value="Walnuts">Walnuts</option>
+                                        <option value="Cashews">Cashews</option>
+                                        <option value="Pistachios">Pistachios</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Price (₹)</label>
+                                    <input type="number" id="productPrice" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Available Quantities (comma separated)</label>
+                                <input type="text" id="productQuantities" value="250 gm, 500 gm, 1kg">
+                            </div>
+                            <div class="form-group">
+                                <label>Product Images (Up to 5)</label>
+                                <input type="file" id="productImageInput" accept="image/*" multiple>
+                                <div id="imagePreviewContainer" class="preview-container"></div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                                <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Product</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="productList" class="grid-list">
+                        <!-- Products will be injected here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Tab -->
+            <section id="ordersTab" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Order Management</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline btn-sm active">All</button>
+                            <button class="btn btn-outline btn-sm">Pending</button>
+                            <button class="btn btn-outline btn-sm">Delivered</button>
+                        </div>
+                    </div>
+                    <div id="orderList" class="grid-list">
+                        <p style="text-align: center; color: #666; padding: 2rem;">Loading orders...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Tab -->
+            <section id="usersTab" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>User Directory</h2>
+                        <input type="text" id="userSearch" placeholder="Search users..."
+                            style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    </div>
+                    <div id="userList" class="grid-list">
+                        <p style="text-align: center; color: #666; padding: 2rem;">Loading users...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- User Details Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeUserModal">&times;</span>
+            <h2 id="modalUserName" style="margin-bottom: 0.5rem;">User Details</h2>
+            <p id="modalUserEmail" style="color: #666; margin-bottom: 1.5rem;"></p>
+
+            <div style="display: flex; gap: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                <button class="btn btn-sm modal-tab active" data-tab="cart">Cart</button>
+                <button class="btn btn-sm modal-tab" data-tab="wishlist">Wishlist</button>
+                <button class="btn btn-sm modal-tab" data-tab="addresses">Addresses</button>
+            </div>
+
+            <div id="modalTabContent" style="min-height: 200px;">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+
+</html>
