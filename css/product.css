@@ -227,8 +227,8 @@
 }
 
 /* Action Buttons */
-.mobile-actions {
-    display: none;
+.product-actions {
+    display: flex;
     flex-direction: column;
     gap: 15px;
 }
@@ -701,7 +701,7 @@
         font-size: 24px;
     }
 
-    .mobile-actions {
+    .product-actions {
         display: flex;
     }
 

@@ -43,7 +43,7 @@
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-count">0</span>
                 </a>
-                <a href="profile.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
+                <a href="login.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
             </div>
         </div>
         <nav class="main-nav">
@@ -89,6 +89,14 @@
                             <i class="fas fa-arrow-left"></i> Back to Cart
                         </button>
                     </div>
+
+                    <div id="savedAddressesWrapper" class="saved-addresses-wrapper" style="display: none;">
+                        <h3><i class="fas fa-map-marker-alt"></i> Select a Saved Address</h3>
+                        <div id="addressBubbles" class="address-bubbles">
+                            <!-- Address bubbles will be injected here -->
+                        </div>
+                    </div>
+
                     <form id="checkoutForm" class="checkout-form">
                         <div class="form-group">
                             <label for="shipping-name">Full Name</label>
@@ -236,7 +244,7 @@
                 <span class="cart-count">0</span>
                 <div class="active-dot"></div>
             </a>
-            <a href="profile.html" data-section="profile" title="Profile">
+            <a href="login.html" data-section="profile" title="Profile">
                 <i class="fas fa-user"></i>
                 <div class="active-dot"></div>
             </a>

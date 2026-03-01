@@ -1,4 +1,4 @@
-/* Cart Section Styles */
+﻿/* Cart Section Styles */
 .cart-section {
     display: block;
     min-height: 100vh;
@@ -59,12 +59,12 @@
 /* Cart Headers */
 .cart-headers {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 40px;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
     align-items: center;
-    padding: 12px 10px;
+    padding: 12px 20px;
     border-bottom: 1.5px solid #eee;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
     color: #888;
     font-size: 13px;
     text-transform: uppercase;
@@ -72,27 +72,22 @@
 }
 
 .cart-header-product {
-    padding-left: 76px;
+    padding-left: 0;
 }
 
 .cart-header-quantity,
-.cart-header-size {
-    text-align: center;
-}
-
+.cart-header-size,
 .cart-header-price {
-    text-align: right;
-    padding-right: 10px;
+    text-align: center;
 }
 
 /* Cart Item Styles */
 .cart-item {
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
     align-items: center;
-    padding: 16px 10px;
+    padding: 20px;
     border-bottom: 1px solid #f0f0f0;
-    gap: 15px;
     transition: background 0.2s ease;
 }
 
@@ -100,11 +95,10 @@
     background-color: #fcfcfc;
 }
 
+/* Remove nested grid, let the parent handle layout */
 .cart-item-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 40px;
-    align-items: center;
-    gap: 10px;
+    display: contents;
+    /* Makes children participate in the parent's grid */
 }
 
 /* Product Column */
@@ -197,23 +191,24 @@
     font-size: 16px;
     font-weight: 700;
     color: #1b1b1b;
-    text-align: right;
+    text-align: center;
 }
 
 /* Remove Button */
-.cart-item-remove {
+.cart-item-actions {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .remove-item {
-    background-color: var(--color-danger, #DE0000);
+    background-color: #f5f5f5;
     border: none;
-    color: #fff;
+    color: #ff4d4f;
     cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
-    padding: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    padding: 8px 10px;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -221,8 +216,33 @@
 }
 
 .remove-item:hover {
-    background-color: #c50000;
+    background-color: #fff1f0;
+    color: #ff1f1f;
     transform: translateY(-1px);
+}
+
+/* Buy Item Button */
+.buy-item-btn {
+    background: #fc6e20;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.buy-item-btn:hover {
+    background: #e55a10;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.2);
+}
+
+.buy-item-btn:active {
+    transform: translateY(0);
 }
 
 /* Total Row */
@@ -364,14 +384,16 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
+        justify-content: space-between; width: 100%;
+flex-wrap: nowrap;
     }
 
-    .cart-item-remove {
+    .cart-item-actions {
         position: absolute;
         top: 15px;
         right: 0px;
+        display: flex;
+        gap: 8px;
     }
 
     .cart-item-quantity {
@@ -650,3 +672,81 @@
     opacity: 0;
     pointer-events: none;
 }
+
+/* Saved Address Selection in Checkout */
+.saved-addresses-wrapper {
+    margin-bottom: 25px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.saved-addresses-wrapper h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.address-bubbles {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.address-bubbles::-webkit-scrollbar {
+    height: 4px;
+}
+
+.address-bubbles::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.address-bubbles::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 10px;
+}
+
+.address-bubble {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #323232;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.address-bubble i {
+    font-size: 12px;
+    color: #888;
+}
+
+.address-bubble:hover {
+    border-color: #fc6e20;
+    background-color: #fff9f5;
+    color: #fc6e20;
+}
+
+.address-bubble.selected {
+    background: #fc6e20;
+    color: #fff;
+    border-color: #fc6e20;
+}
+
+.address-bubble.selected i {
+    color: #fff;
+}
+
+

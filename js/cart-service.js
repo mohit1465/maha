@@ -147,9 +147,10 @@ class CartService {
         await setDoc(cartRef, { cart: newCart }, { merge: true });
     }
 
-    async placeOrder(shippingDetails = null) {
+    async placeOrder(shippingDetails = null, itemsToOrder = null) {
         const user = auth.currentUser;
-        if (!user || this.cartItems.length === 0) return null;
+        const targetItems = itemsToOrder || this.cartItems;
+        if (!user || targetItems.length === 0) return null;
 
         try {
             const orderId = 'ORD' + Date.now();
@@ -157,26 +158,35 @@ class CartService {
                 orderId: orderId,
                 userId: user.uid,
                 email: user.email,
-                items: this.cartItems,
-                total: this.getTotal(),
+                items: targetItems,
+                total: targetItems.reduce((total, item) => total + (item.price * item.quantity), 0),
                 shipping: shippingDetails,
                 status: 'Processing',
                 timestamp: new Date().toISOString()
             };
 
-
-            // Save to user's personal order history in their doc
             const userRef = doc(db, "users", user.uid);
             const userSnap = await getDoc(userRef);
             let orders = [];
             if (userSnap.exists()) {
                 orders = userSnap.data().orders || [];
             }
-            orders.unshift(orderData); // Add new order to top
+            orders.unshift(orderData);
 
-            // Clear cart and update orders
+            // Update user document: add to orders and modify cart
+            let updatedCart;
+            if (itemsToOrder) {
+                // Remove only the ordered items from the current cart
+                updatedCart = this.cartItems.filter(cartItem =>
+                    !itemsToOrder.some(orderItem => orderItem.id === cartItem.id && orderItem.size === cartItem.size)
+                );
+            } else {
+                // Clear the entire cart
+                updatedCart = [];
+            }
+
             await updateDoc(userRef, {
-                cart: [],
+                cart: updatedCart,
                 orders: orders
             });
 

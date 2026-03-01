@@ -5,7 +5,7 @@ import cartService from './cart-service.js';
  */
 function updateCartCount() {
     const cartItems = cartService.getCart();
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalItems = cartItems.length;
 
     // Update all cart count badges (both desktop and mobile)
     const cartCountElements = document.querySelectorAll('.cart-count');

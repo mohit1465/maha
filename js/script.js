@@ -142,37 +142,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Helper to navigate between separate HTML pages based on section name
     function navigateTo(section) {
-        switch (section) {
-            case 'home':
-                window.location.href = 'index.html';
-                break;
-            case 'search':
-                window.location.href = 'search.html';
-                break;
-            case 'product':
-                window.location.href = 'product.html';
-                break;
-            case 'cart':
-                window.location.href = 'cart.html';
-                break;
-            case 'wishlist':
-                window.location.href = 'wishlist.html';
-                break;
-            case 'profile':
-                window.location.href = 'profile.html';
-                break;
-            case 'about':
-                window.location.href = 'about.html';
-                break;
-            case 'contact':
-                window.location.href = 'contact.html';
-                break;
-            case 'login-signup':
-                // Navigate to dedicated login/signup page
-                window.location.href = 'login.html';
-                break;
-            default:
-                break;
+        if (typeof window.checkAuthAndNavigate === 'function') {
+            window.checkAuthAndNavigate(section);
+        } else {
+            switch (section) {
+                case 'home':
+                    window.location.href = 'index.html';
+                    break;
+                case 'search':
+                    window.location.href = 'search.html';
+                    break;
+                case 'product':
+                    window.location.href = 'product.html';
+                    break;
+                case 'cart':
+                    window.location.href = 'cart.html';
+                    break;
+                case 'wishlist':
+                    window.location.href = 'wishlist.html';
+                    break;
+                case 'profile':
+                    window.location.href = 'profile.html';
+                    break;
+                case 'about':
+                    window.location.href = 'about.html';
+                    break;
+                case 'contact':
+                    window.location.href = 'contact.html';
+                    break;
+                case 'login-signup':
+                    window.location.href = 'login.html';
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
