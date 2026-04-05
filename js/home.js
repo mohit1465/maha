@@ -1,5 +1,6 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { createProductCard } from './card-renderer.js';
 
 // Minimal Product Card Renderer (moved here to avoid dependency issues)
 function createMinimalProductCard(product) {
@@ -24,8 +25,9 @@ async function initHome() {
     // Selectors
     const popularRow = document.querySelector('.popular-products .card-row');
     const updatedRow = document.querySelector('.newly-updated .card-row');
+    const highQualityRow = document.querySelector('.high-quality-dry-fruits .card-row');
 
-    if (!popularRow || !updatedRow) {
+    if (!popularRow || !updatedRow || !highQualityRow) {
         console.error("Row containers not found!");
         return;
     }
@@ -49,6 +51,7 @@ async function initHome() {
     // Initial state: show skeletons
     showHomeSkeletons(popularRow);
     showHomeSkeletons(updatedRow);
+    showHighQualitySkeletons(highQualityRow);
 
     try {
         console.log("Fetching real products...");
@@ -70,8 +73,15 @@ async function initHome() {
                 .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
                 .slice(0, 4);
 
+            // High Quality: Premium products with high ratings or specific categories
+            const highQuality = [...allProducts]
+                .filter(p => p.category === 'Almonds' || p.category === 'Walnuts' || (p.rating && Number(p.rating) >= 4.5))
+                .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+                .slice(0, 10);
+
             render(popularRow, popular);
             render(updatedRow, recent);
+            renderHighQuality(highQualityRow, highQuality);
         }
     } catch (err) {
         console.error("Firebase load failed:", err);
@@ -94,6 +104,54 @@ async function initHome() {
             `;
         }
         container.innerHTML = skeletonsHtml;
+    }
+
+    function showHighQualitySkeletons(container) {
+        if (!container) return;
+
+        let skeletonsHtml = '';
+        for (let i = 0; i < 10; i++) {
+            skeletonsHtml += `
+                <div class="product-card-wrapper">
+                    <div class="product-card skeleton">
+                        <div class="skeleton-img" style="width: 100%; height: 100%; border-radius: 18px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+        // Add the "See More" button
+        skeletonsHtml += `
+            <div class="see-more-container">
+                <a href="search.html" class="see-more-btn">
+                    <span>See More Products</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        `;
+        container.innerHTML = skeletonsHtml;
+    }
+
+    function renderHighQuality(container, products) {
+        if (!container) return;
+        
+        let html = '';
+        products.forEach(p => {
+            html += `
+                <div class="product-card-wrapper">
+                    ${createProductCard(p)}
+                </div>
+            `;
+        });
+        // Add the "See More" button
+        html += `
+            <div class="see-more-container">
+                <a href="search.html" class="see-more-btn">
+                    <span>See More Products</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        `;
+        container.innerHTML = html;
     }
 }
 

@@ -25,6 +25,8 @@ class CartService {
         const s = size.toLowerCase().replace(/\s+/g, '');
         if (s.includes('500g')) return '500g';
         if (s.includes('1kg')) return '1kg';
+        if (s.includes('2kg')) return '2kg';
+        if (s.includes('5kg')) return '5kg';
         if (s.includes('250g')) return '250g';
         return size;
     }
@@ -42,11 +44,13 @@ class CartService {
     getPriceForSize(basePrice, size) {
         const bp = parseFloat(basePrice) || 0;
         if (!size) return bp;
-
+        
         const s = size.toLowerCase().replace(/\s+/g, '');
         if (s.includes('500g')) return bp * 2;
         if (s.includes('1kg')) return bp * 4;
-        return bp; // Default for 250g or others
+        if (s.includes('2kg')) return bp * 8;
+        if (s.includes('5kg')) return bp * 20;
+        return bp * 1; // Default for 250g or others
     }
 
     async addToCart(product, quantity = 1, size = '250g') {

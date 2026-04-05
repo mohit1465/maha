@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const imageUrl = (item.images && item.images['1']) ? item.images['1'] : 'assets/placeholder.png';
             itemsHtml += `
             <div class="cart-item" data-id="${item.id}" data-size="${item.size}">
+                <!-- Desktop: Grid Layout -->
                 <div class="cart-item-product">
                     <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                     <div class="cart-item-details">
@@ -72,22 +73,62 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="cart-item-size">
                         <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
-                            ${['250g', '500g', '1kg'].map(size => {
+                            ${['250g', '500g', '1kg', '2kg', '5kg'].map(size => {
                 const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
                 return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
             }).join('')}
                         </select>
                     </div>
-                </div>
-                <div class="cart-item-price">
-                    <div class="unit-price" style="font-size: 0.82em; color: #888;">₹${item.price.toLocaleString('en-IN')} / ${item.size}</div>
-                    ₹${(item.price * item.quantity).toLocaleString('en-IN')}
+                    <div class="cart-item-price-row">
+                        <div class="cart-item-price">₹${(item.price * item.quantity).toLocaleString('en-IN')}</div>
+                        <div class="unit-price">₹${item.price.toLocaleString('en-IN')} / ${item.size}</div>
+                    </div>
                 </div>
                 <div class="cart-item-actions">
                     <button class="buy-item-btn" onclick="buyItem('${item.id}', '${item.size}')">Buy</button>
                     <button class="remove-item" onclick="removeItem('${item.id}', '${item.size}')" title="Remove item">
                         <i class="fas fa-trash-alt"></i>
                     </button>
+                </div>
+                
+                <!-- Mobile: Custom Layout -->
+                <div class="mobile-layout">
+                    <!-- Mobile Row 1: Image > Name/Category > Price -->
+                    <div class="mobile-row-1">
+                        <div class="cart-item-product">
+                            <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-category">${item.category || 'Dry Fruits'}</div>
+                            </div>
+                        </div>
+                        <div class="cart-item-price-row">
+                            <div class="cart-item-price">₹${(item.price * item.quantity).toLocaleString('en-IN')}</div>
+                            <div class="unit-price">₹${item.price.toLocaleString('en-IN')} / ${item.size}</div>
+                        </div>
+                    </div>
+                    <!-- Mobile Row 2: Quantity > Size > Actions -->
+                    <div class="mobile-row-2">
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn minus" onclick="updateQty('${item.id}', '${item.size}', -1)">-</button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn plus" onclick="updateQty('${item.id}', '${item.size}', 1)">+</button>
+                        </div>
+                        <div class="cart-item-size">
+                            <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
+                                ${['250g', '500g', '1kg', '2kg', '5kg'].map(size => {
+                    const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
+                    return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
+                }).join('')}
+                            </select>
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="buy-item-btn" onclick="buyItem('${item.id}', '${item.size}')">Buy</button>
+                            <button class="remove-item" onclick="removeItem('${item.id}', '${item.size}')" title="Remove item">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             `;

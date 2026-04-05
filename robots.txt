@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://maharajadryfruits.com/sitemap.xml
+
+# Block common non-content paths
+Disallow: /css/
+Disallow: /js/
+Disallow: /admin/
+Disallow: /temp/
+Disallow: /*.json$

@@ -11,15 +11,11 @@ if (track) {
     let allSlides = Array.from(track.children);
     const TOTAL_INITIAL_SLIDES = allSlides.length - 1;
 
-    /* Gap must match CSS */
-    const GAP_PERCENT = 2;
-
-    /* Calculate slide width dynamically */
+    /* Calculate slide width dynamically - each slide is now 100% width */
     function getSlideWidth() {
         const slide = allSlides[0];
         const container = track.parentElement;
-        const gap = (container.offsetWidth * GAP_PERCENT) / 100;
-        return slide.offsetWidth + gap;
+        return slide.offsetWidth;
     }
 
     let index = 0;
@@ -27,24 +23,14 @@ if (track) {
     /* Function to update active slide class */
     function updateActiveSlide() {
         allSlides.forEach((slide, i) => {
-            // Persistent Active: Slides at or before current index are marked active
-            // This ensures exiting slides stay in 'Row' layout
-            if (i <= index) {
+            // Only the current slide should be active
+            if (i === index) {
                 slide.classList.add("active");
             } else {
                 slide.classList.remove("active");
             }
         });
-
-        // Loop Sync: When jumping back, we reset all slides except the first few 
-        // to prepare them for the next cycle's 'Next' (column) state
-        if (index === 0) {
-            allSlides.forEach((slide, i) => {
-                if (i > 0) slide.classList.remove("active");
-            });
-        }
     }
-
 
     /* Initialize active state */
     updateActiveSlide();

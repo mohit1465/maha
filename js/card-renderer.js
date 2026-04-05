@@ -120,8 +120,15 @@ window.selectCardOption = function (option, value, event) {
  * Updates the quantity selector UI visibility and value based on what's in the cart for the selected size
  */
 function updateCardQtyUI(card) {
+    if (!card) return;
+    
     const productId = card.dataset.id;
-    const size = card.querySelector('.size-selector .custom-select-trigger span').dataset.selected;
+    if (!productId) return;
+    
+    const sizeSelector = card.querySelector('.size-selector .custom-select-trigger span');
+    if (!sizeSelector || !sizeSelector.dataset.selected) return;
+    
+    const size = sizeSelector.dataset.selected;
     const normalizedSize = cartService.normalizeSize(size);
 
     const cartItems = cartService.getCart();
@@ -133,12 +140,12 @@ function updateCardQtyUI(card) {
     const qtyValue = card.querySelector('.qty-value');
 
     if (qty > 0) {
-        addBtn.style.display = 'none';
-        qtySelector.style.display = 'flex';
-        qtyValue.textContent = qty;
+        if (addBtn) addBtn.style.display = 'none';
+        if (qtySelector) qtySelector.style.display = 'flex';
+        if (qtyValue) qtyValue.textContent = qty;
     } else {
-        addBtn.style.display = 'flex';
-        qtySelector.style.display = 'none';
+        if (addBtn) addBtn.style.display = 'flex';
+        if (qtySelector) qtySelector.style.display = 'none';
     }
 }
 
@@ -146,17 +153,28 @@ function updateCardQtyUI(card) {
  * Updates the price displayed on the card based on selected size and current quantity (if in cart or default to 1)
  */
 function updateCardLivePrice(card) {
-    const basePrice = parseFloat(card.dataset.basePrice);
-    const size = card.querySelector('.size-selector .custom-select-trigger span').dataset.selected;
+    if (!card) return;
+    
+    const basePrice = card.dataset.basePrice;
+    if (!basePrice) return;
+    
+    const sizeSelector = card.querySelector('.size-selector .custom-select-trigger span');
+    if (!sizeSelector || !sizeSelector.dataset.selected) return;
+    
+    const size = sizeSelector.dataset.selected;
+    const basePriceNum = parseFloat(basePrice);
 
     // Get quantity from UI or default to 1 for price preview
     const qtySelector = card.querySelector('.card-qty-selector');
     let qty = 1;
     if (qtySelector && qtySelector.style.display !== 'none') {
-        qty = parseInt(card.querySelector('.qty-value').textContent) || 1;
+        const qtyValue = card.querySelector('.qty-value');
+        if (qtyValue) {
+            qty = parseInt(qtyValue.textContent) || 1;
+        }
     }
 
-    const unitPrice = cartService.getPriceForSize(basePrice, size);
+    const unitPrice = cartService.getPriceForSize(basePriceNum, size);
     const totalPrice = unitPrice * qty;
 
     const priceDisplay = card.querySelector('.card-price');
@@ -240,14 +258,18 @@ window.decrementCardQty = async function (productId, btnElement, event) {
 // Listen for global cart updates to sync all cards
 cartService.addListener(() => {
     document.querySelectorAll('.product-card').forEach(card => {
-        updateCardQtyUI(card);
-        updateCardLivePrice(card);
+        if (card && card.dataset.id) {
+            updateCardQtyUI(card);
+            updateCardLivePrice(card);
+        }
     });
 });
 
 // Listen for wishlist updates to sync heart icons
 wishlistService.addListener((wishlistItems) => {
     document.querySelectorAll('.product-card').forEach(card => {
+        if (!card || !card.dataset.id) return;
+        
         const productId = card.dataset.id;
         const heartBtn = card.querySelector('.card-wishlist');
         if (heartBtn) {

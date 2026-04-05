@@ -65,12 +65,12 @@
 /* Wishlist Headers */
 .wishlist-headers {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 120px 40px;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
     align-items: center;
-    padding: 12px 10px;
+    padding: 12px 20px;
     border-bottom: 1.5px solid #eee;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
     color: #888;
     font-size: 13px;
     text-transform: uppercase;
@@ -78,26 +78,26 @@
 }
 
 .wishlist-header-product {
-    padding-left: 76px;
+    padding-left: 0;
 }
 
-.wishlist-header-price {
-    text-align: right;
-    padding-right: 20px;
+.wishlist-header-price,
+.wishlist-header-stock,
+.wishlist-header-action {
+    text-align: center;
 }
 
-.wishlist-header-stock {
+.wishlist-header-remove {
     text-align: center;
 }
 
 /* Wishlist Item Styles */
 .wishlist-item {
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
     align-items: center;
-    padding: 16px 10px;
+    padding: 20px;
     border-bottom: 1px solid #f0f0f0;
-    gap: 15px;
     transition: background 0.2s ease;
 }
 
@@ -109,11 +109,10 @@
     border-bottom: none;
 }
 
+/* Remove nested grid, let the parent handle layout */
 .wishlist-item-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 120px 40px;
-    align-items: center;
-    gap: 15px;
+    display: contents;
+    /* Makes children participate in the parent's grid */
 }
 
 /* Product Column */
@@ -154,8 +153,7 @@
     font-size: 16px;
     font-weight: 700;
     color: #1b1b1b;
-    text-align: right;
-    padding-right: 15px;
+    text-align: center;
 }
 
 /* Stock Status */
@@ -177,16 +175,13 @@
     background-color: #323232;
     color: #fff;
     border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .wishlist-add-btn:hover {
@@ -194,8 +189,37 @@
     transform: translateY(-1px);
 }
 
-.wishlist-add-btn i {
+/* Buy Item Button */
+.wishlist-buy-btn {
+    background: #fc6e20;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 15px;
     font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-left: 6px;
+}
+
+.wishlist-buy-btn:hover {
+    background: #e55a10;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.2);
+}
+
+.wishlist-buy-btn:active {
+    transform: translateY(0);
+}
+
+/* Action Container */
+.wishlist-item-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 /* Remove Button */
@@ -205,9 +229,9 @@
 }
 
 .remove-wishlist-item {
-    background-color: var(--color-danger, #DE0000);
+    background-color: #e7e7e7;
     border: none;
-    color: #fff;
+    color: #7e7e7e;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.2s ease;
@@ -219,7 +243,8 @@
 }
 
 .remove-wishlist-item:hover {
-    background-color: #c50000;
+    background-color: #1b1b1b;
+    color: #fff;
     transform: translateY(-1px);
 }
 
@@ -235,39 +260,120 @@
 
     .wishlist-item {
         grid-template-columns: 1fr;
-        padding: 20px 10px;
+        padding: 20px 15px;
         position: relative;
-        /* Added for absolute positioning of remove button */
+        gap: 15px;
     }
 
     .wishlist-item-controls {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .wishlist-item-details {
-        padding-right: 40px;
-        /* Prevent text overlap with absolute remove button */
+    .wishlist-item-product {
+        margin-bottom: 5px;
+    }
+
+    .wishlist-item-price-stock-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        margin-left: 10px;
+    }
+
+    .wishlist-item-price {
+        text-align: left;
+        font-size: 18px;
+        margin-bottom: 0;
+    }
+
+    .wishlist-item-stock {
+        text-align: right;
+        margin-bottom: 0;
+    }
+
+    .wishlist-item-actions {
+        justify-content: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .wishlist-add-btn,
+    .wishlist-buy-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 20px;
+    }
+
+    .wishlist-buy-btn {
+        margin-left: 10px;
     }
 
     .wishlist-item-remove {
         position: absolute;
         top: 15px;
-        right: 10px;
-    }
-
-    .wishlist-item-stock {
-        display: none;
+        right: 15px;
     }
 
     .remove-wishlist-item {
-        margin-top: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .wishlist-item-stock {
+        display: block;
     }
 }
 
 @media (max-width: 480px) {
     .wishlist-section {
         padding: 10px;
+    }
+
+    .wishlist-item {
+        padding: 15px 10px;
+        gap: 12px;
+    }
+
+    .wishlist-item-controls {
+        gap: 12px;
+    }
+
+    .wishlist-item-product {
+        gap: 12px;
+    }
+
+    .wishlist-item-thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+
+    .wishlist-item-name {
+        font-size: 14px;
+    }
+
+    .wishlist-item-category {
+        font-size: 11px;
+    }
+
+    .wishlist-item-price {
+        font-size: 16px;
+    }
+
+    .wishlist-add-btn,
+    .wishlist-buy-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .wishlist-buy-btn {
+        margin-left: 8px;
+    }
+
+    .remove-wishlist-item {
+        padding: 8px 10px;
+        font-size: 12px;
     }
 
     .breadcrumb {

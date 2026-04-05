@@ -80,13 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="wishlist-item-controls">
-                    <div class="wishlist-item-price">₹${product.price}</div>
-                    <div class="wishlist-item-stock">
-                        <span class="stock-status">In Stock</span>
+                    <div class="wishlist-item-price-stock-row">
+                        <div class="wishlist-item-price">₹${product.price}</div>
+                        <div class="wishlist-item-stock">
+                            <span class="stock-status">In Stock</span>
+                        </div>
                     </div>
-                    <button class="wishlist-add-btn" onclick="wishlistAddToCart('${product.id}', '${product.name}', ${product.price}, '${imageUrl}')">
-                        <i class="fas fa-shopping-bag"></i> Add
-                    </button>
+                    <div class="wishlist-item-actions">
+                        <button class="wishlist-add-btn" onclick="wishlistAddToCart('${product.id}', '${product.name}', ${product.price}, '${imageUrl}')">Add</button>
+                        <button class="wishlist-buy-btn" onclick="wishlistBuyNow('${product.id}', '${product.name}', ${product.price}, '${imageUrl}')">Buy</button>
+                    </div>
                     <div class="wishlist-item-remove">
                         <button class="remove-wishlist-item" onclick="removeFromWishlist('${product.id}')" title="Remove from wishlist">
                             <i class="fas fa-trash-alt"></i>
@@ -123,11 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="wishlist-item-controls">
-                    <div class="skeleton skeleton-text" style="width: 60%; margin-left: auto;"></div>
-                    <div style="display: flex; justify-content: center;">
+                    <div class="wishlist-item-price-stock-row">
+                        <div class="skeleton skeleton-text" style="width: 60px; height: 20px;"></div>
                         <div class="skeleton skeleton-text" style="width: 60px; height: 24px; border-radius: 20px;"></div>
                     </div>
-                    <div class="skeleton skeleton-btn"></div>
+                    <div class="wishlist-item-actions">
+                        <div class="skeleton skeleton-btn" style="width: 40px; height: 28px; border-radius: 15px;"></div>
+                        <div class="skeleton skeleton-btn" style="width: 40px; height: 28px; border-radius: 15px;"></div>
+                    </div>
                     <div class="wishlist-item-remove">
                         <div class="skeleton skeleton-circle" style="width: 32px; height: 32px;"></div>
                     </div>
@@ -145,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.innerHTML = '...';
 
             await cartService.addToCart({
                 id: id,
@@ -154,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 images: { '1': imageUrl }
             }, 1, '250g'); // Default to 1 unit, 250g
 
-            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            btn.innerHTML = '✓ Added';
             btn.style.backgroundColor = '#27ae60';
 
             setTimeout(() => {
@@ -164,6 +170,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2000);
         } catch (error) {
             console.error("Error adding to cart:", error);
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
+    };
+
+    window.wishlistBuyNow = async (id, name, price, imageUrl) => {
+        const btn = event.currentTarget;
+        const originalHtml = btn.innerHTML;
+
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '...';
+
+            // Add to cart first
+            await cartService.addToCart({
+                id: id,
+                name: name,
+                price: price,
+                images: { '1': imageUrl }
+            }, 1, '250g');
+
+            // Redirect to cart page for checkout
+            btn.innerHTML = '✓ Added';
+            setTimeout(() => {
+                window.location.href = 'cart.html';
+            }, 500);
+        } catch (error) {
+            console.error("Error with buy now:", error);
             btn.disabled = false;
             btn.innerHTML = originalHtml;
         }

@@ -107,7 +107,20 @@
 .product-details {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 50px;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
 }
 
 .product-title {
@@ -118,15 +131,27 @@
 }
 
 .product-category {
-    font-size: 16px;
-    color: #666;
+    font-size: 12px;
+    color: #000000;
     font-weight: 400;
+    padding: 5px 10px;
+    background: #f1f1f1;
+    border-radius: 15px;
+    white-space: nowrap;
 }
 
 .product-price {
     font-size: 32px;
     font-weight: 700;
     color: #323232;
+}
+
+.product-price label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 5px;
 }
 
 .product-description {
@@ -136,8 +161,7 @@
     margin: 0;
 }
 
-/* Variant Selectors */
-.variant-section {
+.product-controls {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -146,7 +170,7 @@
 .variant-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
 }
 
 .variant-group label {
@@ -186,7 +210,9 @@
 /* Quantity Selector */
 .quantity-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     gap: 10px;
 }
 
@@ -229,8 +255,9 @@
 /* Action Buttons */
 .product-actions {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
 }
 
 .btn {
@@ -245,12 +272,50 @@
 }
 
 .btn-primary {
-    background-color: #e55a10;
+    width: 80px;
+    height: 40px;
+    background-color: #fc6e20;
     color: #fff;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
 }
 
 .btn-primary:hover {
     background-color: #e55a10;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.4);
+}
+
+.btn-primary i {
+    font-size: 16px;
+    margin: 0;
+}
+
+.btn-primary span {
+    display: none;
+}
+
+.btn-buy {
+    background: linear-gradient(135deg, #1b1b1b 0%, #323232 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: 40px;
+    padding: 0 20px;
+}
+
+.btn-buy:hover {
+    background: linear-gradient(135deg, #000000 0%, #1b1b1b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-buy:active {
+    transform: translateY(0);
 }
 
 .btn-secondary {
@@ -385,7 +450,7 @@
 }
 
 .add-to-cart-btn {
-    padding: 8px 20px;
+    width: 40px;
     height: 40px;
     border: none;
     border-radius: 20px;
@@ -396,11 +461,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 0;
     font-size: 14px;
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(252, 110, 32, 0.3);
     white-space: nowrap;
+    padding: 0;
 }
 
 .add-to-cart-btn:hover {
@@ -411,6 +477,46 @@
 
 .add-to-cart-btn i {
     font-size: 16px;
+    margin: 0;
+}
+
+.add-to-cart-btn span {
+    display: none;
+}
+
+/* Buy Now Button - Desktop Fixed Action Bar */
+.action-bar-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.buy-now-btn {
+    padding: 8px 16px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1b1b1b 0%, #323232 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.buy-now-btn:hover {
+    background: linear-gradient(135deg, #000000 0%, #1b1b1b 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.buy-now-btn i {
+    font-size: 14px;
 }
 
 /* Mobile Layout */
@@ -526,7 +632,7 @@
 }
 
 .mobile-add-to-cart-btn {
-    padding: 8px 16px;
+    width: 40px;
     height: 40px;
     border: none;
     border-radius: 20px;
@@ -537,11 +643,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 0;
     font-size: 13px;
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(252, 110, 32, 0.3);
     white-space: nowrap;
+    padding: 0;
 }
 
 .mobile-add-to-cart-btn:hover {
@@ -552,6 +659,46 @@
 
 .mobile-add-to-cart-btn i {
     font-size: 16px;
+    margin: 0;
+}
+
+.mobile-add-to-cart-btn span {
+    display: none;
+}
+
+/* Mobile Buy Now Button */
+.mobile-action-bar-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.mobile-buy-now-btn {
+    padding: 8px 12px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #1b1b1b 0%, #323232 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.mobile-buy-now-btn:hover {
+    background: linear-gradient(135deg, #000000 0%, #1b1b1b 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-buy-now-btn i {
+    font-size: 14px;
 }
 
 /* Customer Reviews Section */
@@ -780,13 +927,5 @@
         padding: 5px 8px;
         font-size: 10px;
         min-width: 65px;
-    }
-
-    .mobile-add-to-cart-btn {
-        height: 36px;
-    }
-
-    .mobile-add-to-cart-btn i {
-        font-size: 14px;
     }
 }

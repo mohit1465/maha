@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>https://maharajadryfruits.com/</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <!-- Product Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/product.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://maharajadryfruits.com/assets/almonds-with-shell.jpg</image:loc>
+            <image:title>Premium Badam with Shell</image:title>
+            <image:caption>Fresh quality almonds with shell from Maharaja Dry Fruits</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Search/Shop Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/search.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- About Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/about.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Contact Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/contact.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Cart Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/cart.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Wishlist Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/wishlist.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Login Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/login.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+    <!-- Profile Page -->
+    <url>
+        <loc>https://maharajadryfruits.com/profile.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+</urlset>

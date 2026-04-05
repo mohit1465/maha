@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function updatePriceDisplay(price) {
         const priceElements = document.querySelectorAll('.product-price, .action-bar-product-price, .mobile-product-price');
         priceElements.forEach(element => {
-            element.textContent = `₹${price.toLocaleString('en-IN')}`;
+            element.innerHTML = `<label>Just At</label>₹${price.toLocaleString('en-IN')}`;
         });
     }
 
