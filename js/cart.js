@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <i class="fas fa-shopping-bag" style="font-size: 64px; color: #f0f0f0; margin-bottom: 20px; display: block;"></i>
                     <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 10px; color: #1b1b1b;">Your cart is empty</h2>
                     <p style="color: #666; margin-bottom: 30px;">Add some delicious dry fruits to your cart and they will show up here.</p>
-                    <a href="search.html" class="btn-primary" style="display: inline-block; padding: 14px 35px; text-decoration: none; background: var(--gradient-brand); color: white; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(252, 110, 32, 0.2); transition: all 0.3s ease;">Shop Now</a>
+                    <a href="search.html" style="display: inline-block; padding: 14px 35px; text-decoration: none; background: var(--gradient-brand); color: white; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(252, 110, 32, 0.2); transition: all 0.3s ease;">Shop Now</a>
                 </div>
             `;
             if (buyAllButton) buyAllButton.disabled = true;

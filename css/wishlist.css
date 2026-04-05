@@ -65,7 +65,7 @@
 /* Wishlist Headers */
 .wishlist-headers {
     display: grid;
-    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 40px;
     align-items: center;
     padding: 12px 20px;
     border-bottom: 1.5px solid #eee;
@@ -87,6 +87,10 @@
     text-align: center;
 }
 
+.wishlist-header-price, .wishlist-header-stock {
+    text-align: left;
+}
+
 .wishlist-header-remove {
     text-align: center;
 }
@@ -94,7 +98,7 @@
 /* Wishlist Item Styles */
 .wishlist-item {
     display: grid;
-    grid-template-columns: 2.5fr 1fr 1fr 1fr 120px;
+    grid-template-columns: 2.5fr 2fr 1fr 40px;
     align-items: center;
     padding: 20px;
     border-bottom: 1px solid #f0f0f0;
@@ -153,12 +157,13 @@
     font-size: 16px;
     font-weight: 700;
     color: #1b1b1b;
-    text-align: center;
+    text-align: left;
 }
 
 /* Stock Status */
 .wishlist-item-stock {
-    text-align: center;
+    text-align: left;
+    flex-shrink: 0;
 }
 
 .stock-status {
@@ -246,6 +251,12 @@
     background-color: #1b1b1b;
     color: #fff;
     transform: translateY(-1px);
+}
+
+.wishlist-item-price-stock-row{
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr 1fr;
 }
 
 /* Mobile Responsive */
