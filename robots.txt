@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://maharajadryfruits.com/sitemap.xml
+Sitemap: https://mohit1465.github.io/maha/sitemap.xml
 
 # Block common non-content paths
 Disallow: /css/
