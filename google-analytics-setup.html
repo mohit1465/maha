@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Analytics Tracking Code Template</title>
+    
+    <!-- Google Analytics (gtag.js) - Replace GA_MEASUREMENT_ID with your actual GA ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+</head>
+<body>
+    <h1>Google Analytics Setup Instructions</h1>
+    
+    <h2>Steps to Complete Google Analytics Setup:</h2>
+    
+    <ol>
+        <li><strong>Get Your GA Measurement ID:</strong>
+            <ul>
+                <li>Go to Google Analytics: https://analytics.google.com</li>
+                <li>Create a new property or use existing one</li>
+                <li>Find your Measurement ID (format: G-XXXXXXXXXX)</li>
+            </ul>
+        </li>
+        
+        <li><strong>Replace GA_MEASUREMENT_ID:</strong>
+            <ul>
+                <li>In all HTML files, replace "GA_MEASUREMENT_ID" with your actual ID</li>
+                <li>Example: gtag('config', 'G-1234567890');</li>
+            </ul>
+        </li>
+        
+        <li><strong>Add to All Pages:</strong>
+            <p>Add this tracking code to the <head> section of every HTML page:</p>
+            <pre><code>&lt;!-- Google Analytics (gtag.js) --&gt;
+&lt;script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_ACTUAL_GA_ID"&gt;&lt;/script&gt;
+&lt;script&gt;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'YOUR_ACTUAL_GA_ID');
+&lt;/script&gt;</code></pre>
+        </li>
+        
+        <li><strong>Verify Setup:</strong>
+            <ul>
+                <li>Install Google Analytics Debugger Chrome extension</li>
+                <li>Visit your website and check browser console</li>
+                <li>Look for "Google Analytics" debug messages</li>
+            </ul>
+        </li>
+        
+        <li><strong>Check Real-time Reports:</strong>
+            <ul>
+                <li>In GA, go to Reports > Realtime</li>
+                <li>Visit your website</li>
+                <li>You should see active users within 30 seconds</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h2>Files Updated:</h2>
+    <ul>
+        <li>✅ index.html (homepage)</li>
+        <li>✅ product.html (product page)</li>
+        <li>🔄 Add to remaining pages: search.html, about.html, contact.html, cart.html, etc.</li>
+    </ul>
+    
+    <h2>Important Notes:</h2>
+    <ul>
+        <li>The tracking code is placed in the &lt;head&gt; section as required</li>
+        <li>Using gtag.js (latest version) instead of analytics.js</li>
+        <li>Async loading prevents page speed impact</li>
+        <li>Google verification file is present: google0ed8c92362b4791e.html</li>
+    </ul>
+</body>
+</html>
