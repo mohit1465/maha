@@ -1,0 +1,744 @@
+/**
+ * SEO Product Update Script
+ * Updates all products in Firebase with optimized titles and descriptions
+ */
+
+import { db } from './firebase-config.js';
+import { collection, getDocs, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// SEO-optimized product data based on admin panel
+const seoProductUpdates = {
+    // Almonds Category
+    'american-badam-giri': {
+        name: 'American Almonds (Badam Giri) – Premium Quality Kernels Online',
+        shortDescription: 'Premium quality American badam giri almonds, rich in nutrients and perfect for healthy snacking. Buy online at best price.',
+        longDescription: `Experience the exceptional quality of American almonds (badam giri), carefully selected for their superior taste and nutritional value. These premium almond kernels are packed with protein, healthy fats, and essential vitamins.
+
+✔ Premium Quality American Almonds
+✔ Rich in Protein & Vitamin E
+✔ Heart-Healthy Fats
+✔ Perfect for Daily Nutrition
+✔ No Shell - Ready to Eat
+
+Our American badam giri almonds are perfect for snacking, baking, or adding to your favorite recipes. Boost your health naturally with these premium quality kernels.
+
+💰 Available at just ₹250
+📦 Multiple sizes available
+👉 Order now and enjoy premium quality!`,
+        benefits: 'Premium Quality American Almonds, Rich in Protein & Vitamin E, Heart-Healthy Fats, Perfect for Daily Nutrition, No Shell - Ready to Eat',
+        price: 250,
+        category: 'Almonds',
+        isPremium: true,
+        keywords: 'american badam giri, american almonds, premium badam, buy almonds online, maharaja dry fruits, quality almonds'
+    },
+    'badam-with-shell': {
+        name: 'Badam with Shell – Premium Almonds | Fresh & Natural',
+        shortDescription: 'Fresh premium badam with shell, rich in nutrients and perfect for healthy snacking. Buy online at best price.',
+        longDescription: `Experience the richness of naturally grown, high-quality badam with shell, carefully selected for freshness and taste. These almonds are packed in their natural shell to preserve crunch, flavor, and nutrients.
+
+✔ 100% Natural & Unprocessed
+✔ Rich in Protein, Fiber & Healthy Fats
+✔ Long Shelf Life with Shell Protection
+✔ Perfect for Daily Nutrition & Snacking
+
+Whether you're looking to boost your health or enjoy a crunchy snack, our premium almonds with shell are the perfect choice.
+
+💰 Available at just ₹185
+📦 Multiple sizes available (250g, 500g, 1kg, 2kg)
+
+👉 Order now and enjoy farm-fresh quality delivered to your doorstep.`,
+        benefits: '100% Natural & Unprocessed, Rich in Protein, Fiber & Healthy Fats, Long Shelf Life with Shell Protection, Perfect for Daily Nutrition & Snacking',
+        price: 185,
+        category: 'Almonds',
+        isPremium: true,
+        keywords: 'badam with shell, premium almonds, fresh almonds online, buy almonds India, maharaja dry fruits, natural almonds, quality dry fruits'
+    },
+    'kagzi-badam': {
+        name: 'Kagzi Badam (Soft Shell Almonds) – Premium Quality',
+        shortDescription: 'Premium quality kagzi badam with soft shells, easy to crack and rich in flavor. Perfect for daily consumption.',
+        longDescription: `Discover the exceptional quality of our kagzi badam, featuring soft shells that are easy to crack and reveal delicious, nutrient-rich almonds inside. These are perfect for those who love the experience of cracking their own nuts.
+
+✔ Soft Shell - Easy to Crack
+✔ Premium Quality Almonds
+✔ Rich in Natural Flavor
+✔ High in Nutritional Value
+✔ Perfect for Daily Snacking
+
+Our kagzi badam offers the perfect balance of convenience and tradition. Enjoy the satisfying experience of fresh almonds with the ease of soft shells.
+
+💰 Available at just ₹112.5
+📦 Fresh stock available
+👉 Order now and enjoy the quality!`,
+        benefits: 'Soft Shell - Easy to Crack, Premium Quality Almonds, Rich in Natural Flavor, High in Nutritional Value, Perfect for Daily Snacking',
+        price: 112.5,
+        category: 'Almonds',
+        isPremium: true,
+        keywords: 'kagzi badam, soft shell almonds, premium badam, easy crack almonds, buy badam online, maharaja dry fruits'
+    },
+    'kashmiri-giri-almonds': {
+        name: 'Kashmiri Almonds (Badam Giri) – Rich & Premium Quality',
+        shortDescription: 'Premium Kashmiri badam giri almonds, known for their rich flavor and superior quality. Buy online at best prices.',
+        longDescription: `Experience the legendary taste of Kashmiri almonds (badam giri), renowned for their exceptional flavor, rich aroma, and superior quality. These premium almonds are sourced directly from the pristine valleys of Kashmir.
+
+✔ Premium Kashmiri Quality
+✔ Rich & Distinctive Flavor
+✔ High Nutritional Value
+✔ Traditional Excellence
+✔ Perfect for Gourmet Cooking
+
+Our Kashmiri badam giri almonds are sought after for their unique taste and texture. Perfect for special occasions, gifting, or everyday indulgence in premium quality.
+
+💰 Available at just ₹350
+📦 Authentic Kashmiri source
+👉 Order now and taste the difference!`,
+        benefits: 'Premium Kashmiri Quality, Rich & Distinctive Flavor, High Nutritional Value, Traditional Excellence, Perfect for Gourmet Cooking',
+        price: 350,
+        category: 'Almonds',
+        isPremium: true,
+        keywords: 'kashmiri badam giri, kashmiri almonds, premium badam, rich flavor almonds, buy kashmiri almonds online, maharaja dry fruits'
+    },
+    
+    // Other Dry Fruits Category
+    'chilloza-pine-nuts': {
+        name: 'Chilgoza (Pine Nuts) – Premium Dry Fruits Online',
+        shortDescription: 'Premium quality chilgoza pine nuts, rich in essential nutrients and perfect for healthy snacking. Buy online.',
+        longDescription: `Discover the exceptional taste and nutritional benefits of our premium chilgoza pine nuts, carefully selected for their size, flavor, and quality. These nuts are packed with vitamins, minerals, and healthy fats.
+
+✔ Premium Quality Pine Nuts
+✔ Rich in Essential Nutrients
+✔ Heart-Healthy Fats
+✔ Perfect for Cooking & Snacking
+✔ Sourced from Best Regions
+
+Our chilgoza pine nuts are incredibly versatile - use them in cooking, baking, or enjoy them as a healthy snack. They add a rich, buttery flavor to any dish.
+
+💰 Available at just ₹1400
+📦 Premium grade quality
+👉 Order now and enjoy premium pine nuts!`,
+        benefits: 'Premium Quality Pine Nuts, Rich in Essential Nutrients, Heart-Healthy Fats, Perfect for Cooking & Snacking, Sourced from Best Regions',
+        price: 1400,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'chilgoza, pine nuts, premium dry fruits, healthy nuts, buy pine nuts online, maharaja dry fruits, quality chilgoza'
+    },
+    'anjeer-fig': {
+        name: 'Premium Anjeer (Dried Figs) – Sweet & Natural',
+        shortDescription: 'Premium quality anjeer dried figs, naturally sweet and packed with fiber. Perfect for healthy snacking.',
+        longDescription: `Experience the natural sweetness and chewy texture of our premium anjeer (dried figs), carefully selected and dried to preserve their nutritional value and delicious taste. These figs are nature's healthy candy.
+
+✔ Premium Quality Dried Figs
+✔ Naturally Sweet & Chewy
+✔ Rich in Dietary Fiber
+✔ Packed with Essential Minerals
+✔ Perfect for Digestive Health
+
+Our anjeer figs are perfect for snacking, adding to cereals, or using in baking. They provide natural energy and support digestive health naturally.
+
+💰 Available at just ₹250
+📦 Multiple sizes available
+👉 Order now and enjoy natural sweetness!`,
+        benefits: 'Premium Quality Dried Figs, Naturally Sweet & Chewy, Rich in Dietary Fiber, Packed with Essential Minerals, Perfect for Digestive Health',
+        price: 250,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'anjeer, dried figs, premium anjeer, sweet figs, buy figs online, maharaja dry fruits, quality dry fruits'
+    },
+    'kishmish': {
+        name: 'Kishmish (Raisins) – Fresh & Naturally Sweet',
+        shortDescription: 'Premium quality kishmish raisins, naturally sweet and sun-dried to perfection. Rich in iron and natural energy.',
+        longDescription: `Experience the natural sweetness of our premium kishmish raisins, carefully sun-dried to preserve their juicy texture and concentrated flavor. These dried grapes are packed with essential nutrients.
+
+✔ Premium Quality Raisins
+✔ Naturally Sweet & Juicy
+✔ Sun-Dried to Perfection
+✔ Rich in Iron & Fiber
+✔ Natural Energy Boost
+
+Our kishmish raisins are incredibly versatile - add them to cereals, bake them into cookies, or enjoy them as a natural energy booster. Perfect for all ages.
+
+💰 Available at just ₹170
+📦 Fresh stock available
+👉 Order now and enjoy natural sweetness!`,
+        benefits: 'Premium Quality Raisins, Naturally Sweet & Juicy, Sun-Dried to Perfection, Rich in Iron & Fiber, Natural Energy Boost',
+        price: 170,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'kishmish, raisins, premium kishmish, sweet raisins, buy raisins online, maharaja dry fruits, quality dry fruits'
+    },
+    'mix-dry-fruit-murabha': {
+        name: 'Mixed Dry Fruit Murabba – Healthy & Traditional Sweet',
+        shortDescription: 'Traditional mixed dry fruit murabba, combining premium dry fruits with natural sweetness. Perfect for health-conscious consumers.',
+        longDescription: `Experience the perfect blend of tradition and health with our mixed dry fruit murabba, carefully prepared using premium quality dry fruits and traditional methods. This healthy sweet combines the best of nature's bounty.
+
+✔ Traditional Recipe
+✔ Mixed Premium Dry Fruits
+✔ Natural Sweetness
+✔ Health-Conscious Preparation
+✔ Perfect for All Ages
+
+Our mixed dry fruit murabba is perfect for those who want traditional taste with health benefits. Enjoy it with breakfast, as a snack, or as a healthy dessert.
+
+💰 Available at just ₹375
+📦 Traditional preparation
+👉 Order now and taste tradition!`,
+        benefits: 'Traditional Recipe, Mixed Premium Dry Fruits, Natural Sweetness, Health-Conscious Preparation, Perfect for All Ages',
+        price: 375,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'mixed dry fruit murabba, traditional murabba, healthy sweet, dry fruit sweet, buy murabba online, maharaja dry fruits'
+    },
+    'panch-mewa': {
+        name: 'Panch Mewa Mix – Premium Dry Fruits Blend',
+        shortDescription: 'Traditional panch mewa mix with premium quality dry fruits, perfect for health and nutrition. Buy online.',
+        longDescription: `Discover the perfect nutritional blend with our premium panch mewa mix, combining five essential dry fruits traditionally known for their health benefits and taste. Each ingredient is carefully selected for quality.
+
+✔ Traditional Panch Mewa Recipe
+✔ Five Premium Dry Fruits
+✔ Rich in Multiple Nutrients
+✔ Traditional Health Benefits
+✔ Perfect Daily Nutrition
+
+Our panch mewa mix is perfect for daily consumption, providing a balanced mix of essential nutrients from five different dry fruits. Traditional wisdom meets modern quality.
+
+💰 Available at just ₹275
+📦 Traditional blend
+👉 Order now and enjoy health benefits!`,
+        benefits: 'Traditional Panch Mewa Recipe, Five Premium Dry Fruits, Rich in Multiple Nutrients, Traditional Health Benefits, Perfect Daily Nutrition',
+        price: 275,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'panch mewa, dry fruit mix, traditional health mix, five fruits mix, buy panch mewa online, maharaja dry fruits'
+    },
+    'pista-roasted': {
+        name: 'Roasted Pista (Pistachios) – Crunchy & Premium',
+        shortDescription: 'Premium roasted pista (pistachios), perfectly salted and roasted for maximum flavor and crunch. Healthy snack option.',
+        longDescription: `Experience the perfect crunch and flavor of our premium roasted pista (pistachios), carefully roasted and salted to enhance their natural taste. These vibrant green nuts are packed with nutrients.
+
+✔ Perfectly Roasted & Salted
+✔ Premium Quality Pistachios
+✔ Vibrant Green Color
+✔ Rich in Protein & Fiber
+✔ Perfect Crunchy Texture
+
+Our roasted pistachios are perfect for snacking, adding to desserts, or enjoying as a healthy treat. They provide satisfying crunch with nutritional benefits.
+
+💰 Available at just ₹350
+📦 Perfectly roasted
+👉 Order now and enjoy the crunch!`,
+        benefits: 'Perfectly Roasted & Salted, Premium Quality Pistachios, Vibrant Green Color, Rich in Protein & Fiber, Perfect Crunchy Texture',
+        price: 350,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'roasted pista, pistachios, premium pistachios, salted pistachios, buy pista online, maharaja dry fruits, quality nuts'
+    },
+    'turkel-apricot': {
+        name: 'Turkish Apricots – Premium Dried Khubani',
+        shortDescription: 'Premium quality Turkish apricots, naturally sweet and packed with vitamins. Perfect for healthy snacking.',
+        longDescription: `Experience the exceptional quality of our Turkish apricots, carefully selected and dried to preserve their natural sweetness, vibrant color, and nutritional value. These premium dried apricots are a true delicacy.
+
+✔ Premium Turkish Quality
+✔ Naturally Sweet & Tangy
+✔ Rich in Vitamins A & C
+✔ Perfect Texture & Color
+✔ Traditional Drying Method
+
+Our Turkish apricots are perfect for snacking, baking, or reconstituting for cooking. They provide essential nutrients with delicious taste.
+
+💰 Available at just ₹275
+📦 Authentic Turkish source
+👉 Order now and enjoy premium quality!`,
+        benefits: 'Premium Turkish Quality, Naturally Sweet & Tangy, Rich in Vitamins A & C, Perfect Texture & Color, Traditional Drying Method',
+        price: 275,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'turkish apricots, dried apricots, khubani, premium dry fruits, buy apricots online, maharaja dry fruits, quality turkish apricots'
+    },
+    'khumani-white': {
+        name: 'White Khumani (Dried Apricots) – Soft & Natural',
+        shortDescription: 'Premium quality white khumani dried apricots, soft texture and naturally sweet. Perfect for healthy consumption.',
+        longDescription: `Discover the delicate sweetness of our premium white khumani dried apricots, carefully selected for their soft texture and mild, sweet flavor. These premium dried apricots are a true delicacy.
+
+✔ Premium White Khumani
+✔ Soft & Tender Texture
+✔ Naturally Mild & Sweet
+✔ Rich in Nutrients
+✔ Perfect for All Ages
+
+Our white khumani apricots are perfect for those who prefer a milder, sweeter taste. They're excellent for snacking, baking, or cooking.
+
+💰 Available at just ₹225
+📦 Premium quality
+👉 Order now and enjoy delicate sweetness!`,
+        benefits: 'Premium White Khumani, Soft & Tender Texture, Naturally Mild & Sweet, Rich in Nutrients, Perfect for All Ages',
+        price: 225,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'white khumani, dried apricots, premium apricots, soft apricots, buy khumani online, maharaja dry fruits, quality dry fruits'
+    },
+    'blueberry': {
+        name: 'Dried Blueberries – Premium & Antioxidant Rich',
+        shortDescription: 'Premium quality dried blueberries, packed with antioxidants and natural sweetness. Perfect superfood snack.',
+        longDescription: `Experience the powerhouse of nutrition with our premium dried blueberries, carefully selected and dried to preserve their antioxidant content, sweet flavor, and nutritional value.
+
+✔ Premium Quality Blueberries
+✔ Rich in Antioxidants
+✔ Naturally Sweet & Tangy
+✔ Packed with Vitamins
+✔ Perfect Superfood Snack
+
+Our dried blueberries are perfect for health-conscious consumers looking for antioxidant-rich snacks. Add them to cereals, smoothies, or enjoy them as is.
+
+💰 Available at just ₹600
+📦 Premium grade
+👉 Order now and boost your health!`,
+        benefits: 'Premium Quality Blueberries, Rich in Antioxidants, Naturally Sweet & Tangy, Packed with Vitamins, Perfect Superfood Snack',
+        price: 600,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'dried blueberries, premium blueberries, antioxidant rich, superfood, buy blueberries online, maharaja dry fruits, quality dried fruits'
+    },
+    'cashew': {
+        name: 'Cashew Nuts (Kaju) – Premium Quality Whole',
+        shortDescription: 'Premium quality whole cashew nuts, creamy texture and rich flavor. Perfect for snacking and cooking.',
+        longDescription: `Experience the creamy, buttery goodness of our premium cashew nuts (kaju), carefully selected for their size, flavor, and quality. These whole cashews are a true delicacy.
+
+✔ Premium Whole Cashews
+✔ Creamy & Buttery Texture
+✔ Rich in Healthy Fats
+✔ Perfect Size & Shape
+✔ Versatile Usage
+
+Our cashew nuts are perfect for snacking, cooking, or gifting. They add rich flavor and creamy texture to any dish or recipe.
+
+💰 Available at just ₹300
+📦 Premium quality
+👉 Order now and enjoy creamy goodness!`,
+        benefits: 'Premium Whole Cashews, Creamy & Buttery Texture, Rich in Healthy Fats, Perfect Size & Shape, Versatile Usage',
+        price: 300,
+        category: 'Other Dry Fruits',
+        isPremium: true,
+        keywords: 'cashew nuts, kaju, premium cashews, whole cashews, buy cashews online, maharaja dry fruits, quality cashews'
+    },
+    
+    // Walnuts Category
+    'kashmiri-walnut-giri': {
+        name: 'Kashmiri Walnut Kernels (Akhrot Giri) – Premium Quality',
+        shortDescription: 'Premium quality Kashmiri walnut kernels (akhrot giri), known for their rich flavor and superior quality.',
+        longDescription: `Experience the exceptional quality of Kashmiri walnut kernels (akhrot giri), renowned for their rich flavor, buttery texture, and superior nutritional value. Sourced directly from the pristine valleys of Kashmir.
+
+✔ Premium Kashmiri Quality
+✔ Rich & Distinctive Flavor
+✔ Buttery & Smooth Texture
+✔ High in Omega-3
+✔ Perfect Brain Food
+
+Our Kashmiri walnut kernels are perfect for those who appreciate the finest quality walnuts. Ideal for baking, cooking, or enjoying as a healthy snack.
+
+💰 Available at just ₹300
+📦 Authentic Kashmiri source
+👉 Order now and taste the difference!`,
+        benefits: 'Premium Kashmiri Quality, Rich & Distinctive Flavor, Buttery & Smooth Texture, High in Omega-3, Perfect Brain Food',
+        price: 300,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'kashmiri walnut giri, kashmiri akhrot, premium walnuts, walnut kernels, buy walnuts online, maharaja dry fruits, quality walnuts'
+    },
+    'krela-akhrot': {
+        name: 'Karela Akhrot (Walnuts) – Natural & Healthy',
+        shortDescription: 'Premium quality karela akhrot walnuts, natural and healthy. Perfect for daily nutrition and brain health.',
+        longDescription: `Discover the natural goodness of our premium karela akhrot walnuts, carefully selected for their quality and nutritional value. These walnuts are perfect for health-conscious consumers.
+
+✔ Premium Quality Walnuts
+✔ Natural & Unprocessed
+✔ Rich in Nutrients
+✔ Perfect for Brain Health
+✔ Healthy Snacking Option
+
+Our karela akhrot walnuts are perfect for daily consumption, providing essential nutrients and supporting overall health and wellness.
+
+💰 Available at just ₹187.5
+📦 Natural quality
+👉 Order now and enjoy natural goodness!`,
+        benefits: 'Premium Quality Walnuts, Natural & Unprocessed, Rich in Nutrients, Perfect for Brain Health, Healthy Snacking Option',
+        price: 187.5,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'karela akhrot, natural walnuts, premium walnuts, healthy walnuts, buy walnuts online, maharaja dry fruits, quality akhrot'
+    },
+    'silver-queen-walnuts': {
+        name: 'Silver Queen Walnuts – Premium Grade Quality',
+        shortDescription: 'Premium grade Silver Queen walnuts, known for their superior quality and light color. Perfect for discerning consumers.',
+        longDescription: `Experience the premium quality of Silver Queen walnuts, carefully selected for their light color, superior taste, and exceptional quality. These are among the finest walnuts available.
+
+✔ Premium Grade Silver Queen
+✔ Light Color & Superior Taste
+✔ Exceptional Quality
+✔ Rich in Nutrients
+✔ Perfect for Gifting
+
+Our Silver Queen walnuts are perfect for those who demand the absolute best quality. Ideal for special occasions or premium gifting.
+
+💰 Available at just ₹120
+📦 Premium grade
+👉 Order now and experience premium quality!`,
+        benefits: 'Premium Grade Silver Queen, Light Color & Superior Taste, Exceptional Quality, Rich in Nutrients, Perfect for Gifting',
+        price: 120,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'silver queen walnuts, premium walnuts, grade quality walnuts, light walnuts, buy walnuts online, maharaja dry fruits'
+    },
+    'super-walnuts-with-shell': {
+        name: 'Walnuts with Shell – Super Quality Akhrot',
+        shortDescription: 'Super quality walnuts with shell, premium akhrot known for exceptional taste and nutritional value.',
+        longDescription: `Discover the exceptional quality of our super grade walnuts with shell, carefully selected for their size, flavor, and nutritional value. These premium akhrot are perfect for those who appreciate the finest quality.
+
+✔ Super Quality Grade
+✔ Perfect Size & Shape
+✔ Rich in Omega-3 Fats
+✔ Natural Shell Protection
+✔ Exceptional Freshness
+
+Our super quality walnuts with shell provide the perfect balance of convenience and protection. Enjoy the satisfaction of cracking fresh, premium walnuts.
+
+💰 Available at just ₹150
+📦 Super grade quality
+👉 Order now and experience super quality!`,
+        benefits: 'Super Quality Grade, Perfect Size & Shape, Rich in Omega-3 Fats, Natural Shell Protection, Exceptional Freshness',
+        price: 150,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'super walnuts, quality walnuts, walnuts with shell, premium akhrot, buy walnuts online, maharaja dry fruits'
+    },
+    'superior-quality-walnuts-with-shell': {
+        name: 'Premium Walnuts with Shell – Superior Quality',
+        shortDescription: 'Superior quality walnuts with shell, premium grade akhrot known for exceptional taste and freshness.',
+        longDescription: `Experience the pinnacle of quality with our superior grade walnuts with shell, carefully selected for their exceptional taste, freshness, and nutritional value. These represent the finest walnuts available.
+
+✔ Superior Quality Grade
+✔ Exceptional Freshness
+✔ Rich & Distinctive Flavor
+✔ Perfect Shell Quality
+✔ Premium Nutritional Value
+
+Our superior quality walnuts with shell are perfect for discerning consumers who accept nothing but the best. Experience walnut perfection.
+
+💰 Available at just ₹275
+📦 Superior grade
+👉 Order now and experience perfection!`,
+        benefits: 'Superior Quality Grade, Exceptional Freshness, Rich & Distinctive Flavor, Perfect Shell Quality, Premium Nutritional Value',
+        price: 275,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'superior walnuts, premium walnuts, quality walnuts with shell, best akhrot, buy walnuts online, maharaja dry fruits'
+    },
+    'akhrot-giri-white': {
+        name: 'White Akhrot Giri (Walnut Kernels) – Premium',
+        shortDescription: 'Premium quality white akhrot giri walnut kernels, known for their light color and superior taste.',
+        longDescription: `Discover the exceptional quality of our premium white akhrot giri walnut kernels, carefully selected for their light color, superior taste, and exceptional nutritional value.
+
+✔ Premium White Akhrot
+✔ Light Color & Superior Taste
+✔ Premium Kernel Quality
+✔ Rich in Essential Nutrients
+✔ Perfect for Gourmet Use
+
+Our white akhrot giri kernels are perfect for those who appreciate the finest quality walnuts. Ideal for baking, cooking, or premium snacking.
+
+💰 Available at just ₹350
+📦 Premium quality
+👉 Order now and experience premium quality!`,
+        benefits: 'Premium White Akhrot, Light Color & Superior Taste, Premium Kernel Quality, Rich in Essential Nutrients, Perfect for Gourmet Use',
+        price: 350,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'white akhrot giri, premium walnut kernels, light walnuts, quality akhrot, buy walnuts online, maharaja dry fruits'
+    },
+    'walnuts-superior-quality-medium': {
+        name: 'Medium Size Walnuts – Superior Quality Akhrot',
+        shortDescription: 'Superior quality medium size walnuts, perfect akhrot known for exceptional taste and convenient size.',
+        longDescription: `Experience the perfect balance of size and quality with our superior grade medium size walnuts, carefully selected for their exceptional taste, convenient size, and nutritional value.
+
+✔ Superior Quality Grade
+✔ Perfect Medium Size
+✔ Exceptional Freshness
+✔ Rich in Nutrients
+✔ Convenient for Usage
+
+Our medium size walnuts offer the perfect balance - premium quality in a convenient size that's perfect for various uses.
+
+💰 Available at just ₹212.5
+📦 Superior grade
+👉 Order now and enjoy perfect size!`,
+        benefits: 'Superior Quality Grade, Perfect Medium Size, Exceptional Freshness, Rich in Nutrients, Convenient for Usage',
+        price: 212.5,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'medium walnuts, superior quality walnuts, perfect size akhrot, quality walnuts, buy walnuts online, maharaja dry fruits'
+    },
+    'snow-white-akhrot-giri': {
+        name: 'Snow White Akhrot Giri – Ultra Premium Walnut Kernels',
+        shortDescription: 'Ultra premium snow white akhrot giri walnut kernels, the finest quality walnuts with exceptional taste and appearance.',
+        longDescription: `Experience the absolute pinnacle of walnut quality with our ultra premium snow white akhrot giri kernels. These represent the finest walnuts available, selected for their pristine white color, exceptional taste, and superior nutritional value.
+
+✔ Ultra Premium Grade
+✔ Snow White Color
+✔ Exceptional Quality
+✔ Superior Taste
+✔ Perfect for Connoisseurs
+
+Our snow white akhrot giri kernels are for those who demand nothing but the absolute best. These are perfect for the most discerning walnut connoisseurs.
+
+💰 Available at just ₹450
+📦 Ultra premium grade
+👉 Order now and experience perfection!`,
+        benefits: 'Ultra Premium Grade, Snow White Color, Exceptional Quality, Superior Taste, Perfect for Connoisseurs',
+        price: 450,
+        category: 'Walnuts',
+        isPremium: true,
+        keywords: 'snow white akhrot, ultra premium walnuts, finest walnut kernels, white walnuts, buy walnuts online, maharaja dry fruits'
+    }
+};
+
+/**
+ * Update products with SEO-optimized content
+ */
+async function updateProductsSEO() {
+    console.log('Starting SEO product updates...');
+    
+    try {
+        // Get all products from Firebase
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const products = [];
+        
+        querySnapshot.forEach((doc) => {
+            products.push({ id: doc.id, ...doc.data() });
+        });
+        
+        console.log(`Found ${products.length} products to update`);
+        
+        let updatedCount = 0;
+        
+        // Update each product with SEO content
+        for (const product of products) {
+            // Find matching SEO update by product ID or name
+            let seoUpdate = null;
+            
+            // Map by actual Firebase product IDs
+            switch (product.id) {
+                // Almonds
+                case 'alm-001':
+                    seoUpdate = seoProductUpdates['american-badam-giri'];
+                    break;
+                case 'alm-002':
+                    seoUpdate = seoProductUpdates['badam-with-shell'];
+                    break;
+                case 'alm-003':
+                    seoUpdate = seoProductUpdates['kagzi-badam'];
+                    break;
+                case 'alm-004':
+                    seoUpdate = seoProductUpdates['kashmiri-giri-almonds'];
+                    break;
+                    
+                // Other Dry Fruits
+                case 'dry-001':
+                    seoUpdate = seoProductUpdates['chilloza-pine-nuts'];
+                    break;
+                case 'dry-002':
+                    seoUpdate = seoProductUpdates['anjeer-fig'];
+                    break;
+                case 'dry-003':
+                    seoUpdate = seoProductUpdates['kishmish'];
+                    break;
+                case 'dry-004':
+                    seoUpdate = seoProductUpdates['mix-dry-fruit-murabha'];
+                    break;
+                case 'dry-005':
+                    seoUpdate = seoProductUpdates['panch-mewa'];
+                    break;
+                case 'dry-006':
+                    seoUpdate = seoProductUpdates['pista-roasted'];
+                    break;
+                case 'dry-007':
+                    seoUpdate = seoProductUpdates['turkel-apricot'];
+                    break;
+                case 'dry-008':
+                    seoUpdate = seoProductUpdates['khumani-white'];
+                    break;
+                case 'dry-009':
+                    seoUpdate = seoProductUpdates['blueberry'];
+                    break;
+                case 'dry-010':
+                    seoUpdate = seoProductUpdates['cashew'];
+                    break;
+                    
+                // Walnuts
+                case 'wal-002':
+                    seoUpdate = seoProductUpdates['kashmiri-walnut-giri'];
+                    break;
+                case 'wal-003':
+                    seoUpdate = seoProductUpdates['krela-akhrot'];
+                    break;
+                case 'wal-004':
+                    seoUpdate = seoProductUpdates['silver-queen-walnuts'];
+                    break;
+                case 'wal-005':
+                    seoUpdate = seoProductUpdates['super-walnuts-with-shell'];
+                    break;
+                case 'wal-006':
+                    seoUpdate = seoProductUpdates['superior-quality-walnuts-with-shell'];
+                    break;
+                case 'wal-007':
+                    seoUpdate = seoProductUpdates['akhrot-giri-white'];
+                    break;
+                case 'wal-008':
+                    seoUpdate = seoProductUpdates['walnuts-superior-quality-medium'];
+                    break;
+                case 'wal-009':
+                    seoUpdate = seoProductUpdates['snow-white-akhrot-giri'];
+                    break;
+            }
+            
+            // Fallback: try to match by name patterns if ID mapping doesn't work
+            if (!seoUpdate && product.name) {
+                const name = product.name.toLowerCase();
+                if (name.includes('american badam')) {
+                    seoUpdate = seoProductUpdates['american-badam-giri'];
+                } else if (name.includes('badam with shell')) {
+                    seoUpdate = seoProductUpdates['badam-with-shell'];
+                } else if (name.includes('kagzi')) {
+                    seoUpdate = seoProductUpdates['kagzi-badam'];
+                } else if (name.includes('kashmiri') && name.includes('almond')) {
+                    seoUpdate = seoProductUpdates['kashmiri-giri-almonds'];
+                } else if (name.includes('chilloza') || name.includes('pine')) {
+                    seoUpdate = seoProductUpdates['chilloza-pine-nuts'];
+                } else if (name.includes('anjeer') || name.includes('fig')) {
+                    seoUpdate = seoProductUpdates['anjeer-fig'];
+                } else if (name.includes('kishmish')) {
+                    seoUpdate = seoProductUpdates['kishmish'];
+                } else if (name.includes('mix') && name.includes('murabha')) {
+                    seoUpdate = seoProductUpdates['mix-dry-fruit-murabha'];
+                } else if (name.includes('panch mewa')) {
+                    seoUpdate = seoProductUpdates['panch-mewa'];
+                } else if (name.includes('pista')) {
+                    seoUpdate = seoProductUpdates['pista-roasted'];
+                } else if (name.includes('apricot') || name.includes('turkel')) {
+                    seoUpdate = seoProductUpdates['turkel-apricot'];
+                } else if (name.includes('khumani')) {
+                    seoUpdate = seoProductUpdates['khumani-white'];
+                } else if (name.includes('blueberry')) {
+                    seoUpdate = seoProductUpdates['blueberry'];
+                } else if (name.includes('cashew')) {
+                    seoUpdate = seoProductUpdates['cashew'];
+                } else if (name.includes('kashmiri') && name.includes('walnut')) {
+                    seoUpdate = seoProductUpdates['kashmiri-walnut-giri'];
+                } else if (name.includes('krela')) {
+                    seoUpdate = seoProductUpdates['krela-akhrot'];
+                } else if (name.includes('silver queen')) {
+                    seoUpdate = seoProductUpdates['silver-queen-walnuts'];
+                } else if (name.includes('super') && name.includes('walnut')) {
+                    seoUpdate = seoProductUpdates['super-walnuts-with-shell'];
+                } else if (name.includes('superior') && name.includes('walnut')) {
+                    seoUpdate = seoProductUpdates['superior-quality-walnuts-with-shell'];
+                } else if (name.includes('akhrot giri') && name.includes('white')) {
+                    seoUpdate = seoProductUpdates['akhrot-giri-white'];
+                } else if (name.includes('medium') && name.includes('walnut')) {
+                    seoUpdate = seoProductUpdates['walnuts-superior-quality-medium'];
+                } else if (name.includes('snow white')) {
+                    seoUpdate = seoProductUpdates['snow-white-akhrot-giri'];
+                }
+            }
+            
+            if (seoUpdate) {
+                console.log(`Updating product: ${product.id} - ${product.name}`);
+                console.log(`New name: ${seoUpdate.name}`);
+                
+                // Merge existing product data with SEO updates
+                const updatedProduct = {
+                    ...product,
+                    ...seoUpdate,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                // Update in Firebase
+                await updateDoc(doc(db, "products", product.id), updatedProduct);
+                
+                console.log(`✅ Updated: ${product.name} -> ${seoUpdate.name}`);
+                updatedCount++;
+            } else {
+                console.log(`⚠️ No SEO update found for product: ${product.name} (${product.id})`);
+            }
+        }
+        
+        console.log(`\n🎉 SEO Update Complete!`);
+        console.log(`✅ Total products updated: ${updatedCount}`);
+        console.log(`📊 Total products processed: ${products.length}`);
+        
+        alert(`SEO Update Complete! ${updatedCount} products updated successfully.`);
+        
+    } catch (error) {
+        console.error('Error updating products:', error);
+        alert('Error updating products. Please check the console for details.');
+    }
+}
+
+/**
+ * Add new SEO products if they don't exist
+ */
+async function addMissingSEOProducts() {
+    console.log('Checking for missing SEO products...');
+    
+    try {
+        // Get existing products
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const existingProducts = new Set();
+        
+        querySnapshot.forEach((doc) => {
+            existingProducts.add(doc.id);
+        });
+        
+        let addedCount = 0;
+        
+        // Add missing SEO products
+        for (const [productId, productData] of Object.entries(seoProductUpdates)) {
+            if (!existingProducts.has(productId)) {
+                console.log(`Adding missing product: ${productId}`);
+                
+                const newProduct = {
+                    ...productData,
+                    id: productId,
+                    quantities_available: ['250g', '500g', '1kg', '2kg'],
+                    images: {
+                        '1': `https://placehold.co/300x300?text=${productData.name}`
+                    },
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                await setDoc(doc(db, "products", productId), newProduct);
+                console.log(`✅ Added: ${productData.name}`);
+                addedCount++;
+            }
+        }
+        
+        console.log(`\n🎉 Missing Products Added!`);
+        console.log(`✅ Total products added: ${addedCount}`);
+        
+        if (addedCount > 0) {
+            alert(`${addedCount} new products added successfully!`);
+        }
+        
+    } catch (error) {
+        console.error('Error adding missing products:', error);
+        alert('Error adding products. Please check the console for details.');
+    }
+}
+
+// Export functions for use in browser console
+window.updateProductsSEO = updateProductsSEO;
+window.addMissingSEOProducts = addMissingSEOProducts;
+
+console.log('SEO Product Update Script Loaded!');
+console.log('Available functions:');
+console.log('- updateProductsSEO() : Update existing products with SEO content');
+console.log('- addMissingSEOProducts() : Add missing SEO products to Firebase');
+console.log('\nRun these functions in the browser console to update products.');

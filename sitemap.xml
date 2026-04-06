@@ -42,16 +42,107 @@
         <priority>0.6</priority>
     </url>
     
-    <!-- Product Page -->
+    <!-- Premium Badam with Shell (Almonds) -->
     <url>
-        <loc>https://mohit1465.github.io/maha/product.html</loc>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-badam-with-shell-almonds</loc>
         <lastmod>2026-04-05</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
         <image:image>
             <image:loc>https://mohit1465.github.io/maha/assets/almonds-with-shell.jpg</image:loc>
-            <image:title>Premium Badam with Shell</image:title>
-            <image:caption>Fresh quality almonds with shell from Maharaja Dry Fruits</image:caption>
+            <image:title>Premium Badam with Shell (Almonds) – Fresh &amp; Natural</image:title>
+            <image:caption>Experience the richness of naturally grown, high-quality badam with shell, carefully selected for freshness and taste. 100% Natural &amp; Unprocessed, Rich in Protein, Fiber &amp; Healthy Fats.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Walnuts (Akhrot) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-walnuts-akhrot-crunchy-healthy</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/walnuts-kernels.jpg</image:loc>
+            <image:title>Premium Walnuts (Akhrot) – Brain Food Extraordinaire</image:title>
+            <image:caption>Crunchy, nutrient-dense walnuts rich in omega-3 fatty acids. Perfect for brain health, heart health, and overall wellness. Farm-fresh quality with natural shells.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Cashews (Kaju) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-cashews-kaju-creamy-delicious</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/cashews-whole.jpg</image:loc>
+            <image:title>Premium Cashews (Kaju) – Creamy &amp; Nutritious</image:title>
+            <image:caption>Creamy, buttery cashews packed with essential minerals. Perfect for snacking, cooking, or garnishing. Heart-healthy fats and protein-rich. Available in multiple sizes.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Pistachios (Pista) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-pistachios-pista-salty-crunchy</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/pistachios-shell.jpg</image:loc>
+            <image:title>Premium Pistachios (Pista) – Royal Green Nuts</image:title>
+            <image:caption>Vibrant green pistachios with shells, naturally salted and roasted. Rich in antioxidants, protein, and fiber. Perfect for healthy snacking and desserts.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Raisins (Kishmish) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-raisins-kishmish-sweet-natural</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/raisins-black.jpg</image:loc>
+            <image:title>Premium Raisins (Kishmish) – Naturally Sweet Dried Grapes</image:title>
+            <image:caption>Naturally sweet and juicy raisins, sun-dried to perfection. Rich in iron, fiber, and natural energy. Perfect for snacking, baking, or adding to cereals.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Almonds (Badam) without Shell -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-almonds-badam-without-shell-kernels</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/almonds-kernels.jpg</image:loc>
+            <image:title>Premium Almonds Kernels – Ready to Eat Badam</image:title>
+            <image:caption>High-quality almond kernels without shells, ready for immediate consumption. Packed with vitamin E, protein, and healthy fats. Perfect for daily nutrition and snacking.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Dates (Khajoor) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-dates-khajoor-sweet-juicy</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/dates-medjool.jpg</image:loc>
+            <image:title>Premium Dates (Khajoor) – Natural Sweet Energy</image:title>
+            <image:caption>Soft, juicy premium dates packed with natural sweetness and energy. Rich in fiber, potassium, and antioxidants. Perfect for breaking fasts or healthy snacking.</image:caption>
+        </image:image>
+    </url>
+    
+    <!-- Premium Figs (Anjeer) -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/product.html#premium-figs-anjeer-dried-fruit</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <image:image>
+            <image:loc>https://mohit1465.github.io/maha/assets/figs-dried.jpg</image:loc>
+            <image:title>Premium Figs (Anjeer) – Sweet &amp; Chewy Dried Fruit</image:title>
+            <image:caption>Naturally sweet and chewy dried figs, rich in fiber and essential minerals. Perfect for digestive health and natural energy. Great for snacking or adding to recipes.</image:caption>
         </image:image>
     </url>
     

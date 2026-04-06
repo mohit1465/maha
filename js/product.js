@@ -4,29 +4,57 @@ import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createProductCard } from './card-renderer.js';
 import cartService from './cart-service.js';
+import router from './router.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
     const productSection = document.querySelector('.product-section');
 
-    // Get product ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    // Get product ID from URL (handle multiple formats)
+    let productId = null;
+    
+    // 1. Try hash-based routing first (new SEO-friendly format)
+    const hashProductId = router.getCurrentProductId();
+    if (hashProductId) {
+        productId = hashProductId;
+    }
+    
+    // 2. Fallback to query parameters (old format)
+    if (!productId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        productId = urlParams.get('id');
+    }
+    
+    // 3. Alternative: try to extract from hash string directly
+    if (!productId) {
+        const hashMatch = window.location.hash.match(/id=([^&]+)/);
+        if (hashMatch) {
+            productId = hashMatch[1];
+        }
+    }
 
     // Initialize product section
     async function initProduct() {
+        console.log('Initializing product with ID:', productId);
+        
         if (!productId) {
             // No product ID, redirect to search or home?
             console.error("No product ID provided");
-            // window.location.href = 'search.html'; 
+            document.querySelector('.product-container').innerHTML = '<div class="error-msg">No product ID provided</div>';
             return;
         }
 
         try {
+            console.log('Fetching product from Firebase with ID:', productId);
             const docRef = doc(db, "products", productId);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const product = docSnap.data();
+                console.log('Product loaded successfully:', product);
+                
+                // Update page title and meta description for SEO
+                updatePageSeo(product);
+                
                 populateProductDetails(product);
                 setupThumbnails();
                 setupVariants(product);
@@ -46,7 +74,54 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         } catch (error) {
             console.error("Error getting document:", error);
+            document.querySelector('.product-container').innerHTML = '<div class="error-msg">Error loading product</div>';
         }
+    }
+    
+    /**
+     * Update page SEO elements based on product data
+     */
+    function updatePageSeo(product) {
+        // Generate SEO-optimized title
+        const seoTitle = generateSeoTitle(product);
+        document.title = seoTitle;
+        
+        // Update or create meta description
+        let metaDescription = document.querySelector('meta[name="description"]');
+        if (!metaDescription) {
+            metaDescription = document.createElement('meta');
+            metaDescription.name = 'description';
+            document.head.appendChild(metaDescription);
+        }
+        metaDescription.content = generateSeoDescription(product);
+        
+        // Update canonical URL
+        let canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (!canonicalLink) {
+            canonicalLink = document.createElement('link');
+            canonicalLink.rel = 'canonical';
+            document.head.appendChild(canonicalLink);
+        }
+        const canonicalUrl = router.generateCanonicalUrl(product.name, product.id);
+        canonicalLink.href = canonicalUrl;
+    }
+    
+    /**
+     * Generate SEO-optimized product title
+     */
+    function generateSeoTitle(product) {
+        const baseTitle = `${product.name} – Fresh & Natural | Buy Online in India`;
+        const prefix = product.isPremium ? 'Premium ' : '';
+        return `${prefix}${baseTitle}`;
+    }
+    
+    /**
+     * Generate SEO-optimized product description
+     */
+    function generateSeoDescription(product) {
+        const benefits = product.benefits || 'Rich in nutrients and perfect for healthy snacking';
+        const priceInfo = product.price ? `Available at just ₹${product.price}` : 'Available at best price';
+        return `Experience the richness of ${product.name.toLowerCase()}, carefully selected for freshness and taste. ${benefits}. ${priceInfo}. Multiple sizes available. Order now and enjoy farm-fresh quality delivered to your doorstep.`;
     }
 
     function populateProductDetails(product) {
@@ -57,9 +132,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Price
         updatePriceDisplay(product.price);
 
-        // Description (using hindi name as description for now, or just static text + hindi name)
+        // Description - Use the SEO long description if available, fallback to short description
         const descElement = document.querySelector('.product-description');
-        descElement.innerHTML = `${product.hindiName ? '<strong>' + product.hindiName + '</strong><br>' : ''}Premium quality ${product.category.toLowerCase()}.`;
+        if (product.longDescription) {
+            descElement.innerHTML = product.longDescription.replace(/\n/g, '<br>');
+        } else if (product.shortDescription) {
+            descElement.textContent = product.shortDescription;
+        } else if (product.hindiName) {
+            descElement.innerHTML = '<strong>' + product.hindiName + '</strong><br>Premium quality ' + product.category.toLowerCase() + '.';
+        } else {
+            descElement.textContent = 'Premium quality ' + product.category.toLowerCase() + '.';
+        }
 
         // Images
         const mainImage = document.getElementById('mainImage');

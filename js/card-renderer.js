@@ -1,5 +1,6 @@
 import wishlistService from './wishlist-service.js';
 import cartService from './cart-service.js';
+import router from './router.js';
 
 /**
  * Product Card Renderer
@@ -7,6 +8,9 @@ import cartService from './cart-service.js';
  */
 
 export function createProductCard(product) {
+    // Generate SEO-friendly URL using router
+    const seoUrl = router.generateProductUrl(product.name, product.id);
+    
     // Determine badge (New, Best Seller, or Discount)
     let badgeHtml = '';
     if (product.isNew) {
@@ -44,13 +48,14 @@ export function createProductCard(product) {
                 <i class="fas fa-heart"></i>
             </div>
             
-            <div class="card-image-container" onclick="window.location.href='product.html?id=${product.id}'">
+            <div class="card-image-container" onclick="navigateToProduct('${product.name}', '${product.id}')">
                 <div class="card-image" style="background-image: url('${imageUrl}');"></div>
             </div>
             
             <div class="card-content">
                 <div class="card-title" title="${product.name}">${product.name}</div>
                 <div class="card-hindi-name">${product.hindiName || 'Premium Quality'}</div>
+                <div class="card-description">${product.shortDescription || 'Premium quality ' + product.category.toLowerCase() + ' with rich nutrients and great taste.'}</div>
                 
                 <div class="card-options">
                     <div class="custom-select-wrapper size-selector" onclick="toggleCardDropdown(this, event)">
@@ -85,6 +90,49 @@ export function createProductCard(product) {
     `;
 
     return cardHtml;
+}
+
+/**
+ * Generate SEO-friendly product URL from product name and ID
+ */
+function generateSeoProductUrl(productName, productId) {
+    // This function is kept for backward compatibility
+    return router.generateProductUrl(productName, productId);
+}
+
+// Global navigation function for product cards
+window.navigateToProduct = function(productName, productId) {
+    const slug = router.createSlug(productName);
+    
+    // If we're on product page, just update the hash
+    if (window.location.pathname.includes('product.html')) {
+        router.navigateToProduct(slug, productId);
+        // Reload the page with new hash to fetch new product
+        window.location.reload();
+    } else {
+        // Navigate to product page with hash
+        window.location.href = `product.html#/${slug}?id=${productId}`;
+    }
+};
+
+/**
+ * Minimal Product Card Renderer for Home Page
+ * Shows only image and name.
+ */
+export function createMinimalProductCard(product) {
+    const imageUrl = (product.images && product.images['1']) ? product.images['1'] : 'https://placehold.co/300x300?text=Maharaja';
+    const seoUrl = router.generateProductUrl(product.name, product.id);
+
+    return `
+        <div class="minimal-product-card" onclick="navigateToProduct('${product.name}', '${product.id}')">
+            <div class="minimal-card-image-container">
+                <div class="minimal-card-image" style="background-image: url('${imageUrl}');"></div>
+            </div>
+            <div class="minimal-card-content">
+                <div class="minimal-card-title">${product.name}</div>
+            </div>
+        </div>
+    `;
 }
 
 // Global Custom Dropdown Functions
@@ -278,22 +326,3 @@ wishlistService.addListener((wishlistItems) => {
         }
     });
 });
-
-/**
- * Minimal Product Card Renderer for Home Page
- * Shows only image and name.
- */
-export function createMinimalProductCard(product) {
-    const imageUrl = (product.images && product.images['1']) ? product.images['1'] : 'https://placehold.co/300x300?text=Maharaja';
-
-    return `
-        <div class="minimal-product-card" onclick="window.location.href='product.html?id=${product.id}'">
-            <div class="minimal-card-image-container">
-                <div class="minimal-card-image" style="background-image: url('${imageUrl}');"></div>
-            </div>
-            <div class="minimal-card-content">
-                <div class="minimal-card-title">${product.name}</div>
-            </div>
-        </div>
-    `;
-}

@@ -1,23 +1,15 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { createProductCard } from './card-renderer.js';
+import { createProductCard, createMinimalProductCard } from './card-renderer.js';
+import router from './router.js';
 
-// Minimal Product Card Renderer (moved here to avoid dependency issues)
-function createMinimalProductCard(product) {
-    const imageUrl = (product.images && product.images['1']) ? product.images['1'] :
-        (product.image ? product.image : 'https://placehold.co/300x300?text=Maharaja');
-
-    return `
-        <div class="minimal-product-card" onclick="window.location.href='product.html?id=${product.id}'" style="cursor: pointer;">
-            <div class="minimal-card-image-container" style="width: 100%; aspect-ratio: 1/1; border-radius: 20px; overflow: hidden; background: #f8f9fa;">
-                <div class="minimal-card-image" style="width: 100%; height: 100%; background-image: url('${imageUrl}'); background-size: cover; background-position: center;"></div>
-            </div>
-            <div class="minimal-card-content" style="text-align: center; margin-top: 10px;">
-                <div class="minimal-card-title" style="font-size: 15px; font-weight: 600;">${product.name}</div>
-            </div>
-        </div>
-    `;
-}
+// Global navigation function for home page minimal cards
+window.navigateToProduct = function(productName, productId) {
+    const slug = router.createSlug(productName);
+    
+    // Navigate to product page with hash
+    window.location.href = `product.html#/${slug}?id=${productId}`;
+};
 
 async function initHome() {
     console.log("Home JS Initializing...");
