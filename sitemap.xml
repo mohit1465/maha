@@ -4,10 +4,42 @@
     
     <!-- Homepage -->
     <url>
-        <loc>https://mohit1465.github.io/maha/</loc>
+        <loc>https://mohit1465.github.io/maha/index.html</loc>
         <lastmod>2026-04-05</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
+    </url>
+    
+    <!-- Addresses Page -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/addresses.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Admin Page -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/admin.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Coupons Page -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/coupons.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Orders Page -->
+    <url>
+        <loc>https://mohit1465.github.io/maha/orders.html</loc>
+        <lastmod>2026-04-05</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
     </url>
     
     <!-- Product Page -->
