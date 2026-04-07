@@ -125,8 +125,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function populateProductDetails(product) {
-        // Title
-        document.querySelector('.product-title').textContent = product.name;
+        // Title - Use shortTitle if available, otherwise use full name
+        const titleElement = document.querySelector('.product-title');
+        if (product.shortTitle) {
+            titleElement.textContent = product.shortTitle;
+        } else {
+            titleElement.textContent = product.name;
+        }
+        
         // Category
         document.querySelector('.product-category').textContent = product.category;
         // Price

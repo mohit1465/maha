@@ -53,7 +53,7 @@ export function createProductCard(product) {
             </div>
             
             <div class="card-content">
-                <div class="card-title" title="${product.name}">${product.name}</div>
+                <div class="card-title" title="${product.name}">${product.shortTitle || product.name}</div>
                 <div class="card-hindi-name">${product.hindiName || 'Premium Quality'}</div>
                 <div class="card-description">${product.shortDescription || 'Premium quality ' + product.category.toLowerCase() + ' with rich nutrients and great taste.'}</div>
                 
