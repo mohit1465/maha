@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="wishlist-item-product">
                     <div class="wishlist-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                     <div class="wishlist-item-details">
-                        <div class="wishlist-item-name">${product.name}</div>
+                        <div class="wishlist-item-name">${product.shortTitle || product.name}</div>
                         <div class="wishlist-item-category">${product.category || 'Dry Fruits'}</div>
                     </div>
                 </div>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrate Uploaded Images - Maharaja Dry Fruits</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .integration-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .integration-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .integration-header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .integration-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .integration-controls {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .btn-integration {
+            background: var(--gradient-brand);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn-integration:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(252, 110, 32, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--accent-color);
+        }
+        
+        .code-container {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .instructions {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .status-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--background);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .status-item.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-item.error {
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="integration-container">
+        <div class="integration-header">
+            <h1><i class="fas fa-images"></i> Integrate Uploaded Images</h1>
+            <p>Connect your optimized images to products in Firebase</p>
+        </div>
+        
+        <div class="integration-controls">
+            <h3>🚀 Integration Controls</h3>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn-integration" onclick="generateTemplate()">
+                    <i class="fas fa-code"></i>
+                    Generate Image Mapping Template
+                </button>
+                <button class="btn-integration btn-secondary" onclick="validatePaths()">
+                    <i class="fas fa-check"></i>
+                    Validate Image Paths
+                </button>
+                <button class="btn-integration" onclick="integrateImages()">
+                    <i class="fas fa-upload"></i>
+                    Integrate Images to Products
+                </button>
+            </div>
+        </div>
+        
+        <div class="code-container">
+            <h3>📝 Image Mapping Template</h3>
+            <div class="code-block" id="templateOutput">
+                Click "Generate Image Mapping Template" to see the template
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li><strong>Optimize Images:</strong> First run the image optimizer to get SEO-optimized images</li>
+                <li><strong>Upload Images:</strong> Upload optimized images to your assets folder</li>
+                <li><strong>Edit Mapping:</strong> Update the UPLOADED_IMAGES object in integrate-uploaded-images.js with your file mappings</li>
+                <li><strong>Generate Template:</strong> Click "Generate Image Mapping Template" to see the format</li>
+                <li><strong>Validate Paths:</strong> Click "Validate Image Paths" to check if images exist</li>
+                <li><strong>Integrate:</strong> Click "Integrate Images to Products" to update Firebase</li>
+                <li><strong>Test:</strong> Check product pages to verify images load correctly</li>
+            </ol>
+        </div>
+        
+        <div class="status-container" id="statusContainer">
+            <h3>📊 Integration Status</h3>
+            <div id="statusOutput"></div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { updateProductsWithUploadedImages, generateImageMappingTemplate, validateImagePaths } from './js/integrate-uploaded-images.js';
+        
+        function generateTemplate() {
+            console.log('📝 Generating image mapping template...');
+            const template = generateImageMappingTemplate();
+            document.getElementById('templateOutput').textContent = template;
+        }
+        
+        function validatePaths() {
+            console.log('🔍 Validating image paths...');
+            validateImagePaths();
+            
+            const statusContainer = document.getElementById('statusContainer');
+            const statusOutput = document.getElementById('statusOutput');
+            
+            statusContainer.style.display = 'block';
+            statusOutput.innerHTML = `
+                <div class="status-item success">
+                    <span><i class="fas fa-check-circle"></i> Validation Complete</span>
+                    <span>Check console for results</span>
+                </div>
+            `;
+        }
+        
+        function integrateImages() {
+            console.log('🚀 Starting image integration...');
+            
+            const statusContainer = document.getElementById('statusContainer');
+            const statusOutput = document.getElementById('statusOutput');
+            
+            statusContainer.style.display = 'block';
+            statusOutput.innerHTML = `
+                <div class="status-item">
+                    <span><i class="fas fa-spinner fa-spin"></i> Integration in Progress</span>
+                    <span>Please wait...</span>
+                </div>
+            `;
+            
+            updateProductsWithUploadedImages().then(() => {
+                statusOutput.innerHTML = `
+                    <div class="status-item success">
+                        <span><i class="fas fa-check-circle"></i> Integration Complete</span>
+                        <span>Products updated successfully!</span>
+                    </div>
+                `;
+            });
+        }
+        
+        console.log('📸 Image Integration Tool Ready!');
+    </script>
+</body>
+</html>

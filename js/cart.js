@@ -1,6 +1,7 @@
 import cartService from './cart-service.js';
 import { auth, db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getProductImageUrl } from './image-helper.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const cartList = document.querySelector('.cart-list');
@@ -54,14 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let itemsHtml = headerHtml;
         items.forEach(item => {
-            const imageUrl = (item.images && item.images['1']) ? item.images['1'] : 'assets/placeholder.png';
+            const imageUrl = getProductImageUrl(item.id, item.images, 1);
             itemsHtml += `
             <div class="cart-item" data-id="${item.id}" data-size="${item.size}">
                 <!-- Desktop: Grid Layout -->
                 <div class="cart-item-product">
                     <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                     <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-name">${item.shortTitle || item.name}</div>
                         <div class="cart-item-category">${item.category || 'Dry Fruits'}</div>
                     </div>
                 </div>
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="cart-item-product">
                             <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                             <div class="cart-item-details">
-                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-name">${item.shortTitle || item.name}</div>
                                 <div class="cart-item-category">${item.category || 'Dry Fruits'}</div>
                             </div>
                         </div>

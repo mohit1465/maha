@@ -5,6 +5,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 import { createProductCard } from './card-renderer.js';
 import cartService from './cart-service.js';
 import router from './router.js';
+import { getProductImageUrl, getAllProductImages } from './image-helper.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
     const productSection = document.querySelector('.product-section');
@@ -66,8 +67,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 renderSimilarProducts(product.category, productId);
 
                 // Update breadcrumb
-                const currentBreadcrumb = document.querySelector('.breadcrumb-item.current');
-                if (currentBreadcrumb) currentBreadcrumb.textContent = product.name;
+                const breadcrumbCurrent = document.querySelector('.breadcrumb-item.current');
+                if (breadcrumbCurrent) {
+                    breadcrumbCurrent.textContent = product.shortTitle || product.name;
+                }
             } else {
                 console.log("No such product!");
                 document.querySelector('.product-container').innerHTML = '<div class="error-msg">Product not found</div>';
@@ -125,13 +128,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function populateProductDetails(product) {
-        // Title - Use shortTitle if available, otherwise use full name
+        // Title - Use full name for product page title (SEO title)
         const titleElement = document.querySelector('.product-title');
-        if (product.shortTitle) {
-            titleElement.textContent = product.shortTitle;
-        } else {
-            titleElement.textContent = product.name;
-        }
+        titleElement.textContent = product.name;
         
         // Category
         document.querySelector('.product-category').textContent = product.category;
@@ -150,31 +149,28 @@ document.addEventListener('DOMContentLoaded', async function () {
             descElement.textContent = 'Premium quality ' + product.category.toLowerCase() + '.';
         }
 
-        // Images
+        // Images - Use new image helper with fallback
         const mainImage = document.getElementById('mainImage');
         const thumbnailsContainer = document.querySelector('.thumbnail-column');
 
         // Clear existing static thumbnails
         thumbnailsContainer.innerHTML = '';
 
-        if (product.images) {
-            const imageKeys = Object.keys(product.images);
-
+        // Get all images using the helper (local first, then base64)
+        const allImages = getAllProductImages(productId, product.images);
+        
+        if (allImages.length > 0) {
             // Set main image
-            if (imageKeys.length > 0) {
-                const firstImgUrl = product.images[imageKeys[0]];
-                mainImage.style.backgroundImage = `url('${firstImgUrl}')`;
-                mainImage.style.backgroundSize = 'contain';
-                mainImage.style.backgroundRepeat = 'no-repeat';
-                mainImage.style.backgroundPosition = 'center';
-            }
+            const firstImgUrl = allImages[0];
+            mainImage.style.backgroundImage = `url('${firstImgUrl}')`;
+            mainImage.style.backgroundSize = 'contain';
+            mainImage.style.backgroundRepeat = 'no-repeat';
+            mainImage.style.backgroundPosition = 'center';
 
             // Create thumbnails
-            imageKeys.forEach((key, index) => {
-                const imgUrl = product.images[key];
+            allImages.forEach((imgUrl, index) => {
                 const thumb = document.createElement('div');
                 thumb.className = `thumbnail ${index === 0 ? 'active' : ''}`;
-                thumb.dataset.image = key;
                 thumb.innerHTML = `<div class="thumbnail-image" style="background-image: url('${imgUrl}'); background-size: cover; background-position: center;"></div>`;
 
                 thumb.addEventListener('click', function () {

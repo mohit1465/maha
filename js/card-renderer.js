@@ -1,6 +1,7 @@
 import wishlistService from './wishlist-service.js';
 import cartService from './cart-service.js';
 import router from './router.js';
+import { getProductImageUrl } from './image-helper.js';
 
 /**
  * Product Card Renderer
@@ -21,8 +22,8 @@ export function createProductCard(product) {
         badgeHtml = `<span class="card-badge" style="background: #e0e0e0; color: #1b1b1b;">${product.category}</span>`;
     }
 
-    // Image handling
-    const imageUrl = (product.images && product.images['1']) ? product.images['1'] : 'https://placehold.co/300x300?text=Maharaja';
+    // Image handling - Use new image helper with fallback
+    const imageUrl = getProductImageUrl(product.id, product.images, 1);
 
     // Size Options
     const sizes = product.quantities_available || ['250g', '500g', '1kg'];
@@ -120,7 +121,7 @@ window.navigateToProduct = function(productName, productId) {
  * Shows only image and name.
  */
 export function createMinimalProductCard(product) {
-    const imageUrl = (product.images && product.images['1']) ? product.images['1'] : 'https://placehold.co/300x300?text=Maharaja';
+    const imageUrl = getProductImageUrl(product.id, product.images, 1);
     const seoUrl = router.generateProductUrl(product.name, product.id);
 
     return `
@@ -129,7 +130,7 @@ export function createMinimalProductCard(product) {
                 <div class="minimal-card-image" style="background-image: url('${imageUrl}');"></div>
             </div>
             <div class="minimal-card-content">
-                <div class="minimal-card-title">${product.name}</div>
+                <div class="minimal-card-title">${product.shortTitle || product.name}</div>
             </div>
         </div>
     `;
