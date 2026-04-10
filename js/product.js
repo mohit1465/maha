@@ -82,6 +82,97 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     
     /**
+     * Format the long description nicely for UX
+     */
+    function formatLongDescription(text) {
+        if (!text) return '';
+        
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        
+        let html = '<div class="formatted-description">';
+        let inList = false;
+        let listHtml = '';
+        let inHighlights = false;
+        
+        lines.forEach((line, index) => {
+            const trimmed = line.trim();
+            
+            // Detect bullet points
+            if (trimmed.startsWith('✔') || trimmed.startsWith('✅') || trimmed.startsWith('-') || trimmed.startsWith('•') || trimmed.startsWith('*')) {
+                if (inHighlights) {
+                    html += '</div>';
+                    inHighlights = false;
+                }
+                if (!inList) {
+                    inList = true;
+                    listHtml = '<ul class="product-features-list">';
+                }
+                const content = trimmed.substring(1).trim();
+                listHtml += `<li><i class="fas fa-check-circle check-icon"></i> <span>${content}</span></li>`;
+            } 
+            // Detect highlights/tags
+            else if (trimmed.match(/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u) && 
+                     (trimmed.includes('Available') || trimmed.includes('grade') || trimmed.includes('Order') || trimmed.length < 50)) {
+                
+                if (inList) {
+                    html += listHtml + '</ul>';
+                    inList = false;
+                }
+                if (!inHighlights) {
+                    html += '<div class="product-highlights-box">';
+                    inHighlights = true;
+                }
+                
+                const emojiMatch = trimmed.match(/^([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+)\s*(.*)/u);
+                
+                if (emojiMatch) {
+                    const originalEmoji = emojiMatch[1];
+                    const content = emojiMatch[2];
+                    
+                    let faIcon = 'fas fa-star';
+                    if (originalEmoji.includes('💰') || content.toLowerCase().includes('price') || content.toLowerCase().includes('₹') || content.toLowerCase().includes('available')) {
+                        faIcon = 'fas fa-tag';
+                    } else if (originalEmoji.includes('📦') || content.toLowerCase().includes('grade') || content.toLowerCase().includes('quality')) {
+                        faIcon = 'fas fa-medal';
+                    } else if (originalEmoji.includes('👉') || content.toLowerCase().includes('order') || content.toLowerCase().includes('buy')) {
+                        faIcon = 'fas fa-bolt';
+                    }
+                    
+                    html += `<div class="highlight-item"><div class="highlight-icon"><i class="${faIcon}"></i></div><div class="highlight-text">${content}</div></div>`;
+                } else {
+                    html += `<div class="highlight-item"><div class="highlight-icon"><i class="fas fa-check-circle"></i></div><div class="highlight-text">${trimmed.replace(/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]+/u, '').trim()}</div></div>`;
+                }
+            } 
+            else {
+                if (inList) {
+                    html += listHtml + '</ul>';
+                    inList = false;
+                }
+                if (inHighlights) {
+                    html += '</div>';
+                    inHighlights = false;
+                }
+                
+                if (index === 0) {
+                    html += `<p class="product-lead-text">${trimmed}</p>`;
+                } else {
+                    html += `<p>${trimmed}</p>`;
+                }
+            }
+        });
+        
+        if (inList) {
+            html += listHtml + '</ul>';
+        }
+        if (inHighlights) {
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        return html;
+    }
+    
+    /**
      * Update page SEO elements based on product data
      */
     function updatePageSeo(product) {
@@ -134,13 +225,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         
         // Category
         document.querySelector('.product-category').textContent = product.category;
-        // Price
-        updatePriceDisplay(product.price);
+        
+        // Sync mobile fixed action bar details
+        syncProductDetails(product);
 
         // Description - Use the SEO long description if available, fallback to short description
         const descElement = document.querySelector('.product-description');
         if (product.longDescription) {
-            descElement.innerHTML = product.longDescription.replace(/\n/g, '<br>');
+            descElement.innerHTML = formatLongDescription(product.longDescription);
         } else if (product.shortDescription) {
             descElement.textContent = product.shortDescription;
         } else if (product.hindiName) {
@@ -191,6 +283,36 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
+    function syncProductDetails(product) {
+        // Sync product name in both desktop and mobile fixed action bars
+        const desktopNameElement = document.querySelector('.action-bar-product-name');
+        const mobileNameElement = document.querySelector('.mobile-product-name');
+        
+        if (desktopNameElement) desktopNameElement.textContent = product.name;
+        if (mobileNameElement) mobileNameElement.textContent = product.name;
+        
+        // Get current state
+        const currentQuantity = parseInt(document.querySelector('.quantity-input').value) || 1;
+        const activeVariantBtn = document.querySelector('.variant-btn.active');
+        const selectedSize = activeVariantBtn ? activeVariantBtn.textContent : '250g';
+        const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
+        const totalPrice = scaledPrice * currentQuantity;
+        
+        // Sync current price with quantity and size applied
+        updatePriceDisplay(totalPrice);
+        
+        // Sync size selection in mobile fixed action bar
+        const mobileSizeSelect = document.querySelector('.mobile-size-select');
+        const desktopSizeSelect = document.querySelector('.size-select');
+        
+        if (mobileSizeSelect) {
+            mobileSizeSelect.value = selectedSize;
+        }
+        if (desktopSizeSelect) {
+            desktopSizeSelect.value = selectedSize;
+        }
+    }
+
     // Setup fixed action bar functionality
     function setupFixedActionBar(product) {
         const fixedBar = document.querySelector(".fixed-action-bar");
@@ -221,6 +343,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
                     const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
                     updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync mobile fixed action bar when quantity changes
+                    syncProductDetails(product);
                 }
             });
 
@@ -233,7 +358,97 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
                     const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
                     updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync mobile fixed action bar when quantity changes
+                    syncProductDetails(product);
                 }
+            });
+        }
+
+        // Mobile quantity selector setup
+        const mobileMinusBtn = document.querySelector('.mobile-quantity-btn.minus');
+        const mobilePlusBtn = document.querySelector('.mobile-quantity-btn.plus');
+        const mobileQuantityInput = document.querySelector('.mobile-quantity-input');
+
+        if (mobileMinusBtn && mobilePlusBtn && mobileQuantityInput) {
+            // Clone and replace to remove old listeners if any
+            const newMobileMinus = mobileMinusBtn.cloneNode(true);
+            const newMobilePlus = mobilePlusBtn.cloneNode(true);
+            mobileMinusBtn.parentNode.replaceChild(newMobileMinus, mobileMinusBtn);
+            mobilePlusBtn.parentNode.replaceChild(newMobilePlus, mobilePlusBtn);
+
+            newMobileMinus.addEventListener('click', function () {
+                const currentValue = parseInt(mobileQuantityInput.value);
+                if (currentValue > 1) {
+                    const newValue = currentValue - 1;
+                    mobileQuantityInput.value = newValue;
+                    syncQuantity(newValue);
+                    const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
+                    const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
+                    updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync main product details when mobile quantity changes
+                    syncProductDetails(product);
+                }
+            });
+
+            newMobilePlus.addEventListener('click', function () {
+                const currentValue = parseInt(mobileQuantityInput.value);
+                if (currentValue < 10) {
+                    const newValue = currentValue + 1;
+                    mobileQuantityInput.value = newValue;
+                    syncQuantity(newValue);
+                    const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
+                    const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
+                    updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync main product details when mobile quantity changes
+                    syncProductDetails(product);
+                }
+            });
+        }
+
+        // Setup size select dropdowns for bidirectional sync
+        const mobileSizeSelect = document.querySelector('.mobile-size-select');
+        const desktopSizeSelect = document.querySelector('.size-select');
+        
+        if (mobileSizeSelect) {
+            mobileSizeSelect.addEventListener('change', function() {
+                const selectedSize = this.value;
+                // Update main variant buttons
+                const variantButtons = document.querySelectorAll('.variant-btn');
+                variantButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent === selectedSize) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Recalculate price and sync
+                const currentQuantity = parseInt(document.querySelector('.quantity-input').value) || 1;
+                const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
+                updateTotalPrice(scaledPrice, currentQuantity);
+                syncProductDetails(product);
+            });
+        }
+        
+        if (desktopSizeSelect) {
+            desktopSizeSelect.addEventListener('change', function() {
+                const selectedSize = this.value;
+                // Update main variant buttons
+                const variantButtons = document.querySelectorAll('.variant-btn');
+                variantButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent === selectedSize) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Recalculate price and sync
+                const currentQuantity = parseInt(document.querySelector('.quantity-input').value) || 1;
+                const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
+                updateTotalPrice(scaledPrice, currentQuantity);
+                syncProductDetails(product);
             });
         }
 
@@ -279,15 +494,21 @@ document.addEventListener('DOMContentLoaded', async function () {
             product.quantities_available.forEach((qty, index) => {
                 const btn = document.createElement('button');
                 btn.className = `variant-btn ${index === 0 ? 'active' : ''}`;
-                btn.textContent = qty;
+                // Normalize the display format (250 gm -> 250g, etc.)
+                const normalizedQty = cartService.normalizeSize(qty);
+                btn.textContent = normalizedQty;
 
                 btn.addEventListener('click', function () {
                     optionsContainer.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
 
                     const quantity = parseInt(document.querySelector('.quantity-input').value) || 1;
-                    const scaledPrice = cartService.getPriceForSize(product.price, qty);
+                    const selectedSize = this.textContent; // Use normalized text
+                    const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
                     updateTotalPrice(scaledPrice, quantity);
+                    
+                    // Sync mobile fixed action bar when variant changes
+                    syncProductDetails(product);
                 });
 
                 optionsContainer.appendChild(btn);
@@ -322,6 +543,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
                     const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
                     updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync mobile fixed action bar when quantity changes
+                    syncProductDetails(product);
                 }
             });
 
@@ -334,6 +558,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const selectedSize = document.querySelector('.variant-btn.active')?.textContent || '250g';
                     const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
                     updateTotalPrice(scaledPrice, newValue);
+                    
+                    // Sync mobile fixed action bar when quantity changes
+                    syncProductDetails(product);
                 }
             });
         }

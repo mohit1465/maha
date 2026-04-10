@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const backToCartBtn = document.getElementById('backToCart');
 
     let checkoutItems = []; // Track items being purchased
+    let appliedDiscount = 0; // Discount percentage
+    const cartView = document.getElementById('cartView');
 
     cartService.addListener((cartItems, isLoaded) => {
         if (!isLoaded) {
@@ -59,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             itemsHtml += `
             <div class="cart-item" data-id="${item.id}" data-size="${item.size}">
                 <!-- Desktop: Grid Layout -->
-                <div class="cart-item-product">
+                <div class="cart-item-product" style="cursor: pointer;" onclick="window.location.href='product.html?id=${item.id}'">
                     <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.shortTitle || item.name}</div>
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="cart-item-size">
                         <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
-                            ${['250g', '500g', '1kg', '2kg', '5kg'].map(size => {
+                            ${['250g', '500g', '1kg', '2kg'].map(size => {
                 const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
                 return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
             }).join('')}
@@ -96,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="mobile-layout">
                     <!-- Mobile Row 1: Image > Name/Category > Price -->
                     <div class="mobile-row-1">
-                        <div class="cart-item-product">
+                        <div class="cart-item-product" style="cursor: pointer;" onclick="window.location.href='product.html?id=${item.id}'">
                             <div class="cart-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                             <div class="cart-item-details">
                                 <div class="cart-item-name">${item.shortTitle || item.name}</div>
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                         <div class="cart-item-size">
                             <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
-                                ${['250g', '500g', '1kg', '2kg', '5kg'].map(size => {
+                                ${['250g', '500g', '1kg', '2kg'].map(size => {
                     const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
                     return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
                 }).join('')}
@@ -178,11 +180,165 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function showCheckout() {
-        cartList.style.display = 'none';
-        cartSummaryBar.classList.add('hidden');
+        if (!cartView || !checkoutSection) return;
+
+        // Push state for back button handling
+        history.pushState({ view: 'shipping' }, 'Shipping Details', '#shipping');
+
+        // Toggle Views with Animation
+        cartView.classList.replace('view-active', 'view-hidden');
         checkoutSection.style.display = 'block';
+        setTimeout(() => {
+            checkoutSection.classList.add('view-active');
+            checkoutSection.classList.remove('view-hidden');
+        }, 10);
+        
+        cartSummaryBar.classList.add('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Update Breadcrumb
+        document.querySelectorAll('.checkout-only').forEach(el => el.style.display = 'inline');
+        document.getElementById('breadcrumbCart').classList.remove('current');
+
+        appliedDiscount = 0; // Reset discount on new checkout
+        renderCheckoutSummary();
         autofillProfile();
+        initPaymentSelection();
+        initCouponLogic();
+    }
+
+    window.hideCheckout = () => {
+        if (!cartView || !checkoutSection) return;
+
+        // Toggle Views with Animation
+        checkoutSection.classList.replace('view-active', 'view-hidden');
+        cartView.classList.add('view-active');
+        cartView.classList.remove('view-hidden');
+        
+        setTimeout(() => {
+            checkoutSection.style.display = 'none';
+        }, 500);
+
+        cartSummaryBar.classList.remove('hidden');
+        
+        // Update Breadcrumb
+        document.querySelectorAll('.checkout-only').forEach(el => el.style.display = 'none');
+        document.getElementById('breadcrumbCart').classList.add('current');
+    };
+
+    // Handle Browser Back Button
+    window.onpopstate = function(event) {
+        if (checkoutSection && checkoutSection.style.display === 'block') {
+            hideCheckout();
+        }
+    };
+
+    window.handleBreadcrumbCart = () => {
+        if (checkoutSection && checkoutSection.style.display === 'block') {
+            history.back(); // Use history back to handle both breadcrumb and browser button
+        }
+    };
+
+    function renderCheckoutSummary() {
+        const listContainer = document.getElementById('checkoutItemsList');
+        const itemCountBadge = document.querySelector('.item-count-badge');
+        if (!listContainer) return;
+
+        itemCountBadge.textContent = `${checkoutItems.length} Item${checkoutItems.length !== 1 ? 's' : ''}`;
+
+        listContainer.innerHTML = checkoutItems.map(item => `
+            <div class="checkout-mini-item">
+                <div class="mini-item-thumb" style="background-image: url('${getProductImageUrl(item.id, item.images, 1)}')">
+                    <div class="mini-qty-badge">${item.quantity}</div>
+                </div>
+                <div class="mini-item-info">
+                    <div class="mini-item-name">${item.shortTitle || item.name}</div>
+                    <div class="mini-item-meta">${item.size}</div>
+                </div>
+                <div class="mini-item-price">₹${(item.price * item.quantity).toLocaleString('en-IN')}</div>
+            </div>
+        `).join('');
+
+        updateCheckoutTotals();
+    }
+
+    function initCouponLogic() {
+        const applyBtn = document.getElementById('applyCouponBtn');
+        const couponInput = document.getElementById('couponCode');
+        const messageDiv = document.getElementById('couponMessage');
+
+        if (!applyBtn) return;
+
+        applyBtn.onclick = () => {
+            const code = couponInput.value.trim().toUpperCase();
+            messageDiv.className = 'coupon-message';
+            
+            if (!code) {
+                messageDiv.textContent = 'Please enter a code';
+                messageDiv.classList.add('error');
+                return;
+            }
+
+            // Simple demo coupon logic
+            const coupons = {
+                'MAHARAJA10': 10,
+                'WELCOME20': 20,
+                'FESTIVE15': 15,
+                'FREESHIP': 0 // Just example
+            };
+
+            if (coupons.hasOwnProperty(code)) {
+                appliedDiscount = coupons[code];
+                messageDiv.textContent = `Coupon applied! ${appliedDiscount}% discount added.`;
+                messageDiv.classList.add('success');
+                updateCheckoutTotals();
+            } else {
+                appliedDiscount = 0;
+                messageDiv.textContent = 'Invalid coupon code';
+                messageDiv.classList.add('error');
+                updateCheckoutTotals();
+            }
+        };
+    }
+
+    function updateCheckoutTotals() {
+        const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const discountAmount = Math.floor(subtotal * (appliedDiscount / 100));
+        const grandTotal = subtotal - discountAmount;
+
+        document.getElementById('checkoutSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+        
+        const discountRow = document.getElementById('discountRow');
+        const discountDisplay = document.getElementById('checkoutDiscount');
+        if (appliedDiscount > 0) {
+            discountRow.classList.remove('hidden');
+            discountDisplay.textContent = `-₹${discountAmount.toLocaleString('en-IN')}`;
+        } else {
+            discountRow.classList.add('hidden');
+        }
+
+        document.getElementById('checkoutGrandTotal').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
+    }
+
+    function initPaymentSelection() {
+        const options = document.querySelectorAll('.payment-option');
+        const submitBtn = document.querySelector('.place-order-btn');
+        
+        options.forEach(option => {
+            option.onclick = () => {
+                options.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                const radio = option.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // Update button text
+                if (radio.value === 'online') {
+                    submitBtn.textContent = 'Pay & Place Order';
+                } else {
+                    submitBtn.textContent = 'Place Order';
+                }
+            };
+        });
     }
 
     // Checkout Flow Logic
@@ -195,9 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (backToCartBtn) {
         backToCartBtn.addEventListener('click', function () {
-            cartList.style.display = 'block';
-            cartSummaryBar.classList.remove('hidden');
-            checkoutSection.style.display = 'none';
+            history.back();
         });
     }
 
@@ -272,12 +426,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+            const paymentMethod = this.querySelector('input[name="payment-method"]:checked').value;
 
             try {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
-
-                // Collect shipping details
+                // Collect shipping details first
                 const formData = new FormData(this);
                 const shippingDetails = {
                     name: formData.get('name'),
@@ -289,13 +441,79 @@ document.addEventListener('DOMContentLoaded', function () {
                     pin: formData.get('pin')
                 };
 
-                const orderId = await cartService.placeOrder(shippingDetails, checkoutItems);
-                if (orderId) {
-                    window.location.href = `orders.html?success=true&orderId=${orderId}`;
+                const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+                const discountAmount = Math.floor(subtotal * (appliedDiscount / 100));
+                const finalTotal = subtotal - discountAmount;
+
+                if (paymentMethod === 'online') {
+                    const options = {
+                        "key": "rzp_test_SbrDHadYKj1cvw", // User provided key
+                        "amount": finalTotal * 100, // Amount in paise
+                        "currency": "INR",
+                        "name": "Maharaja Dry Fruits",
+                        "description": appliedDiscount > 0 ? `Order with ${appliedDiscount}% Discount` : "Order for Dry Fruits",
+                        "image": "assets/MAHARAJA logo.png",
+                        "handler": async function (response) {
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
+
+                            try {
+                                const paymentData = {
+                                    paymentId: response.razorpay_payment_id,
+                                    method: 'Online (Razorpay)',
+                                    status: 'Paid',
+                                    subtotal: subtotal,
+                                    discount: discountAmount,
+                                    total: finalTotal
+                                };
+
+                                const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
+                                if (orderId) {
+                                    window.location.href = `orders.html?success=true&orderId=${orderId}`;
+                                }
+                            } catch (err) {
+                                console.error("Order completion failed:", err);
+                                alert("Payment successful but order placement failed. Please contact support.");
+                            }
+                        },
+                        "prefill": {
+                            "name": shippingDetails.name,
+                            "email": shippingDetails.email,
+                            "contact": shippingDetails.phone
+                        },
+                        "theme": {
+                            "color": "#fc6e20"
+                        },
+                        "modal": {
+                            "ondismiss": function() {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
+                            }
+                        }
+                    };
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } else {
+                    // Cash on Delivery flow
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+
+                    const paymentData = {
+                        method: 'Cash on Delivery',
+                        status: 'Pending',
+                        subtotal: subtotal,
+                        discount: discountAmount,
+                        total: finalTotal
+                    };
+
+                    const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
+                    if (orderId) {
+                        window.location.href = `orders.html?success=true&orderId=${orderId}`;
+                    }
                 }
             } catch (error) {
-                console.error("Order placement failed:", error);
-                alert("Failed to place order. Please try again.");
+                console.error("Checkout process failed:", error);
+                alert("Something went wrong. Please try again.");
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }

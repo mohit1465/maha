@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             itemsHtml += `
             <div class="wishlist-item" data-id="${product.id}">
-                <div class="wishlist-item-product">
+                <div class="wishlist-item-product" style="cursor: pointer;" onclick="window.location.href='product.html?id=${product.id}'">
                     <div class="wishlist-item-thumbnail" style="background-image: url('${imageUrl}')"></div>
                     <div class="wishlist-item-details">
                         <div class="wishlist-item-name">${product.shortTitle || product.name}</div>

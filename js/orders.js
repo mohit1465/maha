@@ -126,9 +126,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         `).join('')}
                     </div>
                     
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="color: #666; font-size: 14px;">Total Amount</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #fc6e20;">₹${order.total.toLocaleString('en-IN')}</div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f5f5f5; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <div style="color: #888; font-size: 12px; text-transform: uppercase;">Payment Method</div>
+                            <div style="font-size: 14px; font-weight: 500; color: #323232;">
+                                ${order.payment?.method || 'N/A'} 
+                                ${order.payment?.paymentId ? `<br><small style="color: #999; font-size: 11px;">ID: ${order.payment.paymentId}</small>` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #666; font-size: 14px;">Total Amount</div>
+                            <div style="font-size: 18px; font-weight: 700; color: #fc6e20;">₹${order.total.toLocaleString('en-IN')}</div>
+                        </div>
                     </div>
                 </div>
                 `;

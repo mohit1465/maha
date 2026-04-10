@@ -166,9 +166,9 @@
 .form-group input,
 .form-group textarea {
     width: 100%;
-    padding: 18px 25px;
+    padding: 13px 15px;
     border: 1px solid #eee;
-    border-radius: 25px;
+    border-radius: 15px;
     font-size: 16px;
     font-family: inherit;
     background-color: #fff;

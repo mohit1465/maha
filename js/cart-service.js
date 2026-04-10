@@ -22,11 +22,10 @@ class CartService {
 
     normalizeSize(size) {
         if (!size) return '250g';
-        const s = size.toLowerCase().replace(/\s+/g, '');
+        const s = size.toLowerCase().replace(/\s+/g, '').replace('gm', 'g');
         if (s.includes('500g')) return '500g';
         if (s.includes('1kg')) return '1kg';
         if (s.includes('2kg')) return '2kg';
-        if (s.includes('5kg')) return '5kg';
         if (s.includes('250g')) return '250g';
         return size;
     }
@@ -45,11 +44,10 @@ class CartService {
         const bp = parseFloat(basePrice) || 0;
         if (!size) return bp;
         
-        const s = size.toLowerCase().replace(/\s+/g, '');
+        const s = size.toLowerCase().replace(/\s+/g, '').replace('gm', 'g');
         if (s.includes('500g')) return bp * 2;
         if (s.includes('1kg')) return bp * 4;
         if (s.includes('2kg')) return bp * 8;
-        if (s.includes('5kg')) return bp * 20;
         return bp * 1; // Default for 250g or others
     }
 
@@ -151,7 +149,7 @@ class CartService {
         await setDoc(cartRef, { cart: newCart }, { merge: true });
     }
 
-    async placeOrder(shippingDetails = null, itemsToOrder = null) {
+    async placeOrder(shippingDetails = null, itemsToOrder = null, paymentData = null) {
         const user = auth.currentUser;
         const targetItems = itemsToOrder || this.cartItems;
         if (!user || targetItems.length === 0) return null;
@@ -165,6 +163,7 @@ class CartService {
                 items: targetItems,
                 total: targetItems.reduce((total, item) => total + (item.price * item.quantity), 0),
                 shipping: shippingDetails,
+                payment: paymentData || { method: 'Not Specified', status: 'Unknown' },
                 status: 'Processing',
                 timestamp: new Date().toISOString()
             };
@@ -226,6 +225,11 @@ class CartService {
             formData.append(' Delivery Address', `${shipping.address}, ${shipping.city}, ${shipping.state} - ${shipping.pin}`);
             formData.append(' Items Ordered', '\n' + itemSummary);
             formData.append(' Grand Total', `₹${orderData.total.toLocaleString('en-IN')}`);
+            formData.append(' Payment Method', orderData.payment.method);
+            formData.append(' Payment Status', orderData.payment.status);
+            if (orderData.payment.paymentId) {
+                formData.append(' Razorpay Payment ID', orderData.payment.paymentId);
+            }
 
             const response = await fetch('https://formsubmit.co/ajax/mohit8307521465@gmail.com', {
                 method: 'POST',
