@@ -569,7 +569,28 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Setup action buttons
     function setupActionButtons(product) {
         const addToCartBtns = document.querySelectorAll('.btn-primary, .action-bar-btn-primary, .add-to-cart-btn, .mobile-add-to-cart-btn');
+        const buyNowBtns = document.querySelectorAll('.btn-buy, .buy-now-btn, .mobile-buy-now-btn');
 
+        // Buy Now Logic
+        buyNowBtns.forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            newBtn.addEventListener('click', async function () {
+                const quantity = parseInt(document.querySelector('.quantity-input').value) || 1;
+                const size = document.querySelector('.variant-btn.active')?.textContent || '250g';
+
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                this.classList.add('loading');
+
+                await cartService.addToCart(product, quantity, size);
+                
+                // Navigate directly to cart to finish buying
+                window.location.href = 'cart.html';
+            });
+        });
+
+        // Add to Cart Logic
         addToCartBtns.forEach(btn => {
             // Replace to clear
             const newBtn = btn.cloneNode(true);
@@ -581,16 +602,23 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 await cartService.addToCart(product, quantity, size);
 
-                // Show success feedback
+                // Show success feedback - use just checkmark to avoid squeezing circular buttons
                 const originalText = this.innerHTML;
-                const originalBg = this.style.backgroundColor;
-
-                this.innerHTML = '<i class="fas fa-check"></i> Added';
+                const isIconOnly = this.classList.contains('add-to-cart-btn') || this.classList.contains('mobile-add-to-cart-btn') || this.classList.contains('btn-primary');
+                
+                if (isIconOnly) {
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    this.innerHTML = '<i class="fas fa-check"></i> Added';
+                }
+                
                 this.style.backgroundColor = '#4CAF50';
+                this.style.borderColor = '#4CAF50'; // Make border match if there is one
 
                 setTimeout(() => {
                     this.innerHTML = originalText;
-                    this.style.backgroundColor = originalBg;
+                    this.style.backgroundColor = '';
+                    this.style.borderColor = '';
                 }, 2000);
             });
         });
