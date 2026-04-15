@@ -39,6 +39,12 @@
     <!-- Icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Basic Icons -->
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+    <!-- Filled Icons -->
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+    <!-- Brand Icons -->
+    <link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 </head>
 
 <body data-page="home">
@@ -55,7 +61,7 @@
                 <a href="search.html" class="icon" data-section="search"><i class="fas fa-search"></i></a>
                 <a href="wishlist.html" class="icon" data-section="wishlist"><i class="fas fa-heart"></i></a>
                 <a href="cart.html" class="icon" data-section="cart">
-                    <i class="fas fa-shopping-bag"></i>
+                    <i class="fa-solid fa-cart-shopping"></i>
                     <span class="cart-count">0</span>
                 </a>
                 <a href="login.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
@@ -67,10 +73,30 @@
                 <li class="dropdown">
                     <a href="search.html" class="dropbtn">Shop <i class="fas fa-chevron-down"></i></a>
                     <div class="dropdown-content">
-                        <a href="search.html">All</a>
-                        <a href="search.html?category=Almonds">Almonds</a>
-                        <a href="search.html?category=Walnuts">Walnuts</a>
-                        <a href="search.html?category=Other Dry Fruits">Other Dry Fruits</a>
+                        <a href="search.html" class="dropdown-item">
+                            <i class="fas fa-th-large"></i>
+                            <span>All</span>
+                        </a>
+                        <a href="search.html?category=Almonds" class="dropdown-item">
+                            <i class="fas fa-seedling"></i>
+                            <span>Almonds</span>
+                        </a>
+                        <a href="search.html?category=Walnuts" class="dropdown-item">
+                            <i class="fas fa-circle"></i>
+                            <span>Walnuts</span>
+                        </a>
+                        <a href="search.html?category=Cashews" class="dropdown-item">
+                            <i class="fas fa-leaf"></i>
+                            <span>Cashews</span>
+                        </a>
+                        <a href="search.html?category=Pistachios" class="dropdown-item">
+                            <i class="fas fa-spa"></i>
+                            <span>Pistachios</span>
+                        </a>
+                        <a href="search.html?category=Other Dry Fruits" class="dropdown-item">
+                            <i class="fas fa-basket-shopping"></i>
+                            <span>More</span>
+                        </a>
                     </div>
                 </li>
                 <li><a href="about.html" data-section="about">About Us</a></li>
@@ -401,7 +427,7 @@
             </a>
 
             <a href="cart.html" data-section="cart" title="Cart">
-                <i class="fas fa-shopping-bag"></i>
+                <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-count">0</span>
                 <div class="active-dot"></div>
             </a>

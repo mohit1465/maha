@@ -76,7 +76,7 @@ export function createProductCard(product) {
                     <div class="card-action-container">
                         <button class="card-add-btn" style="display: ${currentQty > 0 ? 'none' : 'flex'}" onclick="handleAddToCart('${product.id}', this, event)">
                             <span>Add</span>
-                            <i class="fas fa-shopping-bag"></i>
+                            <i class="fa-solid fa-cart-shopping"></i>
                         </button>
                         
                         <div class="card-qty-selector" style="display: ${currentQty > 0 ? 'flex' : 'none'}">
