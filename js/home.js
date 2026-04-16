@@ -18,6 +18,7 @@ async function initHome() {
     const popularRow = document.querySelector('.popular-products .card-row');
     const updatedRow = document.querySelector('.newly-updated .card-row');
     const highQualityRow = document.querySelector('.high-quality-dry-fruits .card-row');
+    const dealsRow = document.getElementById('dealsRow');
 
     if (!popularRow || !updatedRow || !highQualityRow) {
         console.error("Row containers not found!");
@@ -43,6 +44,7 @@ async function initHome() {
     // Initial state: show skeletons
     showHomeSkeletons(popularRow);
     showHomeSkeletons(updatedRow);
+    showHomeSkeletons(dealsRow);
     showHighQualitySkeletons(highQualityRow);
 
     try {
@@ -71,8 +73,25 @@ async function initHome() {
                 .sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
                 .slice(0, 10);
 
+            // Explosive Deals: highest discount percentage
+            const deals = [...allProducts]
+                .filter(p => p.originalPrice > p.price)
+                .map(p => ({
+                    ...p,
+                    discountPct: Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)
+                }))
+                .sort((a, b) => b.discountPct - a.discountPct)
+                .slice(0, 4);
+
             render(popularRow, popular);
             render(updatedRow, recent);
+            if (dealsRow) {
+                if (deals.length > 0) {
+                    render(dealsRow, deals);
+                } else {
+                    document.querySelector('.explosive-deals').style.display = 'none';
+                }
+            }
             renderHighQuality(highQualityRow, highQuality);
         }
     } catch (err) {

@@ -89,14 +89,44 @@ span {
     background-color: #ffffff;
 }
 
+/* Promotional Elements */
+.announcement-bar {
+    background: linear-gradient(90deg, #1b1b1b 0%, #323232 100%);
+    color: #fff;
+    padding: 8px 5%;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 3000;
+    display: block;
+}
+
+.announcement-bar b {
+    color: #fc6e20;
+    font-weight: 700;
+}
+
+.announcement-bar .promo-text {
+    display: inline-block;
+    animation: fadeInOut 4s infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; transform: scale(1.02); }
+}
+
 /* Header styles */
 .header {
     color: #fff;
     width: 100%;
-    position: fixed;
-    top: 0;
+    position: sticky;
+    top: 35px; /* Offset by announcement bar height */
     left: 0;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 /* Top header section */
@@ -322,7 +352,7 @@ span {
 
 /* Main content spacing */
 main {
-    padding-top: 100px;
+    padding-top: 135px; /* Announcement Bar (35px) + Header (approx 100px) */
 }
 
 /* Hide mobile navigation on desktop */
@@ -614,8 +644,16 @@ letter-spacing: 1px;
     display: flex;
     justify-content: center;
     gap: 50px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     margin-bottom: 50px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0 20px;
+}
+
+.category-row::-webkit-scrollbar {
+    display: none;
 }
 
 .category-item {
@@ -626,10 +664,6 @@ letter-spacing: 1px;
     align-items: center;
     gap: 15px;
     transition: transform 0.3s ease;
-}
-
-.category-item:hover {
-    transform: translateY(-5px);
 }
 
 .category-circle {
@@ -1012,7 +1046,7 @@ letter-spacing: 1px;
 
     /* Main content spacing for mobile */
     main {
-        padding-top: 50px;
+        padding-top: 85px; /* Announcement Bar (35px) + Header (approx 50px) */
         padding-bottom: 100px;
     }
 
@@ -1024,9 +1058,9 @@ letter-spacing: 1px;
     /* Header styles for mobile */
     .header {
         position: fixed;
-        top: 0;
+        top: 35px; /* Offset by announcement bar */
         left: 0;
-        z-index: 1000;
+        z-index: 2000;
     }
 
     .top-header {

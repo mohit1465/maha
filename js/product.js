@@ -276,10 +276,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    function updatePriceDisplay(price) {
+    function updatePriceDisplay(price, originalPrice = null) {
         const priceElements = document.querySelectorAll('.product-price, .action-bar-product-price, .mobile-product-price');
         priceElements.forEach(element => {
-            element.innerHTML = `<label>Just At </label>₹ ${price.toLocaleString('en-IN')} INR`;
+            const isMainPrice = element.classList.contains('product-price');
+            
+            if (isMainPrice && originalPrice && originalPrice > price) {
+                const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
+                element.innerHTML = `
+                    <div class="product-price-container">
+                        <span class="product-original-price">₹ ${originalPrice.toLocaleString('en-IN')}</span>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            ₹ ${price.toLocaleString('en-IN')} 
+                            <span class="price-cut-badge">${discountPercent}% OFF</span>
+                        </div>
+                        <div class="product-you-save" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-top: 5px;">
+                            You Save: ₹ ${(originalPrice - price).toLocaleString('en-IN')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                element.innerHTML = `<label>Just At </label>₹ ${price.toLocaleString('en-IN')} INR`;
+            }
         });
     }
 
@@ -298,8 +316,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         const scaledPrice = cartService.getPriceForSize(product.price, selectedSize);
         const totalPrice = scaledPrice * currentQuantity;
         
+        // Sync original price if it exists
+        let totalOriginalPrice = null;
+        if (product.originalPrice) {
+            const scaledOriginal = cartService.getPriceForSize(product.originalPrice, selectedSize);
+            totalOriginalPrice = scaledOriginal * currentQuantity;
+        }
+        
         // Sync current price with quantity and size applied
-        updatePriceDisplay(totalPrice);
+        updatePriceDisplay(totalPrice, totalOriginalPrice);
         
         // Sync size selection in mobile fixed action bar
         const mobileSizeSelect = document.querySelector('.mobile-size-select');

@@ -65,7 +65,10 @@ class CartService {
         // Determine base price (assume incoming price is for 250g if not already stored)
         // Fallback to item.price if basePrice is missing (useful for legacy items)
         const basePrice = parseFloat(product.basePrice || product.price) || 0;
+        const baseOriginalPrice = parseFloat(product.baseOriginalPrice || product.originalPrice) || 0;
+        
         const currentPrice = this.getPriceForSize(basePrice, normalizedSize);
+        const currentOriginalPrice = baseOriginalPrice ? this.getPriceForSize(baseOriginalPrice, normalizedSize) : 0;
 
         let newCart = [...this.cartItems];
         if (existingItemIndex > -1) {
@@ -76,7 +79,9 @@ class CartService {
                 id: product.id,
                 name: product.name,
                 basePrice: basePrice,
+                baseOriginalPrice: baseOriginalPrice,
                 price: currentPrice,
+                originalPrice: currentOriginalPrice,
                 images: product.images || { '1': 'https://placehold.co/150x150?text=Maharaja' },
                 category: product.category || 'Dry Fruits',
                 quantity: parseInt(quantity),
@@ -106,7 +111,8 @@ class CartService {
         const newCart = this.cartItems.map(item => {
             if (item.id === productId && item.size === normalizedSize) {
                 const newPrice = this.getPriceForSize(item.basePrice, normalizedSize);
-                return { ...item, quantity: parseInt(quantity), price: newPrice };
+                const newOriginalPrice = item.baseOriginalPrice ? this.getPriceForSize(item.baseOriginalPrice, normalizedSize) : 0;
+                return { ...item, quantity: parseInt(quantity), price: newPrice, originalPrice: newOriginalPrice };
             }
             return item;
         });
@@ -139,7 +145,8 @@ class CartService {
                     return {
                         ...item,
                         size: normNewSize,
-                        price: this.getPriceForSize(item.basePrice, normNewSize)
+                        price: this.getPriceForSize(item.basePrice, normNewSize),
+                        originalPrice: item.baseOriginalPrice ? this.getPriceForSize(item.baseOriginalPrice, normNewSize) : 0
                     };
                 }
                 return item;

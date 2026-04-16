@@ -420,12 +420,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Add click handler for Shop dropdown - navigate to search page (separate HTML)
-    const shopDropdown = document.querySelector('.dropdown');
-    if (shopDropdown) {
-        shopDropdown.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+    // Add click handler for Shop dropdown button only - navigate to search page (separate HTML)
+    const shopDropdownBtn = document.querySelector('.dropdown .dropbtn');
+    if (shopDropdownBtn) {
+        shopDropdownBtn.addEventListener('click', function (e) {
+            // Only navigate if clicking the button itself, not the dropdown content
             window.location.href = 'search.html';
         });
     }
@@ -607,3 +606,24 @@ document.addEventListener('DOMContentLoaded', function () {
             break;
     }
 });
+
+// Category row overflow detection - center when fits, left when overflows
+function updateCategoryRowAlignment() {
+    const categoryRow = document.querySelector('.category-row');
+    if (!categoryRow) return;
+
+    const containerWidth = categoryRow.parentElement.clientWidth;
+    const contentWidth = categoryRow.scrollWidth;
+
+    if (contentWidth > containerWidth) {
+        // Overflow - align left
+        categoryRow.style.justifyContent = 'flex-start';
+    } else {
+        // No overflow - center
+        categoryRow.style.justifyContent = 'center';
+    }
+}
+
+// Run on load and resize
+window.addEventListener('load', updateCategoryRowAlignment);
+window.addEventListener('resize', updateCategoryRowAlignment);

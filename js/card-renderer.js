@@ -14,8 +14,18 @@ export function createProductCard(product) {
     
     // Determine badge (New, Best Seller, or Discount)
     let badgeHtml = '';
+    const originalPrice = product.originalPrice || 0;
+    const sellingPrice = product.price || 0;
+    
     if (product.isNew) {
         badgeHtml = '<span class="card-badge">New</span>';
+    } else if (originalPrice > sellingPrice) {
+        const discountPercent = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+        if (discountPercent >= 30) {
+            badgeHtml = `<span class="card-badge red" style="background: linear-gradient(135deg, #DE0000 0%, #ff4d4d 100%);">HOT DEAL</span>`;
+        } else {
+            badgeHtml = `<span class="card-badge green">${discountPercent}% OFF</span>`;
+        }
     } else if (product.discount) {
         badgeHtml = `<span class="card-badge green">-${product.discount}%</span>`;
     } else if (product.category) {
@@ -43,12 +53,8 @@ export function createProductCard(product) {
 
     // Construct HTML
     const cardHtml = `
-        <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}">
+        <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}" data-original-price="${product.originalPrice || ''}">
             ${badgeHtml}
-            <div class="card-wishlist ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product.id}', this, event)">
-                <i class="fas fa-heart"></i>
-            </div>
-            
             <div class="card-image-container" onclick="navigateToProduct('${product.name}', '${product.id}')">
                 <div class="card-image" style="background-image: url('${imageUrl}');"></div>
             </div>
@@ -69,9 +75,19 @@ export function createProductCard(product) {
                         </div>
                     </div>
                 </div>
+
+                <div class="card-price-container">
+                    <div class="price-main">
+                        ${product.originalPrice ? `<span class="card-original-price">₹${product.originalPrice}</span>` : ''}
+                        <div class="card-price">₹${product.price}</div>
+                    </div>
+                    ${product.originalPrice ? `<div class="card-savings-pill">Save ₹${(product.originalPrice - product.price).toLocaleString('en-IN')}</div>` : ''}
+                </div>
                 
                 <div class="card-footer">
-                    <div class="card-price">₹${product.price}</div>
+                    <div class="card-wishlist ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product.id}', this, event)">
+                        <i class="fas fa-heart"></i>
+                    </div>
                     
                     <div class="card-action-container">
                         <button class="card-add-btn" style="display: ${currentQty > 0 ? 'none' : 'flex'}" onclick="handleAddToCart('${product.id}', this, event)">
@@ -229,6 +245,19 @@ function updateCardLivePrice(card) {
     const priceDisplay = card.querySelector('.card-price');
     if (priceDisplay) {
         priceDisplay.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
+    }
+
+    // Update Original Price if it exists
+    const originalPrice = card.dataset.originalPrice;
+    if (originalPrice) {
+        const originalPriceNum = parseFloat(originalPrice);
+        const scaledOriginal = cartService.getPriceForSize(originalPriceNum, size);
+        const totalOriginal = scaledOriginal * qty;
+        
+        const originalDisplay = card.querySelector('.card-original-price');
+        if (originalDisplay) {
+            originalDisplay.textContent = `₹${totalOriginal.toLocaleString('en-IN')}`;
+        }
     }
 }
 

@@ -26,10 +26,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
             if (categoryParam) {
+                const decodedCategory = decodeURIComponent(categoryParam).trim();
                 categoryChips.forEach(cb => {
-                    if (cb.value.toLowerCase() === categoryParam.toLowerCase()) {
-                        cb.checked = true;
-                    }
+                    const shouldCheck = cb.value.toLowerCase() === decodedCategory.toLowerCase();
+                    cb.checked = shouldCheck;
                 });
             }
 

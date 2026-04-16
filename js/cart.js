@@ -139,20 +139,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add total row at the bottom
         const subtotal = cartService.getTotal();
+        const totalSavings = items.reduce((total, item) => {
+            const savingsPerUnit = (item.originalPrice || item.price) - item.price;
+            return total + (savingsPerUnit * item.quantity);
+        }, 0);
+
         itemsHtml += `
             <div class="cart-total">
-                <div class="total-label">Total</div>
+                <div class="total-label">Subtotal</div>
                 <div class="total-value">₹${subtotal.toLocaleString('en-IN')}</div>
             </div>
+            ${totalSavings > 0 ? `
+            <div class="cart-savings-total" style="display: flex; justify-content: space-between; padding: 10px 0; color: #27ae60; font-weight: 600; font-size: 16px;">
+                <span>Total Savings</span>
+                <span>- ₹${totalSavings.toLocaleString('en-IN')}</span>
+            </div>
+            ` : ''}
         `;
 
         cartList.innerHTML = itemsHtml;
     }
 
     function updateTotals() {
+        const items = cartService.getCart();
         const subtotal = cartService.getTotal();
+        const totalSavings = items.reduce((total, item) => {
+            const savingsPerUnit = (item.originalPrice || item.price) - item.price;
+            return total + (savingsPerUnit * item.quantity);
+        }, 0);
+
         if (subtotalDisplay) subtotalDisplay.textContent = '₹' + subtotal.toLocaleString('en-IN');
         if (summarySubtotal) summarySubtotal.textContent = '₹' + subtotal.toLocaleString('en-IN');
+        
+        const savingsDisplay = document.querySelector('.summary-savings');
+        if (savingsDisplay) {
+            if (totalSavings > 0) {
+                savingsDisplay.style.display = 'flex';
+                savingsDisplay.querySelector('.savings-value').textContent = '-₹' + totalSavings.toLocaleString('en-IN');
+            } else {
+                savingsDisplay.style.display = 'none';
+            }
+        }
     }
 
     window.updateQty = (id, size, delta) => {

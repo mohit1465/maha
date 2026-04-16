@@ -92,7 +92,11 @@ function renderProducts() {
                 <img src="${imgUrl || 'https://placehold.co/100x100?text=No+Img'}" class="item-img">
                 <div>
                     <h4 style="margin: 0;">${product.name}</h4>
-                    <p style="margin: 0; font-size: 0.8rem; color: #666;">₹${product.price} | ${product.category}</p>
+                    <p style="margin: 0; font-size: 0.8rem; color: #666;">
+                        ₹${product.price} 
+                        ${product.originalPrice ? `<span style="text-decoration: line-through; margin-left: 5px; opacity: 0.6;">₹${product.originalPrice}</span>` : ''}
+                        | ${product.category}
+                    </p>
                 </div>
             </div>
             <div class="item-actions">
@@ -410,6 +414,7 @@ window.editProduct = (id) => {
     document.getElementById('productHindiName').value = product.hindiName || '';
     document.getElementById('productCategory').value = product.category || 'Other';
     document.getElementById('productPrice').value = product.price;
+    document.getElementById('productOriginalPrice').value = product.originalPrice || '';
     document.getElementById('productQuantities').value = product.quantities_available ? product.quantities_available.join(', ') : '';
 
     currentImages = [];
@@ -500,6 +505,7 @@ productForm.addEventListener('submit', async (e) => {
     const hindiName = document.getElementById('productHindiName').value;
     const category = document.getElementById('productCategory').value;
     const price = Number(document.getElementById('productPrice').value);
+    const originalPrice = document.getElementById('productOriginalPrice').value ? Number(document.getElementById('productOriginalPrice').value) : null;
     const quantities = document.getElementById('productQuantities').value.split(',').map(s => s.trim()).filter(s => s);
 
     try {
@@ -514,6 +520,7 @@ productForm.addEventListener('submit', async (e) => {
             hindiName,
             category,
             price,
+            originalPrice,
             quantities_available: quantities,
             images: imagesObject,
             createdAt: isEdit ? (allProducts.find(p => p._id === id)?.createdAt || Date.now()) : Date.now()
@@ -534,6 +541,7 @@ productForm.addEventListener('submit', async (e) => {
 function resetForm() {
     productForm.reset();
     document.getElementById('productId').value = '';
+    document.getElementById('productOriginalPrice').value = '';
     currentImages = [];
     imagePreviewContainer.innerHTML = '';
 }
