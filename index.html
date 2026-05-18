@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maharaja Dry Fruits | Premium Quality Dry Fruits Online India</title>
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="MAHARAJA logo.svg">
-    
+
     <!-- Google Analytics (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8KQYRHMSKN"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-8KQYRHMSKN');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-8KQYRHMSKN');
     </script>
 
     <!-- Google Fonts -->
@@ -47,10 +47,15 @@
     <link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 </head>
 
+<div class="announcement-bar" id="announcementBar">
+    <span class="promo-text">🔥 MEGA SALE: Up to 50% OFF on Premium Dry Fruits <span class="separator">|</span> Use
+        Code: <b>MAHARAJA10</b></span>
+    <button class="close-announcement" aria-label="Close announcement">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
 <body data-page="home">
-    <div class="announcement-bar">
-        <span class="promo-text">🔥 MEGA SALE: Up to 50% OFF on Premium Dry Fruits | Use Code: <b>MAHARAJA10</b></span>
-    </div>
     <header class="header">
         <div class="top-header">
             <div class="logo-container">
@@ -188,18 +193,24 @@
             </div>
 
             <!-- Best Savings / Explosive Deals -->
-            <section class="explosive-deals" style="background: #fff; padding: 60px 20px;">
-                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 10px; color: #1b1b1b;">Explosive Deals</h2>
-                <p style="color: #666; margin-bottom: 40px; font-size: 16px;">Grab the biggest savings on our premium collection</p>
+            <section class="explosive-deals flipkart-container">
+                <div class="flipkart-header">
+                    <h2>Explosive Deals</h2>
+                    <a href="search.html"><i class="fas fa-arrow-right-long"></i></a>
+                </div>
 
-                <div class="card-row" id="dealsRow">
+
+                <div class="card-row scrollable-row" id="dealsRow">
                     <!-- Dynamic deals will be injected here -->
                 </div>
             </section>
 
             <!-- Most Popular -->
-            <section class="popular-products">
-                <h2>Most Popular</h2>
+            <section class="popular-products flipkart-container">
+                <div class="flipkart-header">
+                    <h2>Most Popular</h2>
+                    <a href="search.html"><i class="fas fa-arrow-right-long"></i></a>
+                </div>
 
                 <div class="card-row">
                     <div class="product-card-wrapper">
@@ -256,10 +267,13 @@
             </section>
 
             <!-- Newly Updated -->
-            <section class="newly-updated">
-                <h2>Newly Updated</h2>
+            <section class="newly-updated flipkart-container">
+                <div class="flipkart-header">
+                    <h2>Newly Updated</h2>
+                    <a href="search.html"><i class="fas fa-arrow-right-long"></i></a>
+                </div>
 
-                <div class="card-row">
+                <div class="card-row scrollable-row">
                     <div class="product-card-wrapper">
                         <div class="product-card"></div>
                     </div>
@@ -278,7 +292,7 @@
             <!-- High Quality Dry Fruits -->
             <section class="high-quality-dry-fruits">
                 <h2>High Quality Dry Fruits</h2>
-                
+
                 <div class="card-row">
                     <div class="product-card-wrapper">
                         <div class="product-card"></div>

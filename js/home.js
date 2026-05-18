@@ -33,10 +33,10 @@ async function initHome() {
         { id: '4', name: 'Cashews Jumbo', price: 320 }
     ];
 
-    const render = (container, products) => {
+    const render = (container, products, subtitle = "Top Selection") => {
         container.innerHTML = products.map(p => `
             <div class="product-card-wrapper">
-                ${createMinimalProductCard(p)}
+                ${createMinimalProductCard(p, subtitle)}
             </div>
         `).join('');
     };
@@ -60,12 +60,12 @@ async function initHome() {
             // Popular: Highest Price
             const popular = [...allProducts]
                 .sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
-                .slice(0, 4);
+                .slice(0, 6);
 
             // Recent: by createdAt or id
             const recent = [...allProducts]
                 .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-                .slice(0, 4);
+                .slice(0, 10);
 
             // High Quality: Premium products with high ratings or specific categories
             const highQuality = [...allProducts]
@@ -81,13 +81,13 @@ async function initHome() {
                     discountPct: Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)
                 }))
                 .sort((a, b) => b.discountPct - a.discountPct)
-                .slice(0, 4);
+                .slice(0, 8);
 
-            render(popularRow, popular);
-            render(updatedRow, recent);
+            render(popularRow, popular, 'Popular');
+            render(updatedRow, recent, 'Bestsellers');
             if (dealsRow) {
                 if (deals.length > 0) {
-                    render(dealsRow, deals);
+                    render(dealsRow, deals, 'Best Deals');
                 } else {
                     document.querySelector('.explosive-deals').style.display = 'none';
                 }
@@ -102,7 +102,7 @@ async function initHome() {
         if (!container) return;
 
         let skeletonsHtml = '';
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 6; i++) {
             skeletonsHtml += `
                 <div class="product-card-wrapper">
                     <div class="minimal-product-card">

@@ -136,7 +136,7 @@ window.navigateToProduct = function(productName, productId) {
  * Minimal Product Card Renderer for Home Page
  * Shows only image and name.
  */
-export function createMinimalProductCard(product) {
+export function createMinimalProductCard(product, subtitle = "Top Rated") {
     const imageUrl = getProductImageUrl(product.id, product.images, 1);
     const seoUrl = router.generateProductUrl(product.name, product.id);
 
@@ -147,6 +147,7 @@ export function createMinimalProductCard(product) {
             </div>
             <div class="minimal-card-content">
                 <div class="minimal-card-title">${product.shortTitle || product.name}</div>
+                <div class="minimal-card-subtitle">${subtitle}</div>
             </div>
         </div>
     `;

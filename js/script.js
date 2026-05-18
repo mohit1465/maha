@@ -602,8 +602,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 showCartSection();
             }
             break;
-        default:
-            break;
+    }
+});
+
+/* Announcement Bar Logic */
+document.addEventListener('DOMContentLoaded', function() {
+    const announcementBar = document.getElementById('announcementBar');
+    const closeBtn = document.querySelector('.close-announcement');
+    const isHidden = localStorage.getItem('announcement-hidden');
+
+    if (isHidden === 'true') {
+        document.body.classList.add('announcement-hidden');
+    }
+
+    if (closeBtn && announcementBar) {
+        closeBtn.addEventListener('click', function() {
+            document.body.classList.add('announcement-hidden');
+            localStorage.setItem('announcement-hidden', 'true');
+        });
     }
 });
 

@@ -131,16 +131,15 @@
 }
 
 .card-description {
-    font-size: 12px;
-    color: #57606f;
-    line-height: 1.4;
-    margin-bottom: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 34px;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /* Options Row (Size Selector & Quantity) */
@@ -486,25 +485,30 @@
 /* Minimal Product Card Styles (Home Page) */
 .minimal-product-card {
     width: 100%;
+    min-width: 0;
     cursor: pointer;
     transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .minimal-product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .minimal-card-image-container {
     width: 100%;
     aspect-ratio: 1/1;
-    border-radius: 20px;
+    border-radius: 6px;
     overflow: hidden;
     background: #f8f9fa;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .minimal-card-image {
@@ -520,14 +524,26 @@
 }
 
 .minimal-card-content {
-    text-align: center;
+    text-align: left;
+    width: 100%;
+    min-width: 0;
 }
 
 .minimal-card-title {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 400;
     color: #323232;
     font-family: 'Bricolage Grotesque', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.minimal-card-subtitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
 }
 
 .custom-options::-webkit-scrollbar-thumb:hover {
