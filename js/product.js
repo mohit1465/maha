@@ -288,10 +288,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <span class="product-original-price">₹ ${originalPrice.toLocaleString('en-IN')}</span>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             ₹ ${price.toLocaleString('en-IN')} 
-                            <span class="price-cut-badge">${discountPercent}% OFF</span>
+                            <span class="price-cut-badge"><i class="fa-solid fa-percent" style="font-size: 0.9em; margin-right: 4px;"></i>${discountPercent}% OFF</span>
                         </div>
-                        <div class="product-you-save" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-top: 5px;">
-                            You Save: ₹ ${(originalPrice - price).toLocaleString('en-IN')}
+                        <div class="product-you-save">
+                            <i class="fa-solid fa-ticket" style="margin-right: 5px;"></i>You Save: <span class="savings-value">₹ ${(originalPrice - price).toLocaleString('en-IN')}</span>
                         </div>
                     </div>
                 `;

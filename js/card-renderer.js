@@ -22,12 +22,12 @@ export function createProductCard(product) {
     } else if (originalPrice > sellingPrice) {
         const discountPercent = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
         if (discountPercent >= 30) {
-            badgeHtml = `<span class="card-badge red" style="background: linear-gradient(135deg, #DE0000 0%, #ff4d4d 100%);">HOT DEAL</span>`;
+            badgeHtml = `<span class="card-badge red"><i class="fa-solid fa-fire"></i> HOT DEAL</span>`;
         } else {
-            badgeHtml = `<span class="card-badge green">${discountPercent}% OFF</span>`;
+            badgeHtml = `<span class="card-badge green"><i class="fa-solid fa-percent" style="font-size: 0.9em; margin-right: 4px;"></i>${discountPercent}% OFF</span>`;
         }
     } else if (product.discount) {
-        badgeHtml = `<span class="card-badge green">-${product.discount}%</span>`;
+        badgeHtml = `<span class="card-badge green"><i class="fa-solid fa-percent" style="font-size: 0.9em; margin-right: 4px;"></i>-${product.discount}%</span>`;
     } else if (product.category) {
         badgeHtml = `<span class="card-badge" style="background: #e0e0e0; color: #1b1b1b;">${product.category}</span>`;
     }
@@ -51,17 +51,47 @@ export function createProductCard(product) {
     const existingItem = cartItems.find(item => item.id === product.id && item.size === cartService.normalizeSize(defaultSize));
     const currentQty = existingItem ? existingItem.quantity : 0;
 
+    // Generate Savings Pill or Premium Badge
+    let savingsPillHtml = '';
+    const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+    if (hasDiscount) {
+        savingsPillHtml = `<div class="card-savings-pill" onclick="navigateToProduct('${product.name}', '${product.id}')"><i class="fa-solid fa-ticket"></i>Save <span class="savings-amount">₹${(product.originalPrice - product.price).toLocaleString('en-IN')}</span></div>`;
+    } else {
+        let label = 'Fresh Stock';
+        let iconClass = 'fa-leaf';
+        
+        // Since isPremium is true on all products in Firestore, we filter based on price thresholds and premium keywords
+        const lowerName = (product.name || '').toLowerCase();
+        const lowerShort = (product.shortTitle || '').toLowerCase();
+        const isActuallyPremium = (product.price >= 300 && (lowerName.includes('premium') || lowerName.includes('kashmiri') || lowerName.includes('snow white') || lowerShort.includes('premium') || lowerShort.includes('kashmiri'))) || product.price > 400;
+        
+        if (isActuallyPremium) {
+            label = 'Premium Choice';
+            iconClass = 'fa-crown';
+        } else if (product.category === 'Walnuts' || product.category === 'Almonds' || product.category === 'Pistachios' || product.category === 'Cashews') {
+            label = 'Handpicked';
+            iconClass = 'fa-star';
+        } else {
+            label = 'Best Value';
+            iconClass = 'fa-award';
+        }
+        savingsPillHtml = `<div class="card-savings-pill gold-pill" onclick="navigateToProduct('${product.name}', '${product.id}')"><i class="fa-solid ${iconClass}"></i>${label}</div>`;
+    }
+
     // Construct HTML
     const cardHtml = `
         <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}" data-original-price="${product.originalPrice || ''}">
             ${badgeHtml}
+            <div class="card-wishlist ${isWishlisted ? 'active wishlisted-hidden' : ''} ${currentQty > 0 ? 'in-cart' : ''}" onclick="toggleWishlist('${product.id}', this, event)">
+                <i class="${isWishlisted ? 'fas' : 'far'} fa-heart"></i>
+            </div>
             <div class="card-image-container" onclick="navigateToProduct('${product.name}', '${product.id}')">
                 <div class="card-image" style="background-image: url('${imageUrl}');"></div>
             </div>
             
             <div class="card-content">
-                <div class="card-title" title="${product.name}">${product.shortTitle || product.name}</div>
-                <div class="card-hindi-name">${product.hindiName || 'Premium Quality'}</div>
+                <div class="card-title" title="${product.name}" onclick="navigateToProduct('${product.name}', '${product.id}')">${product.shortTitle || product.name}</div>
+                <div class="card-hindi-name" onclick="navigateToProduct('${product.name}', '${product.id}')">${product.hindiName || 'Premium Quality'}</div>
                 <div class="card-description">${product.shortDescription || 'Premium quality ' + product.category.toLowerCase() + ' with rich nutrients and great taste.'}</div>
                 
                 <div class="card-options">
@@ -78,17 +108,13 @@ export function createProductCard(product) {
 
                 <div class="card-price-container">
                     <div class="price-main">
-                        ${product.originalPrice ? `<span class="card-original-price">₹${product.originalPrice}</span>` : ''}
+                        ${hasDiscount ? `<span class="card-original-price">₹${product.originalPrice}</span>` : ''}
                         <div class="card-price">₹${product.price}</div>
                     </div>
-                    ${product.originalPrice ? `<div class="card-savings-pill">Save ₹${(product.originalPrice - product.price).toLocaleString('en-IN')}</div>` : ''}
+                    ${savingsPillHtml}
                 </div>
                 
                 <div class="card-footer">
-                    <div class="card-wishlist ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product.id}', this, event)">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    
                     <div class="card-action-container">
                         <button class="card-add-btn" style="display: ${currentQty > 0 ? 'none' : 'flex'}" onclick="handleAddToCart('${product.id}', this, event)">
                             <span>Add</span>
@@ -204,14 +230,17 @@ function updateCardQtyUI(card) {
     const addBtn = card.querySelector('.card-add-btn');
     const qtySelector = card.querySelector('.card-qty-selector');
     const qtyValue = card.querySelector('.qty-value');
+    const wishlistBtn = card.querySelector('.card-wishlist');
 
     if (qty > 0) {
         if (addBtn) addBtn.style.display = 'none';
         if (qtySelector) qtySelector.style.display = 'flex';
         if (qtyValue) qtyValue.textContent = qty;
+        if (wishlistBtn) wishlistBtn.classList.add('in-cart');
     } else {
         if (addBtn) addBtn.style.display = 'flex';
         if (qtySelector) qtySelector.style.display = 'none';
+        if (wishlistBtn) wishlistBtn.classList.remove('in-cart');
     }
 }
 
@@ -248,7 +277,7 @@ function updateCardLivePrice(card) {
         priceDisplay.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
     }
 
-    // Update Original Price if it exists
+    // Update Original Price and Savings Pill if they exist
     const originalPrice = card.dataset.originalPrice;
     if (originalPrice) {
         const originalPriceNum = parseFloat(originalPrice);
@@ -258,6 +287,14 @@ function updateCardLivePrice(card) {
         const originalDisplay = card.querySelector('.card-original-price');
         if (originalDisplay) {
             originalDisplay.textContent = `₹${totalOriginal.toLocaleString('en-IN')}`;
+        }
+
+        const savingsPill = card.querySelector('.card-savings-pill');
+        if (savingsPill && !savingsPill.classList.contains('gold-pill')) {
+            const savings = totalOriginal - totalPrice;
+            if (savings > 0) {
+                savingsPill.innerHTML = `<i class="fa-solid fa-ticket"></i>Save <span class="savings-amount">₹${Math.round(savings).toLocaleString('en-IN')}</span>`;
+            }
         }
     }
 }
@@ -272,6 +309,19 @@ window.toggleWishlist = async function (productId, element, event) {
     if (event) event.stopPropagation();
     const added = await wishlistService.toggleWishlist(productId);
     element.classList.toggle('active', added);
+    const heartIcon = element.querySelector('i');
+    if (heartIcon) {
+        heartIcon.className = added ? 'fas fa-heart' : 'far fa-heart';
+    }
+    
+    if (added) {
+        // Wait for the heartbeat animation (0.35s) to complete before hiding
+        setTimeout(() => {
+            element.classList.add('wishlisted-hidden');
+        }, 400);
+    } else {
+        element.classList.remove('wishlisted-hidden');
+    }
 };
 
 window.handleAddToCart = async function (productId, btnElement, event) {
@@ -281,7 +331,13 @@ window.handleAddToCart = async function (productId, btnElement, event) {
     const size = card.querySelector('.size-selector .custom-select-trigger span').dataset.selected;
     const basePrice = parseFloat(card.dataset.basePrice);
     const productName = card.querySelector('.card-title').textContent;
-    const productImage = card.querySelector('.card-image').style.backgroundImage.slice(5, -2).replace(/"/g, "");
+    
+    // Robust background image URL extraction
+    const bgImg = card.querySelector('.card-image').style.backgroundImage;
+    const productImage = bgImg.replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
+
+    // Trigger the beautiful fly-to-cart animation
+    flyToCartAnimation(card, productImage);
 
     await cartService.addToCart({
         id: productId,
@@ -296,6 +352,72 @@ window.handleAddToCart = async function (productId, btnElement, event) {
     updateCardQtyUI(card);
     updateCardLivePrice(card);
 };
+
+/**
+ * Renders a floating clone of the product image flying to the active cart icon in a smooth parabolic-like arc.
+ */
+export function flyToCartAnimation(card, productImage) {
+    if (!productImage) return;
+
+    // Find the source image element
+    const sourceImgEl = card.querySelector('.card-image');
+    if (!sourceImgEl) return;
+
+    // Find the target cart element (desktop or mobile)
+    let targetCart = document.querySelector('.header-icons a[data-section="cart"]');
+    if (window.innerWidth <= 768) {
+        const mobileNavCart = document.querySelector('.mobile-nav-icons a[data-section="cart"]');
+        if (mobileNavCart && window.getComputedStyle(mobileNavCart.parentElement).display !== 'none') {
+            targetCart = mobileNavCart;
+        }
+    }
+    if (!targetCart) return;
+
+    // Get positions
+    const imgRect = sourceImgEl.getBoundingClientRect();
+    const cartRect = targetCart.getBoundingClientRect();
+
+    // Create flyer element
+    const flyer = document.createElement('div');
+    flyer.className = 'cart-flyer';
+    flyer.style.backgroundImage = `url('${productImage}')`;
+    flyer.style.left = `${imgRect.left}px`;
+    flyer.style.top = `${imgRect.top}px`;
+    flyer.style.width = `${imgRect.width}px`;
+    flyer.style.height = `${imgRect.height}px`;
+
+    document.body.appendChild(flyer);
+
+    // Force reflow
+    flyer.offsetWidth;
+
+    // Calculate translation target (middle-to-middle alignment)
+    const targetX = cartRect.left + (cartRect.width / 2) - (imgRect.width / 2);
+    const targetY = cartRect.top + (cartRect.height / 2) - (imgRect.height / 2);
+
+    // Apply styles to trigger CSS transition
+    flyer.style.transform = `translate(${targetX - imgRect.left}px, ${targetY - imgRect.top}px) scale(0.08) rotate(360deg)`;
+    flyer.style.opacity = '0.2';
+    flyer.style.borderRadius = '50%';
+
+    // Remove flyer after transition completion
+    flyer.addEventListener('transitionend', () => {
+        flyer.remove();
+        
+        // Add bounce animation class to all visible cart count badges
+        const badges = document.querySelectorAll('.cart-count');
+        badges.forEach(badge => {
+            badge.classList.remove('cart-count-bounce');
+            badge.offsetWidth; // Force layout reflow to restart animation
+            badge.classList.add('cart-count-bounce');
+            
+            // Clean up class after animation finishes
+            setTimeout(() => {
+                badge.classList.remove('cart-count-bounce');
+            }, 600);
+        });
+    });
+}
 
 window.incrementCardQty = async function (productId, btnElement, event) {
     if (event) event.stopPropagation();
@@ -354,6 +476,15 @@ wishlistService.addListener((wishlistItems) => {
         if (heartBtn) {
             const isWishlisted = wishlistItems.includes(productId);
             heartBtn.classList.toggle('active', isWishlisted);
+            const heartIcon = heartBtn.querySelector('i');
+            if (heartIcon) {
+                heartIcon.className = isWishlisted ? 'fas fa-heart' : 'far fa-heart';
+            }
+            if (isWishlisted) {
+                heartBtn.classList.add('wishlisted-hidden');
+            } else {
+                heartBtn.classList.remove('wishlisted-hidden');
+            }
         }
     });
 });

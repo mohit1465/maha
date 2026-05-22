@@ -311,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 'MAHARAJA10': 10,
                 'WELCOME20': 20,
                 'FESTIVE15': 15,
+                'MAHARAJA50': 50,
                 'FREESHIP': 0 // Just example
             };
 

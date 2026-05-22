@@ -605,22 +605,224 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-/* Announcement Bar Logic */
+/* Luxury Coupon Capsule & Deal Drawer Logic */
 document.addEventListener('DOMContentLoaded', function() {
-    const announcementBar = document.getElementById('announcementBar');
-    const closeBtn = document.querySelector('.close-announcement');
-    const isHidden = localStorage.getItem('announcement-hidden');
+    // 1. Inject DOM elements (Backdrop, Drawer, Capsule)
+    const overlay = document.createElement('div');
+    overlay.className = 'coupon-drawer-overlay';
+    overlay.id = 'couponOverlay';
+    document.body.appendChild(overlay);
 
-    if (isHidden === 'true') {
-        document.body.classList.add('announcement-hidden');
+    const drawer = document.createElement('div');
+    drawer.className = 'luxury-coupon-drawer';
+    drawer.id = 'couponDrawer';
+    drawer.innerHTML = `
+        <button class="drawer-close-btn" id="drawerClose">&times;</button>
+        <div class="drawer-header">
+            <span class="drawer-badge">Exclusive Offer</span>
+            <h3>VIP Club Privilege 👑</h3>
+        </div>
+        <div class="drawer-body">
+            <div class="offer-value">50% OFF</div>
+            <p class="offer-desc">Unlock 50% discount on your order + free priority express shipping using code <span class="code-highlight">MAHARAJA50</span></p>
+            <div class="perks-list">
+                <div class="perk-item">
+                    <span class="perk-icon">✨</span>
+                    <span class="perk-text">Flat 50% Instant Discount</span>
+                </div>
+                <div class="perk-item">
+                    <span class="perk-icon">🚚</span>
+                    <span class="perk-text">Free Priority Express Delivery</span>
+                </div>
+                <div class="perk-item">
+                    <span class="perk-icon">🪙</span>
+                    <span class="perk-text">Double Loyalty Points (15% Cash back!)</span>
+                </div>
+            </div>
+            <div class="urgency-timer">
+                <span class="timer-label">⏰ Limited VIP Offer:</span>
+                <span class="timer-clock" id="couponTimer">15:00</span>
+            </div>
+        </div>
+        <div class="drawer-actions">
+            <button class="action-btn primary-action" id="drawerApplyBtn">
+                <span class="btn-text">Apply & Copy Code</span>
+                <span class="btn-success-text">Applied Successfully! 🎉</span>
+            </button>
+            <button class="action-btn secondary-action" id="drawerShopBtn">Shop Now 🛍️</button>
+        </div>
+    `;
+    document.body.appendChild(drawer);
+
+    const capsule = document.createElement('div');
+    capsule.className = 'luxury-coupon-capsule';
+    capsule.id = 'couponCapsule';
+    capsule.innerHTML = `
+        <!-- Desktop Pill View -->
+        <div class="capsule-desktop-inner">
+            <span class="capsule-gift-icon"><i class="fa-solid fa-gift"></i></span>
+            <div class="capsule-brand">MAHARAJA50 <span class="sparkle">✨</span></div>
+            <div class="capsule-divider"></div>
+            <div class="capsule-action">Save 50%</div>
+        </div>
+        <!-- Mobile 3D Gift Badge View -->
+        <div class="capsule-mobile-inner">
+            <div class="mobile-gift-icon">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+            <div class="mobile-offer-badge">50% OFF</div>
+            <span class="mobile-sparkle">✨</span>
+        </div>
+    `;
+    document.body.appendChild(capsule);
+
+    // 2. Open / Close Interactions
+    const toggleDrawer = () => {
+        const isOpen = drawer.classList.contains('active');
+        if (isOpen) {
+            drawer.classList.remove('active');
+            overlay.classList.remove('active');
+        } else {
+            updateDrawerCTA(); // Update buttons based on cart state before opening
+            drawer.classList.add('active');
+            overlay.classList.add('active');
+        }
+    };
+
+    const closeDrawer = () => {
+        drawer.classList.remove('active');
+        overlay.classList.remove('active');
+    };
+
+    capsule.addEventListener('click', toggleDrawer);
+    overlay.addEventListener('click', closeDrawer);
+    document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+
+    // 3. Dynamic CTAs based on Cart Status
+    const updateDrawerCTA = () => {
+        const cartBadge = document.querySelector('.cart-count');
+        const hasItems = cartBadge && cartBadge.classList.contains('show') && parseInt(cartBadge.textContent) > 0;
+        
+        const secondaryBtn = document.getElementById('drawerShopBtn');
+        const couponInput = document.getElementById('couponCode');
+        const applyBtn = document.getElementById('applyCouponBtn');
+        const isCartPage = couponInput && applyBtn;
+
+        if (isCartPage) {
+            secondaryBtn.style.display = 'none'; // No need for Shop/Checkout link on the cart page itself
+        } else {
+            secondaryBtn.style.display = 'flex';
+            if (hasItems) {
+                secondaryBtn.textContent = 'Go to Checkout 🛒';
+            } else {
+                secondaryBtn.textContent = 'Explore Products 🛍️';
+            }
+        }
+    };
+
+    // Secondary Button action
+    document.getElementById('drawerShopBtn').addEventListener('click', function() {
+        const cartBadge = document.querySelector('.cart-count');
+        const hasItems = cartBadge && cartBadge.classList.contains('show') && parseInt(cartBadge.textContent) > 0;
+        
+        closeDrawer();
+        if (hasItems) {
+            window.location.href = 'cart.html';
+        } else {
+            // Redirect to index page catalog section
+            if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/maha')) {
+                const featuredSec = document.getElementById('featured');
+                if (featuredSec) {
+                    featuredSec.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                window.location.href = 'index.html#featured';
+            }
+        }
+    });
+
+    // 4. Urgency Countdown Timer (evergreen session storage timer)
+    const timerClock = document.getElementById('couponTimer');
+    let timeLeft = sessionStorage.getItem('coupon_timer_seconds');
+    
+    if (timeLeft === null) {
+        timeLeft = 900; // 15 minutes default
+    } else {
+        timeLeft = parseInt(timeLeft);
     }
 
-    if (closeBtn && announcementBar) {
-        closeBtn.addEventListener('click', function() {
-            document.body.classList.add('announcement-hidden');
-            localStorage.setItem('announcement-hidden', 'true');
+    const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
+    timerClock.textContent = formatTime(timeLeft);
+
+    const timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+            timeLeft = 900; // Reset for evergreen urgency loop
+        }
+        sessionStorage.setItem('coupon_timer_seconds', timeLeft);
+        timerClock.textContent = formatTime(timeLeft);
+    }, 1000);
+
+    // 5. Apply & Copy Click Handler
+    const applyBtn = document.getElementById('drawerApplyBtn');
+    applyBtn.addEventListener('click', function() {
+        if (applyBtn.classList.contains('success-applied')) return;
+
+        const couponCode = 'MAHARAJA50';
+        const couponInput = document.getElementById('couponCode');
+        const checkoutApplyBtn = document.getElementById('applyCouponBtn');
+        const isCartPage = couponInput && checkoutApplyBtn;
+
+        // Clipboard Copy function
+        const copyToClipboard = () => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(couponCode);
+            } else {
+                const el = document.createElement('textarea');
+                el.value = couponCode;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(el);
+                return success ? Promise.resolve() : Promise.reject();
+            }
+        };
+
+        copyToClipboard().then(() => {
+            applyBtn.classList.add('success-applied');
+            const successText = applyBtn.querySelector('.btn-success-text');
+            
+            if (isCartPage) {
+                successText.textContent = 'Applied Successfully! 🎉';
+                couponInput.value = couponCode;
+                
+                // Programmatic trigger of cart discount apply button
+                setTimeout(() => {
+                    checkoutApplyBtn.click();
+                    closeDrawer();
+                }, 400);
+            } else {
+                successText.textContent = 'Code Copied! ✨';
+            }
+
+            // Reset apply button state
+            setTimeout(() => {
+                applyBtn.classList.remove('success-applied');
+            }, 3000);
+        }).catch(err => {
+            console.error('Failed to copy coupon code:', err);
         });
-    }
+    });
 });
 
 // Category row overflow detection - center when fits, left when overflows

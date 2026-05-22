@@ -23,16 +23,12 @@
     <link rel="stylesheet" href="css/login-signup.css">
 </head>
 
-<div class="announcement-bar" id="announcementBar">
-        <span class="promo-text">🔥 MEGA SALE: Up to 50% OFF on Premium Dry Fruits <span class="separator">|</span> Use Code: <b>MAHARAJA10</b></span>
-        <button class="close-announcement" aria-label="Close announcement">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
 <body data-page="login">
-    
-
     <section class="auth-layout">
+        <!-- Background image container for desktop left/mobile top -->
+        <div class="auth-image-container">
+            <img src="assets/login-bg.png" alt="Premium Dry Fruits" class="auth-bg-image">
+        </div>
         <div class="auth-panel auth-panel-right">
             <div class="auth-panel-content">
 
@@ -111,19 +107,20 @@
 
                     <!-- STEP 6: Date of Birth -->
                     <div class="step" data-step="6">
-                        <p class="auth-info-text">Select your date of birth</p>
+                        <p class="auth-info-text">Select your date of birth <span class="optional-label">(Optional)</span></p>
                         <div class="auth-form-row">
                             <input type="date" placeholder="Date of Birth" id="dob">
                         </div>
                         <div class="auth-action-group">
                             <button id="dobNextBtn" class="primary-btn">Next</button>
+                            <button id="dobSkipBtn" class="skip-btn-onboarding">Skip this step</button>
                             <button class="back-btn">Back</button>
                         </div>
                     </div>
 
                     <!-- STEP 7: Discovery Source -->
                     <div class="step" data-step="7">
-                        <p class="auth-info-text">How did you hear about us?</p>
+                        <p class="auth-info-text">How did you hear about us? <span class="optional-label">(Optional)</span></p>
                         <div class="option-grid">
                             <button class="option-btn" data-value="Instagram">Instagram</button>
                             <button class="option-btn" data-value="Friend">Friend</button>
@@ -133,13 +130,14 @@
                         </div>
                         <input type="hidden" id="discoverySource">
                         <div class="auth-action-group">
+                            <button id="discoverySkipBtn" class="skip-btn-onboarding">Skip this step</button>
                             <button class="back-btn">Back</button>
                         </div>
                     </div>
 
                     <!-- STEP 8: Food Preference -->
                     <div class="step" data-step="8">
-                        <p class="auth-info-text">What do you like the most?</p>
+                        <p class="auth-info-text">What do you like the most? <span class="optional-label">(Optional)</span></p>
                         <div class="option-grid">
                             <button class="option-btn" data-value="Almonds">Almonds</button>
                             <button class="option-btn" data-value="Cashews">Cashews</button>
@@ -149,6 +147,7 @@
                         <input type="hidden" id="foodPreference">
                         <div class="auth-action-group">
                             <button id="startShoppingBtn" class="primary-btn">Start Shopping</button>
+                            <button id="foodSkipBtn" class="skip-btn-onboarding">Skip & Start Shopping</button>
                             <button class="back-btn">Back</button>
                         </div>
                     </div>

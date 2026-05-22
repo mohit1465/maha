@@ -51,15 +51,18 @@ class AuthFlow {
         // Step 6: Date of Birth
         this.dob = document.getElementById('dob');
         this.dobNextBtn = document.getElementById('dobNextBtn');
+        this.dobSkipBtn = document.getElementById('dobSkipBtn');
 
         // Step 7: Discovery Source
         this.discoverySource = document.getElementById('discoverySource');
         this.discoveryButtons = document.querySelectorAll('.step[data-step="7"] .option-btn');
+        this.discoverySkipBtn = document.getElementById('discoverySkipBtn');
 
         // Step 8: Food Preference
         this.foodPreference = document.getElementById('foodPreference');
         this.foodButtons = document.querySelectorAll('.step[data-step="8"] .option-btn');
         this.startShoppingBtn = document.getElementById('startShoppingBtn');
+        this.foodSkipBtn = document.getElementById('foodSkipBtn');
 
         // Recovery Flow
         this.forgotPasswordSection = document.getElementById('forgotPasswordSection');
@@ -127,17 +130,35 @@ class AuthFlow {
 
         // Step 6: Date of Birth
         this.dobNextBtn.addEventListener('click', () => this.handleDobSubmit());
+        if (this.dobSkipBtn) {
+            this.dobSkipBtn.addEventListener('click', () => {
+                this.profileData.dateOfBirth = "Skipped";
+                this.showStep(7);
+            });
+        }
 
         // Step 7: Discovery Source
         this.discoveryButtons.forEach(btn => {
             btn.addEventListener('click', () => this.handleDiscoverySelection(btn));
         });
+        if (this.discoverySkipBtn) {
+            this.discoverySkipBtn.addEventListener('click', () => {
+                this.profileData.discoverySource = "Skipped";
+                this.showStep(8);
+            });
+        }
 
         // Step 8: Food Preference
         this.foodButtons.forEach(btn => {
             btn.addEventListener('click', () => this.handleFoodSelection(btn));
         });
         this.startShoppingBtn.addEventListener('click', () => this.handleProfileCompletion());
+        if (this.foodSkipBtn) {
+            this.foodSkipBtn.addEventListener('click', () => {
+                this.profileData.foodPreference = "Skipped";
+                this.handleProfileCompletion();
+            });
+        }
 
         // Recovery Flow
         this.sendRecoveryBtn.addEventListener('click', () => this.handlePasswordReset());
@@ -214,20 +235,35 @@ class AuthFlow {
         try {
             const result = await AuthService.signInWithGoogle();
             if (result.success) {
-                // Check if profile is complete
+                // Check if profile is already complete
                 const profileResult = await AuthService.getUserProfile(result.user.uid);
-                if (profileResult.success && this.isProfileComplete(profileResult.data)) {
+                if (profileResult.success && profileResult.data && profileResult.data.profileCompleted) {
                     // Profile complete - go to homepage
                     window.location.href = 'index.html';
                 } else {
-                    // Profile incomplete - go to profile steps
-                    this.userEmail = result.user.email;
-                    this.showStep(5);
+                    // Profile not complete or doesn't exist - automatically fill from Google details
+                    const displayName = result.user.displayName || "";
+                    const email = result.user.email || "";
+                    const nameParts = displayName.trim().split(/\s+/);
+                    const firstName = nameParts[0] || "User";
+                    const lastName = nameParts.slice(1).join(" ") || "";
+
+                    const profileData = {
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        profileCompleted: true,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    await AuthService.saveUserProfile(result.user.uid, profileData);
+                    window.location.href = 'index.html';
                 }
             } else {
                 this.showError('Google sign-in failed. Please try again.');
             }
         } catch (error) {
+            console.error('Google sign-in exception:', error);
             this.showError('Google sign-in failed. Please try again.');
         } finally {
             this.showLoading(false);
@@ -388,12 +424,7 @@ class AuthFlow {
 
     handleDobSubmit() {
         const dob = this.dob.value;
-        if (!dob) {
-            this.showError('Please select your date of birth');
-            return;
-        }
-
-        this.profileData.dateOfBirth = dob;
+        this.profileData.dateOfBirth = dob || "Skipped";
         this.showStep(7);
     }
 
@@ -416,8 +447,7 @@ class AuthFlow {
 
     async handleProfileCompletion() {
         if (!this.profileData.foodPreference) {
-            this.showError('Please select your food preference');
-            return;
+            this.profileData.foodPreference = "Skipped";
         }
 
         this.showLoading(true);

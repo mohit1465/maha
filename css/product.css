@@ -164,12 +164,71 @@
 }
 
 .price-cut-badge {
-    font-size: 14px;
-    background: #1b1b1b;
+    font-size: 13px;
+    background: linear-gradient(135deg, #fc9220 0%, #DE0000 100%);
     color: #fff;
-    padding: 2px 10px;
+    padding: 3px 12px;
     border-radius: 20px;
-    font-weight: 600;
+    font-weight: 700;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(252, 110, 32, 0.15);
+    display: inline-flex;
+    align-items: center;
+}
+
+.price-cut-badge::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 30%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.45);
+    transform: rotate(30deg);
+    transition: none;
+    animation: shineBadge 3s infinite ease-in-out;
+}
+
+@keyframes shineBadge {
+    0% { left: -60%; }
+    15% { left: 120%; }
+    100% { left: 120%; }
+}
+
+.product-you-save {
+    font-size: 13px;
+    color: #047857;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1.5px dashed rgba(16, 185, 129, 0.5);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px !important;
+    width: fit-content;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.05);
+    transition: all 0.3s ease;
+}
+
+.product-you-save:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.7);
+}
+
+.product-you-save i {
+    font-size: 13px;
+    color: #059669;
+}
+
+.product-you-save .savings-value {
+    font-weight: 900;
+    font-size: 15px;
+    color: #047857;
+    margin-left: 2px;
 }
 
 .product-price label {
@@ -312,7 +371,7 @@
 .btn-primary:hover {
     background-color: #e55a10;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.4);
+    box-shadow: 0 4px 10px rgba(252, 110, 32, 0.18);
 }
 
 .btn-primary i {
@@ -490,7 +549,7 @@
     gap: 0;
     font-size: 14px;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(252, 110, 32, 0.3);
+    box-shadow: 0 2px 6px rgba(252, 110, 32, 0.12);
     white-space: nowrap;
     padding: 0;
 }
@@ -498,7 +557,7 @@
 .add-to-cart-btn:hover {
     background-color: #e55a10;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.4);
+    box-shadow: 0 4px 10px rgba(252, 110, 32, 0.18);
 }
 
 .add-to-cart-btn i {
@@ -672,7 +731,7 @@
     gap: 0;
     font-size: 13px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.2);
+    box-shadow: 0 4px 10px rgba(252, 110, 32, 0.1);
     white-space: nowrap;
     padding: 0;
 }
@@ -680,7 +739,7 @@
 .mobile-add-to-cart-btn:hover {
     background-color: #e55a10;
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(252, 110, 32, 0.3);
+    box-shadow: 0 5px 12px rgba(252, 110, 32, 0.15);
 }
 
 .mobile-add-to-cart-btn i {
