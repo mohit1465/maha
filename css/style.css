@@ -1,3 +1,4 @@
+
 /* ============================================
    CSS CUSTOM PROPERTIES (COLOR VARIABLES)
    ============================================ */
@@ -43,11 +44,43 @@
 }
 
 html {
-    font-family: "Bricolage Grotesque", sans-serif;
+    font-family: "Bricolage Grotesque", sans-serif !important;
 }
 
 body {
-    font-family: "Bricolage Grotesque", sans-serif;
+    font-family: "Bricolage Grotesque", sans-serif !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body {
+        cursor: url("../assets/Particles/Almond.png") 16 16, auto;
+    }
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+    body,
+    body.custom-cursor-active,
+    body.custom-cursor-active * {
+        cursor: auto !important;
+    }
+}
+
+body.custom-cursor-active,
+body.custom-cursor-active * {
+    cursor: none !important;
+}
+
+#customCursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    z-index: 2147483647;
+    transform: translate(calc(-50% + 8px), calc(-50% + 8px));
+    display: none;
+    transition: transform 0.08s ease-out;
 }
 
 h1,
@@ -61,7 +94,7 @@ a,
 button,
 li,
 span {
-    font-family: "Bricolage Grotesque", sans-serif;
+    font-family: "Bricolage Grotesque", sans-serif !important;
 }
 
 /* Section Styles */
