@@ -19,7 +19,7 @@
     </script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -452,6 +452,9 @@
             <div class="nav-item" data-tab="users">
                 <i class="fas fa-users"></i> Users
             </div>
+            <div class="nav-item" data-tab="coupons">
+                <i class="fas fa-ticket-alt"></i> Coupons
+            </div>
             <a href="index.html" class="nav-item"
                 style="margin-top: auto; border-top: 1px solid var(--border-color); border-radius: 0;">
                 <i class="fas fa-external-link-alt"></i> View Site
@@ -556,6 +559,55 @@
                     </div>
                 </div>
             </section>
+        
+            <!-- Coupons Tab -->
+            <section id="couponsTab" class="hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Coupons & Promo Codes</h2>
+                        <button class="btn btn-primary" id="addCouponBtn">
+                            <i class="fas fa-plus"></i> Add Coupon
+                        </button>
+                    </div>
+
+                    <div id="couponFormContainer" class="hidden"
+                        style="margin-bottom: 2rem; padding: 1.5rem; background: #fafafa; border-radius: 12px; border: 1px dashed var(--primary-color);">
+                        <h3 id="couponFormTitle" style="margin-bottom: 1rem;">Add New Coupon</h3>
+                        <form id="couponForm">
+                            <input type="hidden" id="couponId">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Coupon Code (Uppercase)</label>
+                                    <input type="text" id="couponCodeInput" required placeholder="e.g. MAHARAJA20" style="text-transform: uppercase;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Discount Percentage (%)</label>
+                                    <input type="number" id="couponDiscount" required min="1" max="100" placeholder="e.g. 20">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Minimum Order Value (₹)</label>
+                                    <input type="number" id="couponMinOrder" required min="0" placeholder="e.g. 500">
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date</label>
+                                    <input type="date" id="couponExpiry" required>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                                <button type="button" class="btn btn-outline" id="cancelCouponBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Coupon</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="couponList" class="grid-list">
+                        <p style="text-align: center; color: #666; padding: 2rem;">Loading coupons...</p>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -581,22 +633,25 @@
     <script type="module" src="js/admin.js"></script>
     <script type="module" src="js/update-products-seo.js"></script>
     <script>
-        // Add SEO update buttons to admin panel
+        // Add SEO & Data update buttons to admin panel
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.querySelector('.sidebar');
             if (sidebar) {
                 const seoSection = document.createElement('div');
                 seoSection.innerHTML = `
                     <div style="padding: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">SEO Tools</h4>
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">SEO & Data Tools</h4>
                         <button onclick="updateProductsSEO()" style="width: 100%; margin-bottom: 0.5rem; padding: 0.75rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
                             🚀 Update All Products with SEO Content
                         </button>
-                        <button onclick="addMissingSEOProducts()" style="width: 100%; padding: 0.75rem; background: var(--success-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        <button onclick="addMissingSEOProducts()" style="width: 100%; margin-bottom: 0.5rem; padding: 0.75rem; background: var(--success-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
                             ➕ Add Missing SEO Products
                         </button>
+                        <button onclick="seedRandomReviews()" style="width: 100%; padding: 0.75rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
+                            ⭐ Seed 2-8 Reviews on All Products
+                        </button>
                         <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
-                            ⚠️ This will update product titles, descriptions, and SEO metadata for all products.
+                            ⚠️ These tools will modify product listings and customer reviews in the live database.
                         </div>
                     </div>
                 `;

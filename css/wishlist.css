@@ -13,7 +13,7 @@
 
 /* Breadcrumb Styles */
 .wishlist-section .breadcrumb {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     margin-bottom: 24px;
     display: flex;
@@ -48,7 +48,7 @@
 
 /* Page Title */
 .page-title {
-    font-size: 32px;
+    font-size: var(--text-h2);
     font-weight: 700;
     color: #323232;
     margin-bottom: 32px;
@@ -72,7 +72,7 @@
     margin-bottom: 8px;
     font-weight: 600;
     color: #888;
-    font-size: 13px;
+    font-size: var(--text-small);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -141,20 +141,20 @@
 }
 
 .wishlist-item-name {
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 600;
     color: #323232;
     margin-bottom: 2px;
 }
 
 .wishlist-item-category {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #999;
 }
 
 /* Price Column */
 .wishlist-item-price {
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 700;
     color: #1b1b1b;
     text-align: left;
@@ -167,7 +167,7 @@
 }
 
 .stock-status {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     font-weight: 600;
     color: #27ae60;
     background: #e8f5e9;
@@ -182,7 +182,7 @@
     border: none;
     padding: 6px 12px;
     border-radius: 15px;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -201,7 +201,7 @@
     border: none;
     padding: 6px 14px;
     border-radius: 15px;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -238,7 +238,7 @@
     border: none;
     color: #7e7e7e;
     cursor: pointer;
-    font-size: 16px;
+    font-size: var(--text-body);
     transition: all 0.2s ease;
     padding: 8px 10px;
     border-radius: 12px;
@@ -296,7 +296,7 @@
 
     .wishlist-item-price {
         text-align: left;
-        font-size: 18px;
+        font-size: var(--text-body-lg);
         margin-bottom: 0;
     }
 
@@ -313,7 +313,7 @@
     .wishlist-add-btn,
     .wishlist-buy-btn {
         padding: 10px 20px;
-        font-size: 14px;
+        font-size: var(--text-small);
         border-radius: 20px;
     }
 
@@ -329,7 +329,7 @@
 
     .remove-wishlist-item {
         padding: 10px 12px;
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .wishlist-item-stock {
@@ -361,21 +361,21 @@
     }
 
     .wishlist-item-name {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .wishlist-item-category {
-        font-size: 11px;
+        font-size: var(--text-tiny);
     }
 
     .wishlist-item-price {
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .wishlist-add-btn,
     .wishlist-buy-btn {
         padding: 8px 16px;
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 
     .wishlist-buy-btn {
@@ -384,10 +384,10 @@
 
     .remove-wishlist-item {
         padding: 8px 10px;
-        font-size: 12px;
+        font-size: var(--text-tiny);
     }
 
     .breadcrumb {
-        font-size: 12px;
+        font-size: var(--text-tiny);
     }
 }

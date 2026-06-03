@@ -1,6 +1,6 @@
 import cartService from './cart-service.js';
 import { auth, db } from './firebase-config.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getProductImageUrl } from './image-helper.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -296,35 +296,88 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!applyBtn) return;
 
-        applyBtn.onclick = () => {
+        applyBtn.onclick = async () => {
             const code = couponInput.value.trim().toUpperCase();
-            messageDiv.className = 'coupon-message';
             
             if (!code) {
                 messageDiv.textContent = 'Please enter a code';
-                messageDiv.classList.add('error');
+                messageDiv.className = 'coupon-message error';
                 return;
             }
 
-            // Simple demo coupon logic
-            const coupons = {
-                'MAHARAJA10': 10,
-                'WELCOME20': 20,
-                'FESTIVE15': 15,
-                'MAHARAJA50': 50,
-                'FREESHIP': 0 // Just example
-            };
+            applyBtn.disabled = true;
+            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
 
-            if (coupons.hasOwnProperty(code)) {
-                appliedDiscount = coupons[code];
+            try {
+                // Query Firestore coupons collection where code == input
+                const q = query(collection(db, "coupons"), where("code", "==", code));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    appliedDiscount = 0;
+                    messageDiv.textContent = 'Invalid coupon code';
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                    return;
+                }
+
+                const couponDoc = querySnapshot.docs[0];
+                const couponData = couponDoc.data();
+
+                // Validate if active
+                if (couponData.active !== true) {
+                    appliedDiscount = 0;
+                    messageDiv.textContent = 'This coupon is no longer active';
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                    return;
+                }
+
+                // Validate expiryDate
+                let expiryDateObj = null;
+                if (couponData.expiryDate) {
+                    if (couponData.expiryDate.seconds) {
+                        expiryDateObj = new Date(couponData.expiryDate.seconds * 1000);
+                    } else {
+                        expiryDateObj = new Date(couponData.expiryDate);
+                    }
+                }
+
+                if (expiryDateObj && expiryDateObj < new Date()) {
+                    appliedDiscount = 0;
+                    messageDiv.textContent = 'This coupon has expired';
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                    return;
+                }
+
+                // Validate minOrder
+                const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+                const minOrder = Number(couponData.minOrder || 0);
+
+                if (subtotal < minOrder) {
+                    appliedDiscount = 0;
+                    messageDiv.textContent = `Minimum order amount of ₹${minOrder} required to use this coupon`;
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                    return;
+                }
+
+                // Apply coupon discount
+                appliedDiscount = Number(couponData.discountPercent || 0);
                 messageDiv.textContent = `Coupon applied! ${appliedDiscount}% discount added.`;
-                messageDiv.classList.add('success');
+                messageDiv.className = 'coupon-message success';
                 updateCheckoutTotals();
-            } else {
+
+            } catch (err) {
+                console.error("Error validating coupon:", err);
                 appliedDiscount = 0;
-                messageDiv.textContent = 'Invalid coupon code';
-                messageDiv.classList.add('error');
+                messageDiv.textContent = 'Error applying coupon. Please try again.';
+                messageDiv.className = 'coupon-message error';
                 updateCheckoutTotals();
+            } finally {
+                applyBtn.disabled = false;
+                applyBtn.innerHTML = 'Apply';
             }
         };
     }

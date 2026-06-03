@@ -101,6 +101,77 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
         } else {
             filteredOrders.forEach(order => {
+                let step = 1;
+                const statusLower = (order.status || '').toLowerCase();
+                if (statusLower === 'processing' || statusLower === 'pending' || statusLower === 'order placed') {
+                    step = 1;
+                } else if (statusLower === 'confirmed' || statusLower === 'order confirmed') {
+                    step = 2;
+                } else if (statusLower === 'shipped') {
+                    step = 3;
+                } else if (statusLower === 'out for delivery' || statusLower === 'out_for_delivery') {
+                    step = 4;
+                } else if (statusLower === 'delivered') {
+                    step = 5;
+                }
+                
+                let progressPercent = 0;
+                if (step === 2) progressPercent = 25;
+                else if (step === 3) progressPercent = 50;
+                else if (step === 4) progressPercent = 75;
+                else if (step === 5) progressPercent = 100;
+
+                let stepperHtml = '';
+                if (statusLower === 'cancelled') {
+                    stepperHtml = `
+                        <div style="background: #fff5f5; color: #e53e3e; border-radius: 8px; padding: 10px 15px; margin: 15px 0; font-weight: 600; text-align: center; font-size: 13px; border: 1px solid #fed7d7; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-times-circle" style="font-size: 16px;"></i> This order has been cancelled.
+                        </div>
+                    `;
+                } else {
+                    stepperHtml = `
+                        <div class="order-stepper" style="display: flex; justify-content: space-between; position: relative; margin: 25px 0 20px 0; padding: 0 5px;">
+                            <div class="stepper-line" style="position: absolute; top: 12px; left: 8%; right: 8%; height: 3px; background: #e2e8f0; z-index: 1;"></div>
+                            <div class="stepper-line-active" style="position: absolute; top: 12px; left: 8%; width: calc(${progressPercent}% * 0.84); height: 3px; background: #fc6e20; z-index: 1; transition: width 0.5s ease;"></div>
+                            
+                            <div style="text-align: center; z-index: 2; flex: 1;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${step >= 1 ? '#fc6e20' : '#cbd5e1'}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 9px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    ${step >= 1 ? '<i class="fas fa-check" style="font-size:8px;"></i>' : '1'}
+                                </div>
+                                <div style="font-size: 10px; font-weight: ${step >= 1 ? '600' : '400'}; color: ${step >= 1 ? '#fc6e20' : '#64748b'};">Placed</div>
+                            </div>
+                            
+                            <div style="text-align: center; z-index: 2; flex: 1;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${step >= 2 ? '#fc6e20' : '#cbd5e1'}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 9px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    ${step >= 2 ? '<i class="fas fa-check" style="font-size:8px;"></i>' : '2'}
+                                </div>
+                                <div style="font-size: 10px; font-weight: ${step >= 2 ? '600' : '400'}; color: ${step >= 2 ? '#fc6e20' : '#64748b'};">Confirmed</div>
+                            </div>
+                            
+                            <div style="text-align: center; z-index: 2; flex: 1;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${step >= 3 ? '#fc6e20' : '#cbd5e1'}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 9px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    ${step >= 3 ? '<i class="fas fa-check" style="font-size:8px;"></i>' : '3'}
+                                </div>
+                                <div style="font-size: 10px; font-weight: ${step >= 3 ? '600' : '400'}; color: ${step >= 3 ? '#fc6e20' : '#64748b'};">Shipped</div>
+                            </div>
+                            
+                            <div style="text-align: center; z-index: 2; flex: 1;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${step >= 4 ? '#fc6e20' : '#cbd5e1'}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 9px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    ${step >= 4 ? '<i class="fas fa-check" style="font-size:8px;"></i>' : '4'}
+                                </div>
+                                <div style="font-size: 10px; font-weight: ${step >= 4 ? '600' : '400'}; color: ${step >= 4 ? '#fc6e20' : '#64748b'};">Out for Delivery</div>
+                            </div>
+                            
+                            <div style="text-align: center; z-index: 2; flex: 1;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: ${step >= 5 ? '#22c55e' : '#cbd5e1'}; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 9px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    ${step >= 5 ? '<i class="fas fa-check" style="font-size:8px;"></i>' : '5'}
+                                </div>
+                                <div style="font-size: 10px; font-weight: ${step >= 5 ? '600' : '400'}; color: ${step >= 5 ? '#22c55e' : '#64748b'};">Delivered</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 html += `
                 <div class="order-card" style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: left; border: 1px solid #eee;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid #f5f5f5; padding-bottom: 15px;">
@@ -126,7 +197,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         `).join('')}
                     </div>
                     
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f5f5f5; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    ${stepperHtml}
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                         <div>
                             <div style="color: #888; font-size: 12px; text-transform: uppercase;">Payment Method</div>
                             <div style="font-size: 14px; font-weight: 500; color: #323232;">
@@ -134,9 +207,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ${order.payment?.paymentId ? `<br><small style="color: #999; font-size: 11px;">ID: ${order.payment.paymentId}</small>` : ''}
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="color: #666; font-size: 14px;">Total Amount</div>
-                            <div style="font-size: 18px; font-weight: 700; color: #fc6e20;">₹${order.total.toLocaleString('en-IN')}</div>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-left: auto;">
+                            <button onclick="window.downloadInvoice('${btoa(JSON.stringify(order))}')" class="btn-download-invoice" style="background: white; border: 1.5px solid #fc6e20; color: #fc6e20; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                                <i class="fas fa-file-pdf"></i> Download Invoice
+                            </button>
+                            <div style="text-align: right;">
+                                <div style="color: #666; font-size: 13px;">Total Amount</div>
+                                <div style="font-size: 18px; font-weight: 700; color: #fc6e20;">₹${order.total.toLocaleString('en-IN')}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -206,3 +284,184 @@ document.addEventListener('DOMContentLoaded', function () {
         ordersContainer.style.textAlign = 'center';
     }
 });
+
+// --- DYNAMIC INVOICE DOWNLOADER (jspdf) ---
+async function loadJsPDF() {
+    if (window.jspdf) return window.jspdf;
+    
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = () => resolve(window.jspdf);
+        script.onerror = () => reject(new Error('Failed to load jsPDF'));
+        document.head.appendChild(script);
+    });
+}
+
+window.downloadInvoice = async function(orderB64) {
+    const order = JSON.parse(atob(orderB64));
+    console.log("Generating invoice for order:", order);
+    
+    try {
+        const jspdfModule = await loadJsPDF();
+        const { jsPDF } = jspdfModule;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        
+        const primaryColor = [252, 110, 32];
+        const darkColor = [50, 50, 50];
+        const grayColor = [128, 128, 128];
+        
+        // 1. Header (Brand Logo / Name)
+        doc.setFillColor(255, 248, 242);
+        doc.rect(0, 0, 210, 45, 'F');
+        
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.text("MAHARAJA DRY FRUITS", 20, 20);
+        
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(10);
+        doc.text("Premium Taste Without Premium Price", 20, 25);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text("Hisar, Haryana - 125001", 20, 31);
+        doc.text("Email: support@maharajadryfruits.com | Contact: +91 99999 99999", 20, 36);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(20);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("INVOICE", 150, 20);
+        
+        // 2. Order Metadata Info
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.text(`Invoice No: INV-${order.orderId}`, 150, 26);
+        const orderDate = new Date(order.timestamp).toLocaleDateString('en-IN');
+        doc.text(`Date: ${orderDate}`, 150, 31);
+        doc.text(`Status: Paid`, 150, 36);
+        
+        doc.setDrawColor(240, 240, 240);
+        doc.setLineWidth(0.5);
+        doc.line(20, 45, 190, 45);
+        
+        // 3. Billing & Shipping Info
+        const shipping = order.shipping || {};
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("BILLED TO:", 20, 56);
+        
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text(shipping.name || "Customer", 20, 62);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text([
+            shipping.address || "N/A",
+            `${shipping.city || ""}, ${shipping.state || ""} - ${shipping.pin || ""}`,
+            `Phone: ${shipping.phone || "N/A"}`,
+            `Email: ${shipping.email || order.email || "N/A"}`
+        ], 20, 67);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("PAYMENT INFO:", 120, 56);
+        
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        const payment = order.payment || {};
+        doc.text([
+            `Method: ${payment.method || "Cash on Delivery"}`,
+            `Status: ${payment.status || "Paid"}`,
+            payment.paymentId ? `Transaction ID: ${payment.paymentId}` : "Transaction ID: N/A"
+        ], 120, 62);
+        
+        doc.line(20, 92, 190, 92);
+        
+        // 4. Items Table
+        doc.setFillColor(245, 245, 245);
+        doc.rect(20, 98, 170, 8, 'F');
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        
+        doc.text("Item Description", 23, 103);
+        doc.text("Size", 90, 103);
+        doc.text("Qty", 120, 103);
+        doc.text("Unit Price", 140, 103);
+        doc.text("Total", 170, 103);
+        
+        let y = 112;
+        const items = order.items || [];
+        
+        doc.setFont('helvetica', 'normal');
+        items.forEach(item => {
+            doc.text(item.name || "Product", 23, y);
+            doc.text(item.size || "250g", 90, y);
+            doc.text(String(item.quantity), 120, y);
+            doc.text(`₹${item.price.toLocaleString('en-IN')}`, 140, y);
+            const totalItemPrice = item.price * item.quantity;
+            doc.text(`₹${totalItemPrice.toLocaleString('en-IN')}`, 170, y);
+            
+            doc.setDrawColor(245, 245, 245);
+            doc.line(20, y + 3, 190, y + 3);
+            y += 10;
+        });
+        
+        const subtotal = payment.subtotal || items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const discount = payment.discount || 0;
+        const gstAmount = parseFloat(((order.total) * 0.05).toFixed(2));
+        
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.text("Subtotal:", 130, y);
+        doc.text(`₹${subtotal.toLocaleString('en-IN')}`, 170, y);
+        
+        if (discount > 0) {
+            y += 6;
+            doc.text("Discount Applied:", 130, y);
+            doc.text(`-₹${discount.toLocaleString('en-IN')}`, 170, y);
+        }
+        
+        y += 6;
+        doc.text("GST (5% Included):", 130, y);
+        doc.text(`₹${gstAmount.toLocaleString('en-IN')}`, 170, y);
+        
+        y += 8;
+        doc.setFillColor(255, 248, 242);
+        doc.rect(125, y - 5, 65, 8, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("Grand Total:", 130, y);
+        doc.text(`₹${order.total.toLocaleString('en-IN')}`, 170, y);
+        
+        y += 25;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.text("Thank you for shopping with Maharaja!", 105, y, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        doc.text("This is a computer-generated invoice and requires no physical signature.", 105, y + 5, { align: 'center' });
+        
+        doc.save(`Invoice-${order.orderId}.pdf`);
+        
+    } catch (err) {
+        console.error("Failed to generate PDF:", err);
+        alert("Failed to generate PDF invoice. Please check console logs.");
+    }
+};

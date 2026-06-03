@@ -15,7 +15,7 @@
 
 /* Breadcrumb Styles */
 .about-section .breadcrumb {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     margin-bottom: 24px;
     display: flex;
@@ -49,7 +49,7 @@
 
 /* Page Title */
 .page-title {
-    font-size: 42px;
+    font-size: var(--text-h1);
     font-weight: 800;
     color: var(--text-color);
     margin-bottom: 40px;
@@ -72,7 +72,7 @@
 }
 
 .intro-text {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     line-height: 1.8;
     color: #555;
     margin-top: 24px;
@@ -104,7 +104,7 @@
 
 .mission-card h3,
 .vision-card h3 {
-    font-size: 28px;
+    font-size: var(--text-h3);
     font-weight: 700;
     color: var(--text-color);
     margin-bottom: 20px;
@@ -112,7 +112,7 @@
 
 .mission-card p,
 .vision-card p {
-    font-size: 16px;
+    font-size: var(--text-body);
     line-height: 1.7;
     color: #666;
 }
@@ -157,7 +157,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: var(--text-h2);
     margin: 0 auto 24px;
     transition: all 0.4s ease;
 }
@@ -169,14 +169,14 @@
 }
 
 .value-item h3 {
-    font-size: 20px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: var(--text-color);
     margin-bottom: 15px;
 }
 
 .value-item p {
-    font-size: 14px;
+    font-size: var(--text-small);
     line-height: 1.6;
     color: #777;
 }
@@ -213,7 +213,7 @@
 }
 
 .stat-number {
-    font-size: 42px;
+    font-size: var(--text-h1);
     font-weight: 800;
     background: var(--gradient-brand);
     -webkit-background-clip: text;
@@ -224,7 +224,7 @@
 }
 
 .stat-label {
-    font-size: 16px;
+    font-size: var(--text-body);
     color: var(--text-color);
     font-weight: 600;
     opacity: 0.8;
@@ -278,26 +278,26 @@
     content: '\f007';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 40px;
+    font-size: var(--text-h1);
     color: #ccc;
 }
 
 .team-member h3 {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: var(--text-color);
     margin-bottom: 6px;
 }
 
 .team-role {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #fc6e20;
     font-weight: 600;
 }
 
 /* Section Title */
 .section-title {
-    font-size: 32px;
+    font-size: var(--text-h2);
     font-weight: 800;
     color: var(--text-color);
     margin-bottom: 20px;
@@ -312,7 +312,7 @@
     }
 
     .page-title {
-        font-size: 32px;
+        font-size: var(--text-h2);
         margin-bottom: 30px;
     }
 
@@ -329,7 +329,7 @@
     }
 
     .intro-text {
-        font-size: 16px;
+        font-size: var(--text-body);
         line-height: 1.7;
     }
 
@@ -346,12 +346,12 @@
 
     .mission-card h3,
     .vision-card h3 {
-        font-size: 24px;
+        font-size: var(--text-h4);
     }
 
     .mission-card p,
     .vision-card p {
-        font-size: 15px;
+        font-size: var(--text-body);
     }
 
     .values-grid {
@@ -367,7 +367,7 @@
     .value-icon {
         width: 60px;
         height: 60px;
-        font-size: 24px;
+        font-size: var(--text-h4);
         border-radius: 15px;
     }
 
@@ -382,7 +382,7 @@
     }
 
     .stat-number {
-        font-size: 32px;
+        font-size: var(--text-h2);
     }
 
     .team-grid {
@@ -402,18 +402,18 @@
     }
 
     .team-avatar::after {
-        font-size: 30px;
+        font-size: var(--text-h3);
     }
 
     .section-title {
-        font-size: 24px;
+        font-size: var(--text-h4);
         margin-bottom: 15px;
     }
 }
 
 @media (max-width: 480px) {
     .page-title {
-        font-size: 28px;
+        font-size: var(--text-h3);
     }
 
     .intro-section,

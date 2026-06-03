@@ -3,10 +3,24 @@ import cartService from './cart-service.js';
 import router from './router.js';
 import { getProductImageUrl } from './image-helper.js';
 
-/**
- * Product Card Renderer
- * Generates HTML for product cards with rich interactions.
- */
+function renderStarsHTML(rating) {
+    let html = '';
+    const fullStars = Math.floor(rating);
+    const hasHalf = (rating - fullStars) >= 0.3 && (rating - fullStars) <= 0.8;
+    const extraFull = (rating - fullStars) > 0.8 ? 1 : 0;
+    
+    const finalFullStars = fullStars + extraFull;
+    for (let i = 1; i <= 5; i++) {
+        if (i <= finalFullStars) {
+            html += '<i class="fas fa-star"></i>';
+        } else if (i === finalFullStars + 1 && hasHalf) {
+            html += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+            html += '<i class="far fa-star"></i>';
+        }
+    }
+    return html;
+}
 
 export function createProductCard(product) {
     // Generate SEO-friendly URL using router
@@ -78,6 +92,20 @@ export function createProductCard(product) {
         savingsPillHtml = `<div class="card-savings-pill gold-pill" onclick="navigateToProduct('${product.name}', '${product.id}')"><i class="fa-solid ${iconClass}"></i>${label}</div>`;
     }
 
+    // Generate star rating HTML if the product has ratings
+    let ratingHtml = '';
+    if (product.reviewCount && product.reviewCount > 0) {
+        const avg = product.averageRating || 0;
+        ratingHtml = `
+            <div class="card-rating" onclick="navigateToProduct('${product.name}', '${product.id}')">
+                <div class="card-stars">
+                    ${renderStarsHTML(avg)}
+                </div>
+                <span class="card-rating-text">${avg.toFixed(1)} <span class="card-rating-count">(${product.reviewCount})</span></span>
+            </div>
+        `;
+    }
+
     // Construct HTML
     const cardHtml = `
         <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}" data-original-price="${product.originalPrice || ''}">
@@ -92,6 +120,7 @@ export function createProductCard(product) {
             <div class="card-content">
                 <div class="card-title" title="${product.name}" onclick="navigateToProduct('${product.name}', '${product.id}')">${product.shortTitle || product.name}</div>
                 <div class="card-hindi-name" onclick="navigateToProduct('${product.name}', '${product.id}')">${product.hindiName || 'Premium Quality'}</div>
+                ${ratingHtml}
                 <div class="card-description">${product.shortDescription || 'Premium quality ' + product.category.toLowerCase() + ' with rich nutrients and great taste.'}</div>
                 
                 <div class="card-options">

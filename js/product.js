@@ -1,7 +1,7 @@
 // Product Section Functionality
-// Product Section Functionality
-import { db } from './firebase-config.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { db, auth } from './firebase-config.js';
+import { doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { createProductCard } from './card-renderer.js';
 import cartService from './cart-service.js';
 import router from './router.js';
@@ -62,6 +62,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 setupQuantitySelector(product);
                 setupActionButtons(product);
                 setupFixedActionBar(product);
+                setupImageZoom();
+                setupAdditionalInteractions();
 
                 // Load similar products
                 renderSimilarProducts(product.category, productId);
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (breadcrumbCurrent) {
                     breadcrumbCurrent.textContent = product.shortTitle || product.name;
                 }
+                initReviews(product);
             } else {
                 console.log("No such product!");
                 document.querySelector('.product-container').innerHTML = '<div class="error-msg">Product not found</div>';
@@ -254,10 +257,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (allImages.length > 0) {
             // Set main image
             const firstImgUrl = allImages[0];
-            mainImage.style.backgroundImage = `url('${firstImgUrl}')`;
-            mainImage.style.backgroundSize = 'contain';
-            mainImage.style.backgroundRepeat = 'no-repeat';
-            mainImage.style.backgroundPosition = 'center';
+            mainImage.src = firstImgUrl;
+            mainImage.alt = product.name;
 
             // Create thumbnails
             allImages.forEach((imgUrl, index) => {
@@ -268,7 +269,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 thumb.addEventListener('click', function () {
                     document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
-                    mainImage.style.backgroundImage = `url('${imgUrl}')`;
+                    mainImage.src = imgUrl;
                 });
 
                 thumbnailsContainer.appendChild(thumb);
@@ -281,22 +282,38 @@ document.addEventListener('DOMContentLoaded', async function () {
         priceElements.forEach(element => {
             const isMainPrice = element.classList.contains('product-price');
             
-            if (isMainPrice && originalPrice && originalPrice > price) {
-                const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
-                element.innerHTML = `
-                    <div class="product-price-container">
-                        <span class="product-original-price">₹ ${originalPrice.toLocaleString('en-IN')}</span>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            ₹ ${price.toLocaleString('en-IN')} 
-                            <span class="price-cut-badge"><i class="fa-solid fa-percent" style="font-size: 0.9em; margin-right: 4px;"></i>${discountPercent}% OFF</span>
+            if (isMainPrice) {
+                if (originalPrice && originalPrice > price) {
+                    const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
+                    element.innerHTML = `
+                        <div class="price-card">
+                            <div class="price-row">
+                                <span class="price-actual">₹${price.toLocaleString('en-IN')}</span>
+                                <span class="price-original">₹${originalPrice.toLocaleString('en-IN')}</span>
+                                <span class="price-discount-badge">${discountPercent}% OFF</span>
+                            </div>
+                            <div class="price-footer">
+                                <div class="price-savings">
+                                    <i class="fa-solid fa-ticket"></i> You Save: <span class="savings-value">₹${(originalPrice - price).toLocaleString('en-IN')}</span>
+                                </div>
+                                <span class="tax-info">Inclusive of all taxes</span>
+                            </div>
                         </div>
-                        <div class="product-you-save">
-                            <i class="fa-solid fa-ticket" style="margin-right: 5px;"></i>You Save: <span class="savings-value">₹ ${(originalPrice - price).toLocaleString('en-IN')}</span>
+                    `;
+                } else {
+                    element.innerHTML = `
+                        <div class="price-card">
+                            <div class="price-row">
+                                <span class="price-actual">₹${price.toLocaleString('en-IN')}</span>
+                            </div>
+                            <div class="price-footer">
+                                <span class="tax-info">Inclusive of all taxes</span>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             } else {
-                element.innerHTML = `<label>Just At </label>₹ ${price.toLocaleString('en-IN')} INR`;
+                element.innerHTML = `<span class="at-text">At</span> ₹${price.toLocaleString('en-IN')}`;
             }
         });
     }
@@ -492,6 +509,80 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
+    function setupImageZoom() {
+        const container = document.getElementById('zoomContainer');
+        const img = document.getElementById('mainImage');
+        
+        if (!container || !img) return;
+        
+        // Disable hover zoom on touch viewports or small devices
+        const isZoomEnabled = () => window.innerWidth >= 1024;
+
+        container.addEventListener('mousemove', function(e) {
+            if (!isZoomEnabled()) return;
+            const rect = container.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            img.style.transformOrigin = `${x}% ${y}%`;
+            img.style.transform = 'scale(2.2)'; // 2.2x zoom feels extra premium
+        });
+        
+        container.addEventListener('mouseleave', function() {
+            img.style.transform = 'scale(1)';
+            img.style.transformOrigin = 'center center';
+        });
+    }
+
+    function setupAdditionalInteractions() {
+        // Copy coupon handler
+        const copyBtn = document.getElementById('inlineCopyCouponBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                const couponCode = 'MAHARAJA50';
+                const originalHTML = copyBtn.innerHTML;
+                
+                const performCopyFeedback = () => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHTML;
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                };
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(couponCode)
+                        .then(performCopyFeedback)
+                        .catch(err => console.error('Clipboard copy failed: ', err));
+                } else {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = couponCode;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        performCopyFeedback();
+                    } catch (err) {
+                        console.error('Fallback copy failed: ', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
+
+        // Rating summary smooth scroll to reviews
+        const ratingSummary = document.getElementById('productRatingSummary');
+        if (ratingSummary) {
+            ratingSummary.addEventListener('click', function() {
+                const reviewsSection = document.querySelector('.reviews-section');
+                if (reviewsSection) {
+                    reviewsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+    }
+
     function syncQuantity(value) {
         const inputs = document.querySelectorAll('.quantity-input, .action-bar-quantity-input, .mobile-quantity-input');
         inputs.forEach(input => input.value = value);
@@ -629,12 +720,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 // Show success feedback - use just checkmark to avoid squeezing circular buttons
                 const originalText = this.innerHTML;
-                const isIconOnly = this.classList.contains('add-to-cart-btn') || this.classList.contains('mobile-add-to-cart-btn') || this.classList.contains('btn-primary');
+                const isIconOnly = this.classList.contains('add-to-cart-btn') || this.classList.contains('mobile-add-to-cart-btn') || this.classList.contains('btn-icon-only');
                 
                 if (isIconOnly) {
                     this.innerHTML = '<i class="fas fa-check"></i>';
                 } else {
-                    this.innerHTML = '<i class="fas fa-check"></i> Added';
+                    this.innerHTML = '<i class="fas fa-check"></i> Added!';
                 }
                 
                 this.style.backgroundColor = '#4CAF50';
@@ -646,6 +737,421 @@ document.addEventListener('DOMContentLoaded', async function () {
                     this.style.borderColor = '';
                 }, 2000);
             });
+        });
+    }
+
+    // --- DYNAMIC REVIEWS & STAR RATINGS ---
+    function renderStarsHTML(rating) {
+        let html = '';
+        const fullStars = Math.floor(rating);
+        const hasHalf = (rating - fullStars) >= 0.3 && (rating - fullStars) <= 0.8;
+        const extraFull = (rating - fullStars) > 0.8 ? 1 : 0;
+        
+        const finalFullStars = fullStars + extraFull;
+        for (let i = 1; i <= 5; i++) {
+            if (i <= finalFullStars) {
+                html += '<i class="fas fa-star"></i>';
+            } else if (i === finalFullStars + 1 && hasHalf) {
+                html += '<i class="fas fa-star-half-alt"></i>';
+            } else {
+                html += '<i class="far fa-star"></i>';
+            }
+        }
+        return html;
+    }
+
+    function updateSchemaSEO(product, avgRating, totalReviews, reviewsList) {
+        let schemaScript = document.querySelector('script[type="application/ld+json"]');
+        if (!schemaScript) {
+            schemaScript = document.createElement('script');
+            schemaScript.type = 'application/ld+json';
+            document.head.appendChild(schemaScript);
+        }
+
+        const reviewsArray = reviewsList.map(r => ({
+            "@type": "Review",
+            "author": {
+                "@type": "Person",
+                "name": r.userName
+            },
+            "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": String(r.rating)
+            },
+            "reviewBody": r.reviewText
+        }));
+
+        const schemaData = {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": product.name,
+            "image": product.images ? Object.values(product.images) : [],
+            "description": product.seoLongDescription || product.description || "",
+            "brand": {
+                "@type": "Brand",
+                "name": "Maharaja Dry Fruits"
+            },
+            "category": `Dry Fruits > ${product.category || ""}`,
+            "offers": {
+                "@type": "AggregateOffer",
+                "priceCurrency": "INR",
+                "lowPrice": String(product.price || 0),
+                "highPrice": String(product.originalPrice || product.price || 0),
+                "offerCount": "1",
+                "availability": "https://schema.org/InStock"
+            }
+        };
+
+        if (totalReviews > 0) {
+            schemaData.aggregateRating = {
+                "@type": "AggregateRating",
+                "ratingValue": String(avgRating),
+                "reviewCount": String(totalReviews),
+                "bestRating": "5",
+                "worstRating": "1"
+            };
+            schemaData.review = reviewsArray;
+        }
+
+        schemaScript.textContent = JSON.stringify(schemaData, null, 4);
+    }
+
+    async function loadReviewsList(productId, product) {
+        const reviewsContainer = document.getElementById('dynamicReviewsContainer');
+        const avgRatingNumber = document.getElementById('avgRatingNumber');
+        const avgStarsDisplay = document.getElementById('avgStarsDisplay');
+        const totalReviewsCountText = document.getElementById('totalReviewsCountText');
+        
+        const summaryStars = document.getElementById('productStarsSummary');
+        const summaryAvg = document.getElementById('productAvgRatingVal');
+        const summaryCount = document.getElementById('productReviewCountVal');
+        
+        if (!reviewsContainer) return;
+
+        try {
+            const q = query(
+                collection(db, "reviews"), 
+                where("productId", "==", productId)
+            );
+            const querySnapshot = await getDocs(q);
+            
+            const reviews = [];
+            let ratingSum = 0;
+            
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                reviews.push(data);
+                ratingSum += (data.rating || 0);
+            });
+
+            // Sort reviews by timestamp descending in-memory to bypass composite index requirements
+            reviews.sort((a, b) => {
+                const tA = a.timestamp ? (a.timestamp.toDate ? a.timestamp.toDate() : new Date(a.timestamp)) : 0;
+                const tB = b.timestamp ? (b.timestamp.toDate ? b.timestamp.toDate() : new Date(b.timestamp)) : 0;
+                return tB - tA;
+            });
+            
+            const count = reviews.length;
+            const avgRating = count > 0 ? parseFloat((ratingSum / count).toFixed(1)) : 0.0;
+            
+            // Update Summary Card
+            if (avgRatingNumber) avgRatingNumber.textContent = avgRating.toFixed(1);
+            if (avgStarsDisplay) avgStarsDisplay.innerHTML = renderStarsHTML(avgRating);
+            if (totalReviewsCountText) totalReviewsCountText.textContent = `Based on ${count} ${count === 1 ? 'review' : 'reviews'}`;
+            
+            // Update Product Title Rating summary
+            if (summaryAvg) summaryAvg.textContent = avgRating.toFixed(1);
+            if (summaryStars) summaryStars.innerHTML = renderStarsHTML(avgRating);
+            if (summaryCount) summaryCount.textContent = `(${count} ${count === 1 ? 'review' : 'reviews'})`;
+            
+            // Update Rating Breakdown Bars
+            const starCounts = {5:0, 4:0, 3:0, 2:0, 1:0};
+            reviews.forEach(r => { const s = Math.round(r.rating); if (starCounts[s] !== undefined) starCounts[s]++; });
+            [5,4,3,2,1].forEach(star => {
+                const row = document.querySelector(`.rating-bar-row[data-star="${star}"]`);
+                if (!row) return;
+                const fill = row.querySelector('.rating-bar-fill');
+                const countEl = row.querySelector('.bar-count');
+                const pct = count > 0 ? Math.round((starCounts[star] / count) * 100) : 0;
+                if (fill) fill.style.width = pct + '%';
+                if (countEl) countEl.textContent = starCounts[star];
+            });
+
+            // Avatar color palette
+            const avatarColors = ['#e74c3c','#9b59b6','#2ecc71','#3498db','#e67e22','#1abc9c','#e91e63','#ff5722','#607d8b','#795548'];
+            const getAvatarColor = (name) => {
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                return avatarColors[Math.abs(hash) % avatarColors.length];
+            };
+
+            // Render Reviews Grid
+            if (count === 0) {
+                reviewsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #aaa; grid-column: 1 / -1; width: 100%;">
+                        <i class="far fa-comments" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.4;"></i>
+                        <p style="font-size:15px; font-weight:600; color:#888;">No reviews yet</p>
+                        <p style="font-size:13px; color:#bbb; margin-top:6px;">Be the first to share your experience!</p>
+                    </div>
+                `;
+            } else {
+                reviewsContainer.innerHTML = reviews.map((review, idx) => {
+                    let formattedDate = 'Just now';
+                    if (review.timestamp) {
+                        try {
+                            const dateObj = review.timestamp.toDate ? review.timestamp.toDate() : new Date(review.timestamp);
+                            formattedDate = dateObj.toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
+                        } catch (e) { console.error(e); }
+                    }
+                    const name = review.userName || 'Customer';
+                    const initial = name.charAt(0).toUpperCase();
+                    const color = getAvatarColor(name);
+                    const ratingVal = Math.round(review.rating || 0);
+                    return `
+                        <div class="review-card" data-rating="${ratingVal}" style="animation-delay:${idx * 0.05}s">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <div class="reviewer-avatar" style="background: linear-gradient(135deg, ${color}, ${color}cc);">${initial}</div>
+                                    <div>
+                                        <div class="reviewer-name">${name}</div>
+                                        <div class="reviewer-verified">
+                                            ${review.verifiedBuyer ? '<i class="fas fa-check-circle"></i> Verified Buyer' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="review-rating">${renderStarsHTML(review.rating)}</div>
+                            </div>
+                            <p class="review-text">${review.reviewText}</p>
+                            <div class="review-footer">
+                                <span class="review-date">${formattedDate}</span>
+                                <button class="review-helpful-btn" aria-label="Mark as helpful">
+                                    <i class="far fa-thumbs-up"></i>
+                                    <span>Helpful</span>
+                                    <span class="helpful-count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Update Structured SEO Data dynamically
+            updateSchemaSEO(product, avgRating, count, reviews);
+            
+            // Sync aggregate rating and review count back to product document in Firestore
+            try {
+                await updateDoc(doc(db, "products", productId), {
+                    averageRating: avgRating,
+                    reviewCount: count
+                });
+                console.log(`Synced rating aggregate for product ${productId}: average = ${avgRating}, count = ${count}`);
+            } catch (syncErr) {
+                console.warn("Unable to sync product aggregate rating fields (might be due to permission rules):", syncErr);
+            }
+            
+        } catch (err) {
+            console.error("Error loading reviews:", err);
+            if (reviewsContainer) {
+                reviewsContainer.innerHTML = `<p style="color: red; text-align: center; grid-column: 1 / -1;">Failed to load customer reviews.</p>`;
+            }
+        }
+    }
+
+    function renderReviewForm(product, user, isVerifiedBuyer) {
+        const formContainer = document.getElementById('addReviewFormContainer');
+        if (!formContainer) return;
+        
+        formContainer.innerHTML = `
+            <form id="addReviewForm" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 2px; font-weight: 600; color: #323232;">Write a Customer Review</h3>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <span style="font-weight: 600; font-size: 14px; color: #555;">Your Rating:</span>
+                    <div class="star-rating-selector" style="font-size: 1.6rem; color: #ccc; cursor: pointer; display: flex; gap: 6px;">
+                        <i class="far fa-star star-select" data-rating="1" style="transition: color 0.2s;"></i>
+                        <i class="far fa-star star-select" data-rating="2" style="transition: color 0.2s;"></i>
+                        <i class="far fa-star star-select" data-rating="3" style="transition: color 0.2s;"></i>
+                        <i class="far fa-star star-select" data-rating="4" style="transition: color 0.2s;"></i>
+                        <i class="far fa-star star-select" data-rating="5" style="transition: color 0.2s;"></i>
+                    </div>
+                    <input type="hidden" id="reviewRatingInput" required value="">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <textarea id="reviewTextInput" placeholder="Describe the freshness, taste, size, or packaging..." required rows="3" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; resize: none; font-family: inherit; font-size: 13.5px;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 10px 24px; font-size: 13.5px; border-radius: 8px; background: #fc6e20; color: white; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s;">Submit Review</button>
+            </form>
+        `;
+        
+        // Star interactive selector logic
+        const stars = formContainer.querySelectorAll('.star-select');
+        const ratingInput = document.getElementById('reviewRatingInput');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const selectedRating = parseInt(this.dataset.rating);
+                ratingInput.value = selectedRating;
+                
+                stars.forEach(s => {
+                    const r = parseInt(s.dataset.rating);
+                    if (r <= selectedRating) {
+                        s.className = 'fas fa-star star-select';
+                        s.style.color = '#ffc107';
+                    } else {
+                        s.className = 'far fa-star star-select';
+                        s.style.color = '#ccc';
+                    }
+                });
+            });
+            
+            // Hover effects
+            star.addEventListener('mouseover', function() {
+                const hoverRating = parseInt(this.dataset.rating);
+                stars.forEach(s => {
+                    const r = parseInt(s.dataset.rating);
+                    if (r <= hoverRating) {
+                        s.style.color = '#ffb300';
+                    } else {
+                        s.style.color = '#ccc';
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentRating = parseInt(ratingInput.value) || 0;
+                stars.forEach(s => {
+                    const r = parseInt(s.dataset.rating);
+                    if (r <= currentRating) {
+                        s.style.color = '#ffc107';
+                        s.className = 'fas fa-star star-select';
+                    } else {
+                        s.style.color = '#ccc';
+                        s.className = 'far fa-star star-select';
+                    }
+                });
+            });
+        });
+        
+        // Form submission
+        const form = document.getElementById('addReviewForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const rating = parseInt(ratingInput.value);
+            const reviewText = document.getElementById('reviewTextInput').value.trim();
+            
+            if (!rating || rating < 1 || rating > 5) {
+                alert("Please select a star rating (1 to 5) before submitting your review.");
+                return;
+            }
+            
+            if (!reviewText) {
+                alert("Please enter some review comments.");
+                return;
+            }
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            try {
+                let userName = user.displayName || user.email.split('@')[0];
+                try {
+                    const userSnap = await getDoc(doc(db, "users", user.uid));
+                    if (userSnap.exists()) {
+                        const userData = userSnap.data();
+                        const firstName = userData.firstName || '';
+                        const lastName = userData.lastName || '';
+                        const fullName = `${firstName} ${lastName}`.trim();
+                        if (fullName) userName = fullName;
+                    }
+                } catch (e) {
+                    console.error("Error reading user name:", e);
+                }
+                
+                const reviewData = {
+                    productId: product.id,
+                    userId: user.uid,
+                    userName: userName,
+                    rating: rating,
+                    reviewText: reviewText,
+                    timestamp: serverTimestamp(),
+                    verifiedBuyer: isVerifiedBuyer
+                };
+                
+                await addDoc(collection(db, "reviews"), reviewData);
+                
+                alert("Thank you! Your review has been submitted successfully.");
+                
+                // Reload review list
+                await loadReviewsList(product.id, product);
+                
+                // Reset form
+                ratingInput.value = '';
+                document.getElementById('reviewTextInput').value = '';
+                stars.forEach(s => {
+                    s.className = 'far fa-star star-select';
+                    s.style.color = '#ccc';
+                });
+                
+            } catch (err) {
+                console.error("Error submitting review:", err);
+                alert("Failed to submit review. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Review';
+            }
+        });
+    }
+
+    async function initReviews(product) {
+        const productId = product.id;
+        const reviewsContainer = document.getElementById('dynamicReviewsContainer');
+        const formContainer = document.getElementById('addReviewFormContainer');
+        
+        if (!reviewsContainer || !formContainer) return;
+        
+        // Load reviews list and update summary
+        await loadReviewsList(productId, product);
+        
+        // Setup review form based on auth state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Check if email is verified
+                if (user.emailVerified) {
+                    // Check if they are a verified buyer of this product
+                    let verifiedBuyer = false;
+                    try {
+                        const userSnap = await getDoc(doc(db, "users", user.uid));
+                        if (userSnap.exists()) {
+                            const userData = userSnap.data();
+                            const orders = userData.orders || [];
+                            verifiedBuyer = orders.some(order => 
+                                order.items && order.items.some(item => item.id === productId)
+                            );
+                        }
+                    } catch (err) {
+                        console.error("Error checking verified buyer status:", err);
+                    }
+                    
+                    renderReviewForm(product, user, verifiedBuyer);
+                } else {
+                    formContainer.innerHTML = `
+                        <div style="text-align: center; padding: 15px; color: #555; background: #fff8f8; border-radius: 8px; border: 1px solid #ffe5e5; font-size: 14px;">
+                            <p style="margin: 0 0 6px 0; font-weight: 700; color: #d9534f;"><i class="fas fa-envelope-open-text" style="margin-right: 5px;"></i> Email Verification Required</p>
+                            <p style="font-size: 12px; color: #777; margin: 0 0 10px 0;">Please verify your email address to submit reviews.</p>
+                            <a href="profile.html" class="btn btn-primary" style="padding: 6px 15px; font-size: 12px; text-decoration: none; border-radius: 5px; background: #fc6e20; color: white; display: inline-block;">Go to Profile to Verify</a>
+                        </div>
+                    `;
+                }
+            } else {
+                formContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #555; background: #fafafa; border-radius: 8px; border: 1px dashed #ccc; font-size: 14px;">
+                        <p style="margin: 0 0 6px 0; font-weight: 700;"><i class="fas fa-lock" style="margin-right: 5px;"></i> Sign In Required</p>
+                        <p style="font-size: 12px; color: #777; margin: 0 0 10px 0;">Only logged-in customers can write reviews.</p>
+                        <a href="login.html" class="btn btn-primary" style="padding: 6px 15px; font-size: 12px; text-decoration: none; border-radius: 5px; background: #fc6e20; color: white; display: inline-block;">Log In / Register</a>
+                    </div>
+                `;
+            }
         });
     }
 
@@ -724,24 +1230,4 @@ window.showProductSection = function () {
     if (aboutSection) aboutSection.style.display = 'none';
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-    const fixedBar = document.querySelector(".fixed-action-bar");
-
-    if (!fixedBar) return;
-
-    // Hide initially and prepare for animation
-    fixedBar.style.transform = "translateY(100%)";
-    fixedBar.style.transition = "transform 0.3s ease-in-out";
-
-    window.addEventListener("scroll", function () {
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
-
-        if (scrollY > 300) {
-            // Show with slide up animation
-            fixedBar.style.transform = "translateY(0)";
-        } else {
-            // Hide with slide down animation
-            fixedBar.style.transform = "translateY(100%)";
-        }
-    });
-});
+// Fixed action bar visibility is now handled by IntersectionObserver in product-ux.js

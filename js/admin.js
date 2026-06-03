@@ -1,13 +1,16 @@
 import { db, auth } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc, getDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc, getDoc, query, where, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // DOM Elements
 const productList = document.getElementById('productList');
 const orderList = document.getElementById('orderList');
 const userList = document.getElementById('userList');
+const couponList = document.getElementById('couponList');
 const productFormContainer = document.getElementById('productFormContainer');
 const productForm = document.getElementById('productForm');
+const couponFormContainer = document.getElementById('couponFormContainer');
+const couponForm = document.getElementById('couponForm');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const imageInput = document.getElementById('productImageInput');
 const imagePreviewContainer = document.getElementById('imagePreviewContainer');
@@ -16,6 +19,8 @@ const modalTabContent = document.getElementById('modalTabContent');
 
 let allProducts = [];
 let allUsers = [];
+let allCoupons = [];
+let allOrders = [];
 let currentImages = [];
 
 // Admin Emails
@@ -56,6 +61,10 @@ document.querySelectorAll('.sidebar .nav-item[data-tab]').forEach(item => {
         document.getElementById('productsTab').classList.toggle('hidden', tabId !== 'products');
         document.getElementById('ordersTab').classList.toggle('hidden', tabId !== 'orders');
         document.getElementById('usersTab').classList.toggle('hidden', tabId !== 'users');
+        document.getElementById('couponsTab').classList.toggle('hidden', tabId !== 'coupons');
+        if (tabId === 'coupons') {
+            loadCoupons();
+        }
     });
 });
 
@@ -117,7 +126,7 @@ async function loadOrders() {
     orderList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Loading orders...</p>';
     try {
         const usersSnapshot = await getDocs(collection(db, "users"));
-        let allOrders = [];
+        allOrders = [];
 
         usersSnapshot.forEach(userDoc => {
             const userData = userDoc.data();
@@ -172,7 +181,7 @@ function renderOrders(orders) {
                     <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                     <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                 </select>
-                <button class="btn btn-outline" onclick="window.viewOrderItems('${btoa(JSON.stringify(order.items))}')" style="padding: 5px 12px;">
+                <button class="btn btn-outline" onclick="window.viewOrderItems('${order.orderId}')" style="padding: 5px 12px;">
                     <i class="fas fa-eye"></i>
                 </button>
             </div>
@@ -312,10 +321,11 @@ document.getElementById('closeUserModal').addEventListener('click', () => {
     userModal.style.display = 'none';
 });
 
-window.viewOrderItems = (b64) => {
-    const items = JSON.parse(atob(b64));
+window.viewOrderItems = (orderId) => {
+    const order = allOrders.find(o => o.orderId === orderId);
+    const items = order ? (order.items || []) : [];
     document.getElementById('modalUserName').textContent = "Order Items";
-    document.getElementById('modalUserEmail').textContent = "";
+    document.getElementById('modalUserEmail').textContent = order ? `Order ID: #${orderId}` : "";
 
     modalTabContent.innerHTML = '';
     items.forEach(item => {
@@ -575,3 +585,276 @@ function compressImage(file) {
         };
     });
 }
+
+// --- COUPON MANAGEMENT ---
+async function loadCoupons() {
+    couponList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Loading coupons...</p>';
+    try {
+        const querySnapshot = await getDocs(collection(db, "coupons"));
+        allCoupons = [];
+        querySnapshot.forEach((doc) => {
+            allCoupons.push({ _id: doc.id, ...doc.data() });
+        });
+        renderCoupons();
+    } catch (error) {
+        console.error("Error loading coupons:", error);
+        couponList.innerHTML = '<p style="color: red; text-align: center;">Failed to load coupons.</p>';
+    }
+}
+
+function renderCoupons() {
+    couponList.innerHTML = '';
+    if (allCoupons.length === 0) {
+        couponList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No coupons created yet.</p>';
+        return;
+    }
+
+    allCoupons.forEach(coupon => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        
+        let formattedExpiry = 'No Expiry';
+        if (coupon.expiryDate) {
+            try {
+                const dateObj = coupon.expiryDate.seconds ? new Date(coupon.expiryDate.seconds * 1000) : new Date(coupon.expiryDate);
+                formattedExpiry = dateObj.toLocaleDateString();
+            } catch (e) {
+                formattedExpiry = coupon.expiryDate;
+            }
+        }
+
+        div.innerHTML = `
+            <div class="item-info" style="flex: 1;">
+                <div style="width: 40px; height: 40px; background: #e0f2fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0284c7; font-size: 1.25rem;">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                        <h4 style="margin: 0; font-family: monospace; font-size: 1.1rem; letter-spacing: 0.5px;">${coupon.code}</h4>
+                        <span class="badge ${coupon.active ? 'badge-completed' : 'badge-cancelled'}" style="font-size: 0.7rem; padding: 2px 8px;">
+                            ${coupon.active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.85rem; color: #555;">
+                        <strong>Discount:</strong> ${coupon.discountPercent}% | 
+                        <strong>Min Order:</strong> ₹${coupon.minOrder || 0} | 
+                        <strong>Expires:</strong> ${formattedExpiry}
+                    </p>
+                </div>
+            </div>
+            <div class="item-actions" style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn btn-outline" onclick="window.toggleCouponActive('${coupon._id}', ${coupon.active})" style="padding: 5px 12px; font-size: 0.8rem;">
+                    <i class="fas ${coupon.active ? 'fa-eye-slash' : 'fa-eye'}"></i> ${coupon.active ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="btn btn-danger" onclick="window.deleteCoupon('${coupon._id}')" style="padding: 5px 12px; font-size: 0.8rem;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        couponList.appendChild(div);
+    });
+}
+
+// Global actions for Coupon List
+window.toggleCouponActive = async (id, currentStatus) => {
+    loadingOverlay.style.display = 'flex';
+    try {
+        await updateDoc(doc(db, "coupons", id), {
+            active: !currentStatus
+        });
+        loadCoupons();
+    } catch (error) {
+        console.error("Error toggling status:", error);
+        alert("Failed to toggle active state.");
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
+};
+
+window.deleteCoupon = async (id) => {
+    if (!confirm('Are you sure you want to delete this coupon?')) return;
+    loadingOverlay.style.display = 'flex';
+    try {
+        await deleteDoc(doc(db, "coupons", id));
+        loadCoupons();
+    } catch (error) {
+        console.error("Error deleting coupon:", error);
+        alert("Failed to delete coupon.");
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
+};
+
+// Coupon Form Listeners
+document.getElementById('addCouponBtn').addEventListener('click', () => {
+    couponForm.reset();
+    document.getElementById('couponId').value = '';
+    document.getElementById('couponFormTitle').textContent = 'Add New Coupon';
+    couponFormContainer.classList.remove('hidden');
+});
+
+document.getElementById('cancelCouponBtn').addEventListener('click', () => {
+    couponFormContainer.classList.add('hidden');
+});
+
+couponForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loadingOverlay.style.display = 'flex';
+    
+    const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
+    const discountPercent = Number(document.getElementById('couponDiscount').value);
+    const minOrder = Number(document.getElementById('couponMinOrder').value);
+    const expiryDate = document.getElementById('couponExpiry').value;
+    
+    try {
+        const couponData = {
+            code,
+            discountPercent,
+            minOrder,
+            expiryDate,
+            active: true
+        };
+        
+        const docId = code; // Use the coupon code as the document ID for simplicity and unique code check
+        await setDoc(doc(db, "coupons", docId), couponData);
+        
+        couponFormContainer.classList.add('hidden');
+        couponForm.reset();
+        loadCoupons();
+        alert('Coupon saved successfully!');
+    } catch (error) {
+        console.error("Error saving coupon:", error);
+        alert('Failed to save coupon.');
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
+});
+
+// --- RANDOM REVIEWS SEEDER ---
+window.seedRandomReviews = async () => {
+    if (!confirm("Are you sure you want to seed 2-8 random reviews on all products? This will delete all existing reviews first!")) return;
+
+    loadingOverlay.style.display = 'flex';
+    document.querySelector('#loadingOverlay p').textContent = "Seeding reviews... Please wait.";
+
+    const namesPool = [
+        "Amit Sharma", "Priya Patel", "Rohan Gupta", "Deepak Verma", "Neha Singh",
+        "Sunita Rao", "Karan Malhotra", "Vikram Sen", "Ananya Das", "Suresh Kumar",
+        "Meera Nair", "Arjun Reddy", "Kriti Joshi", "Sanjay Dutt", "Divya Pillai",
+        "Rajesh Mehta", "Shalini Iyer", "Aditya Bose", "Pooja Hegde", "Rahul Mishra"
+    ];
+
+    const reviewsByRating = {
+        3: [
+            "Decent quality, but shipping took longer than expected.",
+            "Taste is good, but the packaging could be improved.",
+            "Alright product, but a bit pricey for the quantity.",
+            "Average freshness. Satisfactory but not outstanding.",
+            "Average dry fruits, normal taste. Nothing special but acceptable.",
+            "The size of the nuts is average. Flavor is fine."
+        ],
+        4: [
+            "Really fresh and tasty dry fruits. Good value for money.",
+            "Very clean and crisp packaging. Taste is excellent.",
+            "Quality is high and delivery was quick. Will buy again.",
+            "Great taste and freshness. Happy with the purchase.",
+            "Solid quality dry fruits. Clean and well sorted.",
+            "Nice texture and flavor. The packaging is airtight."
+        ],
+        5: [
+            "Absolutely premium quality! The best dry fruits I have ordered online.",
+            "Super fresh, big sizes, and delicious taste. 10/5 stars!",
+            "Excellent packaging, quick shipping, and outstanding premium dry fruits.",
+            "Highly recommended! Incredibly tasty and fresh.",
+            "Amazing taste and crispiness. Will order in bulk next time.",
+            "Exceptional freshness and sweet, buttery flavor. Highly satisfied!"
+        ]
+    };
+
+    try {
+        console.log("Fetching products to seed reviews...");
+        const productsSnapshot = await getDocs(collection(db, "products"));
+        const products = [];
+        productsSnapshot.forEach((docSnap) => {
+            products.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        console.log(`Found ${products.length} products to seed reviews for.`);
+
+        for (const product of products) {
+            console.log(`Processing product: ${product.name} (ID: ${product.id})`);
+
+            // 1. Delete existing reviews for this product (best effort)
+            try {
+                const reviewsQuery = query(collection(db, "reviews"), where("productId", "==", product.id));
+                const existingReviewsSnap = await getDocs(reviewsQuery);
+                for (const docSnap of existingReviewsSnap.docs) {
+                    await deleteDoc(doc(db, "reviews", docSnap.id));
+                }
+            } catch (delErr) {
+                console.warn(`Could not clear old reviews for product ${product.id}:`, delErr);
+            }
+
+            // 2. Generate random reviews count (2 to 8)
+            const reviewsCount = Math.floor(Math.random() * 7) + 2; // 2 to 8
+            let ratingSum = 0;
+            const generatedReviews = [];
+
+            for (let i = 0; i < reviewsCount; i++) {
+                // Pick rating (3 to 5)
+                const rating = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
+                ratingSum += rating;
+
+                // Pick random name
+                const userName = namesPool[Math.floor(Math.random() * namesPool.length)];
+
+                // Pick random review comment
+                const comments = reviewsByRating[rating];
+                const reviewText = comments[Math.floor(Math.random() * comments.length)];
+
+                // Pick random timestamp within the last 30 days
+                const daysAgo = Math.floor(Math.random() * 30);
+                const date = new Date();
+                date.setDate(date.getDate() - daysAgo);
+                date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60));
+
+                const reviewData = {
+                    productId: product.id,
+                    userId: auth.currentUser ? auth.currentUser.uid : "anonymous-seeder",
+                    userName,
+                    rating,
+                    reviewText,
+                    timestamp: date,
+                    verifiedBuyer: true
+                };
+
+                generatedReviews.push(reviewData);
+            }
+
+            // 3. Write reviews to Firestore
+            for (const review of generatedReviews) {
+                await addDoc(collection(db, "reviews"), review);
+            }
+
+            // 4. Calculate aggregates
+            const averageRating = parseFloat((ratingSum / reviewsCount).toFixed(1));
+
+            // 5. Update product document
+            await updateDoc(doc(db, "products", product.id), {
+                averageRating,
+                reviewCount: reviewsCount
+            });
+            console.log(`Seeded reviews for product ${product.name}. Count: ${reviewsCount}, Avg: ${averageRating}`);
+        }
+
+        alert("Successfully seeded 2-8 random reviews on all products!");
+        loadProducts(); // Reload the UI list
+
+    } catch (err) {
+        console.error("Error seeding reviews:", err);
+        alert("Failed to seed reviews: " + err.message);
+    } finally {
+        loadingOverlay.style.display = 'none';
+        document.querySelector('#loadingOverlay p').textContent = "Processing...";
+    }
+};

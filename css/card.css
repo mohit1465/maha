@@ -30,7 +30,7 @@
     color: white;
     padding: 5px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: var(--text-tiny);
     font-weight: 700;
     z-index: 2;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -107,7 +107,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     color: #8e9bb0;
-    font-size: 13px;
+    font-size: var(--text-small);
 }
 
 .card-wishlist:hover {
@@ -184,7 +184,7 @@
 
 .card-title {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 16px;
+    font-size: var(--text-h4);
     font-weight: 700;
     color: #1e272e;
     margin-bottom: 3px;
@@ -204,10 +204,10 @@
 .card-hindi-name {
     font-family: 'Hind', sans-serif;
     /* Fallback if not loaded, mostly standard sans */
-    font-size: 12px;
+    font-size: var(--text-tiny);
     font-weight: 500;
     color: #fc6e20;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     opacity: 0.85;
     cursor: pointer;
     transition: opacity 0.2s ease;
@@ -216,6 +216,34 @@
 
 .card-hindi-name:hover {
     opacity: 1;
+}
+
+.card-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.card-stars {
+    color: #ffc107;
+    font-size: var(--text-tiny);
+    display: flex;
+    gap: 2px;
+}
+
+.card-rating-text {
+    color: #555555;
+    font-size: var(--text-tiny);
+    font-weight: 600;
+}
+
+.card-rating-count {
+    color: #999999;
+    font-weight: 400;
+    font-size: var(--text-tiny);
+    margin-left: 2px;
 }
 
 .card-description {
@@ -245,7 +273,7 @@
 .card-select {
     width: 100%;
     padding: 6px 10px;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     border: 1px solid #dfe4ea;
     border-radius: 8px;
     appearance: none;
@@ -267,7 +295,7 @@
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    font-size: 10px;
+    font-size: var(--text-tiny);
     color: #a4b0be;
 }
 
@@ -304,7 +332,7 @@
 }
 
 .card-original-price {
-    font-size: 13px;
+    font-size: var(--text-small);
     color: #a4b0be;
     text-decoration: line-through;
     font-weight: 500;
@@ -312,14 +340,14 @@
 
 .card-price {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 20px;
+    font-size: var(--text-h3);
     font-weight: 800;
     color: #1e272e;
     line-height: 1;
 }
 
 .card-savings-pill {
-    font-size: 11px;
+    font-size: var(--text-tiny);
     color: #047857;
     font-weight: 700;
     background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
@@ -338,7 +366,7 @@
 }
 
 .card-savings-pill i {
-    font-size: 11px;
+    font-size: var(--text-tiny);
     color: #059669;
 }
 
@@ -361,7 +389,7 @@
 }
 
 .card-savings-pill.gold-pill i {
-    font-size: 10px;
+    font-size: var(--text-tiny);
     color: #d97706;
 }
 
@@ -385,7 +413,7 @@
     color: white;
     border: none;
     padding: 10px 16px;
-    font-size: 14px;
+    font-size: var(--text-body); font-weight: 600;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -422,7 +450,7 @@
     width: 40px;
     height: 100%;
     cursor: pointer;
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -435,7 +463,7 @@
 }
 
 .card-qty-selector .qty-value {
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 700;
     min-width: 24px;
     text-align: center;
@@ -453,7 +481,7 @@
     }
 
     .card-title {
-        font-size: 14px;
+        font-size: var(--text-h4);
     }
 
     .price-main {
@@ -472,7 +500,7 @@
     }
 
     .card-savings-pill {
-        font-size: 11px;
+        font-size: var(--text-tiny);
     }
 
     .card-footer {
@@ -487,7 +515,7 @@
 
     .card-add-btn {
         background: #1b1b1b;
-        font-size: 13px;
+        font-size: var(--text-body); font-weight: 600;
         padding: 0 12px;
     }
 
@@ -514,7 +542,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #323232;
     background: #f8f9fa;
@@ -541,7 +569,7 @@
 }
 
 .custom-select-trigger .arrow {
-    font-size: 10px;
+    font-size: var(--text-tiny);
     color: #b2bec3;
     transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
@@ -585,7 +613,7 @@
     position: relative;
     display: block;
     padding: 10px 12px;
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #323232;
     cursor: pointer;
@@ -670,7 +698,7 @@
 }
 
 .minimal-card-title {
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 400;
     color: #323232;
     font-family: 'Bricolage Grotesque', sans-serif;
@@ -681,7 +709,7 @@
 }
 
 .minimal-card-subtitle {
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 700;
     color: #111;
 }

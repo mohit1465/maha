@@ -15,7 +15,7 @@
 
 /* Breadcrumb Styles */
 .cart-section .breadcrumb {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     margin-bottom: 24px;
     display: flex;
@@ -70,7 +70,7 @@
     margin-bottom: 8px;
     font-weight: 600;
     color: #888;
-    font-size: 13px;
+    font-size: var(--text-small);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -121,14 +121,14 @@
 }
 
 .cart-item-name {
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 600;
     color: #323232;
     margin-bottom: 2px;
 }
 
 .cart-item-category {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #999;
 }
 
@@ -156,14 +156,14 @@
 }
 
 .cart-item-price {
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 700;
     color: #1b1b1b;
     text-align: center;
 }
 
 .unit-price {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #888;
     text-align: center;
 }
@@ -189,7 +189,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     transition: all 0.2s ease;
 }
@@ -201,7 +201,7 @@
 }
 
 .quantity-value {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     min-width: 15px;
     text-align: center;
@@ -218,14 +218,14 @@
     border: 1px solid #eee;
     border-radius: 8px;
     background-color: #fff;
-    font-size: 13px;
+    font-size: var(--text-small);
     color: #1b1b1b;
     cursor: pointer;
 }
 
 /* Price Column */
 .cart-item-price {
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 700;
     color: #1b1b1b;
     text-align: center;
@@ -243,7 +243,7 @@
     border: none;
     color: #7e7e7e;
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--text-small);
     transition: all 0.3s ease;
     padding: 8px 10px;
     border-radius: 10px;
@@ -265,7 +265,7 @@
     border: none;
     padding: 8px 18px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -293,13 +293,13 @@
 }
 
 .total-label {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 600;
     color: #323232;
 }
 
 .total-value {
-    font-size: 20px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: #323232;
 }
@@ -333,13 +333,13 @@
 }
 
 .summary-label {
-    font-size: 16px;
+    font-size: var(--text-body);
     color: #666;
     font-weight: 400;
 }
 
 .summary-value {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 600;
     color: #323232;
 }
@@ -350,7 +350,7 @@
     border: none;
     padding: 10px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -433,12 +433,12 @@
     }
 
     .mobile-row-1 .cart-item-name {
-        font-size: 15px;
+        font-size: var(--text-body);
         margin-bottom: 4px;
     }
 
     .mobile-row-1 .cart-item-category {
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 
     .mobile-row-1 .cart-item-price-row {
@@ -453,7 +453,7 @@
         text-align: right;
         font-weight: 600;
         margin: 0;
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .mobile-row-1 .unit-price {
@@ -497,11 +497,11 @@
     }
 
     .total-label {
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .total-value {
-        font-size: 18px;
+        font-size: var(--text-body-lg);
     }
 
     .cart-bottom-padding {
@@ -514,16 +514,16 @@
     }
 
     .summary-label {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .summary-value {
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .buy-all-btn {
         padding: 12px 24px;
-        font-size: 15px;
+        font-size: var(--text-body);
     }
 }
 
@@ -550,38 +550,38 @@
     }
 
     .cart-item-name {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .cart-item-category {
-        font-size: 12px;
+        font-size: var(--text-tiny);
     }
 
     .quantity-btn {
         width: 26px;
         height: 26px;
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 
     .quantity-value {
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 
     .size-select {
         padding: 5px 8px;
-        font-size: 12px;
+        font-size: var(--text-tiny);
     }
 
     .cart-item-price {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .total-label {
-        font-size: 15px;
+        font-size: var(--text-body);
     }
 
     .total-value {
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .cart-summary-bar {
@@ -590,16 +590,16 @@
     }
 
     .summary-label {
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 
     .summary-value {
-        font-size: 15px;
+        font-size: var(--text-body);
     }
 
     .buy-all-btn {
         padding: 10px 20px;
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 }
 
@@ -646,7 +646,7 @@
 }
 
 .summary-header h3 {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: #323232;
     margin: 0;
@@ -657,7 +657,7 @@
     color: #fc6e20;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     font-weight: 600;
 }
 
@@ -703,19 +703,19 @@
 }
 
 .mini-item-name {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     color: #323232;
     margin-bottom: 2px;
 }
 
 .mini-item-meta {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #888;
 }
 
 .mini-item-price {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     color: #323232;
     text-align: right;
@@ -740,7 +740,7 @@
     padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 15px;
-    font-size: 14px;
+    font-size: var(--text-small);
     background: #fff;
     transition: all 0.2s ease;
 }
@@ -756,7 +756,7 @@
     background: #1b1b1b;
     color: #fff;
     border: none;
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -767,7 +767,7 @@
 }
 
 .coupon-message {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     margin-top: 8px;
     padding-left: 2px;
 }
@@ -787,7 +787,7 @@
 .breakdown-row {
     display: flex;
     justify-content: space-between;
-    font-size: 15px;
+    font-size: var(--text-body);
     color: #666;
 }
 
@@ -804,7 +804,7 @@
     margin-top: 5px;
     padding-top: 12px;
     border-top: 1.5px solid #f5f5f5;
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: #323232;
 }
@@ -823,7 +823,7 @@
 }
 
 .checkout-header h2 {
-    font-size: 20px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: #323232;
     margin: 0;
@@ -834,7 +834,7 @@
     border: 1px solid #ddd;
     padding: 8px 16px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -874,7 +874,7 @@
 }
 
 .form-group label {
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #333;
     margin-bottom: 6px;
@@ -887,7 +887,7 @@
     border: none;
     padding: 10px;
     border-radius: 15px;
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -902,7 +902,7 @@
 .secure-checkout-badge {
     text-align: center;
     margin-bottom: 5px;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #32aa3c;
     display: flex;
     justify-content: center;
@@ -933,7 +933,7 @@
 }
 
 .payment-method-section h3 {
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 700;
     color: #323232;
     margin-bottom: 15px;
@@ -983,13 +983,13 @@
 }
 
 .payment-option .option-title {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     color: #333;
 }
 
 .payment-option .option-desc {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #666;
     margin-top: 4px;
 }
@@ -1079,7 +1079,7 @@
     right: -8px;
     background: #111;
     color: #fff;
-    font-size: 11px;
+    font-size: var(--text-tiny);
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -1096,7 +1096,7 @@
 }
 
 .mini-item-name {
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #333;
     display: -webkit-box;
@@ -1106,13 +1106,13 @@
 }
 
 .mini-item-meta {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #777;
     margin-top: 4px;
 }
 
 .mini-item-price {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #333;
     white-space: nowrap;
@@ -1133,13 +1133,13 @@
 }
 .breakdown-row {
     margin-bottom: 10px;
-    font-size: 13px;
+    font-size: var(--text-small);
     color: #444;
 }
 .price-breakdown .total {
     border-top: none;
     padding-top: 5px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 600;
     color: #111;
 }
@@ -1174,7 +1174,7 @@
     }
 
     .summary-header h3 {
-        font-size: 16px;
+        font-size: var(--text-body);
     }
 
     .coupon-input-wrapper {
@@ -1186,7 +1186,7 @@
     }
 
     .mini-item-name {
-        font-size: 13px;
+        font-size: var(--text-small);
     }
 }
 
@@ -1200,7 +1200,7 @@
 }
 
 .saved-addresses-wrapper h3 {
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     color: #666;
     margin-bottom: 12px;
@@ -1234,7 +1234,7 @@
     border: 1px solid #eee;
     padding: 10px 18px;
     border-radius: 30px;
-    font-size: 13px;
+    font-size: var(--text-small);
     font-weight: 500;
     color: #323232;
     cursor: pointer;
@@ -1246,7 +1246,7 @@
 }
 
 .address-bubble i {
-    font-size: 12px;
+    font-size: var(--text-tiny);
     color: #888;
 }
 

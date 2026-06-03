@@ -15,7 +15,7 @@
 
 /* Breadcrumb Styles */
 .contact-section .breadcrumb {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #666;
     margin-bottom: 24px;
     display: flex;
@@ -49,7 +49,7 @@
 
 /* Page Title */
 .page-title {
-    font-size: 42px;
+    font-size: var(--text-h1);
     font-weight: 800;
     color: var(--text-color);
     margin-bottom: 40px;
@@ -97,7 +97,7 @@
 }
 
 .contact-icon {
-    font-size: 24px;
+    font-size: var(--text-h4);
     width: 60px;
     height: 60px;
     display: flex;
@@ -117,20 +117,20 @@
 }
 
 .contact-details h3 {
-    font-size: 20px;
+    font-size: var(--text-body-lg);
     font-weight: 700;
     color: var(--text-color);
     margin-bottom: 6px;
 }
 
 .contact-details p {
-    font-size: 16px;
+    font-size: var(--text-body);
     color: #555;
     margin-bottom: 4px;
 }
 
 .contact-subtitle {
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #999 !important;
     font-weight: 500;
 }
@@ -156,7 +156,7 @@
 
 .form-group label {
     display: block;
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 10px;
@@ -169,7 +169,7 @@
     padding: 13px 15px;
     border: 1px solid #eee;
     border-radius: 15px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-family: inherit;
     background-color: #fff;
     color: var(--text-color);
@@ -196,7 +196,7 @@
     border: none;
     padding: 18px 40px;
     border-radius: 25px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.4s ease;
@@ -253,7 +253,7 @@
 }
 
 .map-marker {
-    font-size: 60px;
+    font-size: var(--text-display);
     background: var(--gradient-brand);
     -webkit-background-clip: text;
     background-clip: text;
@@ -262,7 +262,7 @@
 }
 
 .map-content p {
-    font-size: 18px;
+    font-size: var(--text-body-lg);
     font-weight: 600;
     line-height: 1.6;
     color: var(--text-color);
@@ -276,7 +276,7 @@
     }
 
     .page-title {
-        font-size: 32px;
+        font-size: var(--text-h2);
         margin-bottom: 30px;
     }
 
@@ -304,16 +304,16 @@
     .contact-icon {
         width: 50px;
         height: 50px;
-        font-size: 20px;
+        font-size: var(--text-body-lg);
         border-radius: 15px;
     }
 
     .contact-details h3 {
-        font-size: 18px;
+        font-size: var(--text-body-lg);
     }
 
     .contact-details p {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 
     .form-row {
@@ -339,17 +339,17 @@
     }
 
     .map-marker {
-        font-size: 40px;
+        font-size: var(--text-h1);
     }
 
     .map-content p {
-        font-size: 14px;
+        font-size: var(--text-small);
     }
 }
 
 @media (max-width: 480px) {
     .page-title {
-        font-size: 28px;
+        font-size: var(--text-h3);
     }
 
     .contact-info-section,

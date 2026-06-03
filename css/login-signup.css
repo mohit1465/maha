@@ -72,7 +72,7 @@ body {
 }
 
 h3#stepTitle {
-    font-size: 24px;
+    font-size: var(--text-h4);
     font-weight: 600;
     margin: 0 0 20px 0;
     color: #1a1a1a;
@@ -85,7 +85,7 @@ h3#stepTitle {
 
 #progressText {
     display: block;
-    font-size: 13px;
+    font-size: var(--text-small);
     color: #888;
     margin-top: 8px;
     text-align: right;
@@ -146,7 +146,7 @@ input,
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     background: #fcfcfc;
-    font-size: 16px;
+    font-size: var(--text-body);
     transition: all 0.3s ease;
 }
 
@@ -163,7 +163,7 @@ input:focus,
     border: none;
     padding: 16px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -180,7 +180,7 @@ input:focus,
     border: 1px solid #e0e0e0;
     padding: 16px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -196,7 +196,7 @@ input:focus,
     border: 1px solid #e0e0e0;
     padding: 14px;
     border-radius: 12px;
-    font-size: 16px;
+    font-size: var(--text-body);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -217,7 +217,7 @@ input:focus,
     font-weight: 600;
     cursor: pointer;
     padding: 5px;
-    font-size: 15px;
+    font-size: var(--text-body);
 }
 
 .skip-btn-onboarding {
@@ -226,7 +226,7 @@ input:focus,
     border: 1px solid #e5e5e5;
     padding: 14px;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: var(--text-body);
     font-weight: 500;
     cursor: pointer;
     text-align: center;
@@ -251,7 +251,7 @@ input:focus,
     background: none;
     border: none;
     color: #888;
-    font-size: 14px;
+    font-size: var(--text-small);
     cursor: pointer;
     text-align: center;
     text-decoration: underline;
@@ -271,7 +271,7 @@ input:focus,
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 14px;
+    font-size: var(--text-small);
     text-align: center;
 }
 
@@ -288,7 +288,7 @@ input:focus,
     align-items: center;
     gap: 10px;
     color: #ccc;
-    font-size: 12px;
+    font-size: var(--text-tiny);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin: 10px 0;
@@ -303,7 +303,7 @@ input:focus,
 }
 
 .auth-info-text {
-    font-size: 15px;
+    font-size: var(--text-body);
     color: #1b1b1b;
     margin-bottom: 20px;
     line-height: 1.5;
@@ -312,7 +312,7 @@ input:focus,
 .auth-link {
     display: block;
     margin-top: 10px;
-    font-size: 14px;
+    font-size: var(--text-small);
     color: #fc6e20;
     cursor: pointer;
 }
@@ -364,12 +364,12 @@ input:focus,
     }
 
     h3#stepTitle {
-        font-size: 20px;
+        font-size: var(--text-body-lg);
     }
 
     input,
     .auth-select {
-        font-size: 15px;
+        font-size: var(--text-body);
         padding: 10px;
     }
 

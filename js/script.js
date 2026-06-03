@@ -745,6 +745,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 4. Urgency Countdown Timer (evergreen session storage timer)
     const timerClock = document.getElementById('couponTimer');
+    const inlineTimer = document.getElementById('couponInlineTimer');
     let timeLeft = sessionStorage.getItem('coupon_timer_seconds');
     
     if (timeLeft === null) {
@@ -759,7 +760,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${m}:${s}`;
     };
 
-    timerClock.textContent = formatTime(timeLeft);
+    const updateTimerDisplays = (seconds) => {
+        const formatted = formatTime(seconds);
+        if (timerClock) timerClock.textContent = formatted;
+        const inlineTimerEl = document.getElementById('couponInlineTimer');
+        if (inlineTimerEl) inlineTimerEl.textContent = `⏰ Ends in ${formatted}`;
+    };
+
+    updateTimerDisplays(timeLeft);
 
     const timerInterval = setInterval(() => {
         timeLeft--;
@@ -767,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timeLeft = 900; // Reset for evergreen urgency loop
         }
         sessionStorage.setItem('coupon_timer_seconds', timeLeft);
-        timerClock.textContent = formatTime(timeLeft);
+        updateTimerDisplays(timeLeft);
     }, 1000);
 
     // 5. Apply & Copy Click Handler
