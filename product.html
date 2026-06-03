@@ -102,24 +102,6 @@
 
 <body data-page="product">
 
-<!-- Social Proof Toast -->
-<div class="social-proof-toast" id="socialProofToast">
-    <div class="toast-avatar" id="toastAvatar">R</div>
-    <div class="toast-content">
-        <div class="toast-name" id="toastName">Rahul from Delhi</div>
-        <div class="toast-action">just purchased this! 🛍️</div>
-    </div>
-    <button class="toast-close" id="toastClose" aria-label="Close">×</button>
-</div>
-
-<!-- Recently Viewed Bar -->
-<div class="recently-viewed-bar" id="recentlyViewedBar" style="display:none;">
-    <i class="fas fa-clock"></i>
-    <span>Recently viewed:</span>
-    <div class="recently-viewed-items" id="recentlyViewedItems"></div>
-    <button class="recently-viewed-close" id="recentlyViewedClose">×</button>
-</div>
-        
 <header class="header">
         <div class="top-header">
             <div class="logo-container">
@@ -446,24 +428,24 @@
                 <!-- Customer Reviews Section -->
                 <div class="reviews-section">
                     <div class="reviews-header">
-                        <h2>Customer Reviews</h2>
+                        <h2><i class="fas fa-star" style="margin-right: 10px; color: #fc6e20;"></i>Customer Reviews</h2>
                         <div class="reviews-filter" id="reviewsFilter">
-                            <button class="filter-btn active" data-rating="all">All</button>
-                            <button class="filter-btn" data-rating="5">5★</button>
-                            <button class="filter-btn" data-rating="4">4★</button>
-                            <button class="filter-btn" data-rating="3">3★</button>
+                            <button class="filter-btn active" data-rating="all"><i class="fas fa-list"></i> All</button>
+                            <button class="filter-btn" data-rating="5"><i class="fas fa-star"></i> 5★</button>
+                            <button class="filter-btn" data-rating="4"><i class="fas fa-star"></i> 4★</button>
+                            <button class="filter-btn" data-rating="3"><i class="fas fa-star"></i> 3★</button>
                         </div>
                     </div>
                     
                     <div class="reviews-summary-card">
-                        <!-- Left: big number + stars -->
+                        <!-- Left: Rating Summary -->
                         <div class="summary-left">
                             <div class="avg-rating-number" id="avgRatingNumber">0.0</div>
                             <div class="stars" id="avgStarsDisplay"></div>
                             <div class="total-reviews-text" id="totalReviewsCountText">Based on 0 reviews</div>
                         </div>
 
-                        <!-- Middle: Rating breakdown bars -->
+                        <!-- Middle: Rating Breakdown Bars -->
                         <div class="rating-breakdown" id="ratingBreakdown">
                             <div class="rating-bar-row" data-star="5">
                                 <span class="star-label">5 ★</span>

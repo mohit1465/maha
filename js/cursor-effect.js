@@ -391,11 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isEditableTarget(event.target)) {
                 lockTextSelection();
             }
-
-            if (!isInteractiveTarget(event.target)) {
-                event.preventDefault();
-            }
-        }, { passive: false });
+        }, { passive: true });
         window.addEventListener('touchend', () => {
             pointer.down = false;
             unlockTextSelection();

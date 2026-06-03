@@ -910,24 +910,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return `
                         <div class="review-card" data-rating="${ratingVal}" style="animation-delay:${idx * 0.05}s">
                             <div class="review-header">
-                                <div class="reviewer-info">
-                                    <div class="reviewer-avatar" style="background: linear-gradient(135deg, ${color}, ${color}cc);">${initial}</div>
-                                    <div>
-                                        <div class="reviewer-name">${name}</div>
-                                        <div class="reviewer-verified">
-                                            ${review.verifiedBuyer ? '<i class="fas fa-check-circle"></i> Verified Buyer' : ''}
-                                        </div>
+                                <div class="review-left">
+                                    <div class="reviewer-name">${name}</div>
+                                    <div class="review-date">${formattedDate}</div>
+                                    <div class="review-rating-stars">${renderStarsHTML(review.rating)}</div>
+                                    <div class="review-badges">
+                                        ${review.verifiedBuyer ? '<span class="review-badge"><i class="fas fa-check-circle"></i> Verified Buyer</span>' : ''}
                                     </div>
                                 </div>
-                                <div class="review-rating">${renderStarsHTML(review.rating)}</div>
                             </div>
+                            ${review.reviewTitle ? `<p class="review-title">${review.reviewTitle}</p>` : ''}
                             <p class="review-text">${review.reviewText}</p>
                             <div class="review-footer">
-                                <span class="review-date">${formattedDate}</span>
-                                <button class="review-helpful-btn" aria-label="Mark as helpful">
+                                <button class="review-helpful" aria-label="Mark as helpful">
                                     <i class="far fa-thumbs-up"></i>
-                                    <span>Helpful</span>
-                                    <span class="helpful-count">0</span>
+                                    <span class="review-helpful-count">0</span>
                                 </button>
                             </div>
                         </div>
