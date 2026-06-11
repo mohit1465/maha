@@ -283,6 +283,199 @@ span {
     color: #ffffff;
 }
 
+/* Profile Completion Widget Upgrade */
+.completion-widget {
+    background: linear-gradient(135deg, #1b1b1b 0%, #2a2a2a 100%);
+    border: none;
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.4s ease forwards;
+}
+
+.completion-widget::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(252, 110, 32, 0.15) 0%, rgba(252, 110, 32, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.completion-rewards-icon {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: #fc6e20;
+    opacity: 0.2;
+    transform: rotate(15deg);
+}
+
+.completion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.completion-header h4 {
+    font-size: var(--text-h3);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.5px;
+}
+
+.completion-header span {
+    font-weight: 800;
+    color: #fc6e20;
+    font-size: var(--text-h4);
+    background: rgba(252, 110, 32, 0.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+.completion-progress-bar {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.completion-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fc6e20, #ff9e66);
+    width: 0%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 5px;
+    position: relative;
+}
+
+.completion-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.completion-subtext {
+    font-size: var(--text-body);
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.missing-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.missing-step-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px 20px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.missing-step-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: rgba(252, 110, 32, 0.5);
+}
+
+.missing-step-card span {
+    font-size: var(--text-body);
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.missing-step-card select,
+.missing-step-card input {
+    padding: 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: var(--text-body);
+    min-width: 180px;
+    background: rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.missing-step-card select option {
+    background: #2a2a2a;
+    color: #ffffff;
+}
+
+.missing-step-card select:focus,
+.missing-step-card input:focus {
+    border-color: #fc6e20;
+}
+
+.step-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.missing-step-card button {
+    background: #fc6e20;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(252, 110, 32, 0.3);
+}
+
+.missing-step-card button:hover {
+    background: #ff8e4f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(252, 110, 32, 0.4);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .profile-section {
@@ -368,6 +561,21 @@ span {
         padding: 15px 20px;
     }
 
+    .completion-widget {
+        padding: 16px;
+        border-radius: 16px;
+    }
+    
+    .missing-step-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .missing-step-card button {
+        width: 100%;
+    }
+
     .profile-menu-container {
         padding: 5px;
         border-radius: 25px;
@@ -399,4 +607,78 @@ span {
     .action-card h3 {
         font-size: var(--text-body);
     }
+}
+
+/* Coupon Stack Widget */
+.coupon-stack-widget {
+    position: relative;
+    width: 80px;
+    height: 40px;
+    cursor: pointer;
+    perspective: 1000px;
+    margin-left: 15px;
+}
+
+.stack-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.stack-cards {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.stack-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #fc6e20, #ff9e66);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border: 1px dashed rgba(255,255,255,0.5);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+}
+
+.stack-card.active {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(10px);
+    z-index: 3;
+}
+
+.stack-card.next {
+    opacity: 0.8;
+    transform: translateY(4px) scale(0.95) translateZ(5px);
+    z-index: 2;
+}
+
+.stack-card.hidden-card {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    z-index: 1;
+}
+
+.coupon-stack-widget:hover .stack-card.active {
+    transform: translateY(-5px) scale(1.05) translateZ(15px);
 }

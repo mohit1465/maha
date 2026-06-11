@@ -88,36 +88,49 @@ async function loadProducts() {
 function renderProducts() {
     productList.innerHTML = '';
     if (allProducts.length === 0) {
-        productList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No products found.</p>';
+        productList.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666; padding: 2rem;">No products found.</td></tr>';
         return;
     }
 
     allProducts.forEach(product => {
-        const imgUrl = product.images && product.images['1'] ? product.images['1'] : '';
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-            <div class="item-info">
-                <img src="${imgUrl || 'https://placehold.co/100x100?text=No+Img'}" class="item-img">
-                <div>
-                    <h4 style="margin: 0;">${product.name}</h4>
-                    <p style="margin: 0; font-size: 0.8rem; color: #666;">
-                        ₹${product.price} 
-                        ${product.originalPrice ? `<span style="text-decoration: line-through; margin-left: 5px; opacity: 0.6;">₹${product.originalPrice}</span>` : ''}
-                        | ${product.category}
-                    </p>
-                </div>
-            </div>
-            <div class="item-actions">
-                <button class="btn btn-outline" onclick="window.editProduct('${product._id}')" style="padding: 5px 12px;">
+        const imgUrl = product.images && product.images['1'] ? product.images['1'] : 'https://placehold.co/100x100?text=No+Img';
+        
+        // Build badges
+        const tagsHtml = (product.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join('');
+        const groupsHtml = (product.groups || []).map(g => `<span class="group-badge">${g}</span>`).join('');
+        const hasShortcuts = product.longDescription && (product.longDescription.nutritionKey || product.longDescription.storageKey);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <img src="${imgUrl}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
+            </td>
+            <td>
+                <div class="prod-title">${product.name}</div>
+                <div class="prod-meta"><strong>Short:</strong> ${product.shortTitle || 'N/A'}</div>
+                <div class="prod-meta" style="color: #888;">${product.shortDescription || 'No description'}</div>
+                ${hasShortcuts ? '<div class="prod-meta"><i class="fas fa-bolt" style="color:#fc9220;"></i> Has Shortcuts</div>' : ''}
+            </td>
+            <td>
+                <div class="prod-meta"><strong>Cat:</strong> ${product.category}</div>
+                <div style="margin-top: 4px;">${tagsHtml}</div>
+                <div style="margin-top: 4px;">${groupsHtml}</div>
+            </td>
+            <td>
+                <div class="prod-title">₹${product.price}</div>
+                ${product.originalPrice ? `<div class="prod-meta" style="text-decoration: line-through;">MRP: ₹${product.originalPrice}</div>` : ''}
+                <div class="prod-meta"><strong>Sizes:</strong> ${(product.quantities_available || []).join(', ')}</div>
+            </td>
+            <td style="text-align: right;">
+                <button class="btn btn-outline" onclick="window.editProduct('${product._id}')" style="padding: 6px 10px; margin-bottom: 4px; width: 100%; justify-content: center;">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn btn-danger" onclick="window.deleteProduct('${product._id}')" style="padding: 5px 12px; margin-left: 8px;">
-                    <i class="fas fa-trash"></i>
+                <button class="btn btn-danger" onclick="window.deleteProduct('${product._id}')" style="padding: 6px 10px; width: 100%; justify-content: center;">
+                    <i class="fas fa-trash"></i> Delete
                 </button>
-            </div>
+            </td>
         `;
-        productList.appendChild(div);
+        productList.appendChild(tr);
     });
 }
 
@@ -410,22 +423,46 @@ async function sendStatusUpdateEmail(order, userEmail) {
 }
 
 // --- IMAGE HANDLING & FORM CRUD (keeping existing logic) ---
-// ... (omitted for brevity, will be merged below)
-
-// RE-INTEGRATING THE REMAINING LOGIC FROM ORIGINAL admin.js
-// --- EXISTING PRODUCT FORM LOGIC ---
+const productModalOverlay = document.getElementById('productModalOverlay');
+const closeModalBtn = document.getElementById('closeModalBtn');
 
 window.editProduct = (id) => {
     const product = allProducts.find(p => p._id === id);
     if (!product) return;
 
     document.getElementById('productId').value = product._id;
-    document.getElementById('productName').value = product.name;
+    document.getElementById('productName').value = product.name || '';
+    document.getElementById('productShortTitle').value = product.shortTitle || '';
     document.getElementById('productHindiName').value = product.hindiName || '';
-    document.getElementById('productCategory').value = product.category || 'Other';
-    document.getElementById('productPrice').value = product.price;
+    
+    // Tag inputs
+    window.setTagValues('categoryTagInput', product.category ? [product.category] : ['Other Dry Fruits']);
+    window.setTagValues('quantitiesTagInput', product.quantities_available || []);
+    window.setTagValues('keywordsTagInput', product.keywords || []);
+    window.setTagValues('tagsTagInput', product.tags || []);
+    window.setTagValues('groupsTagInput', product.groups || []);
+    
+    document.getElementById('productPrice').value = product.price || '';
     document.getElementById('productOriginalPrice').value = product.originalPrice || '';
-    document.getElementById('productQuantities').value = product.quantities_available ? product.quantities_available.join(', ') : '';
+    
+    document.getElementById('productShortDescription').value = product.shortDescription || '';
+    
+    // Handle Long Description Object vs String
+    let longDescText = '';
+    let nutKey = '';
+    let storKey = '';
+    if (product.longDescription) {
+        if (typeof product.longDescription === 'object') {
+            longDescText = product.longDescription.details || '';
+            nutKey = product.longDescription.nutritionKey || '';
+            storKey = product.longDescription.storageKey || '';
+        } else {
+            longDescText = product.longDescription;
+        }
+    }
+    document.getElementById('productLongDescription').value = longDescText;
+    document.getElementById('productNutritionKey').value = nutKey;
+    document.getElementById('productStorageKey').value = storKey;
 
     currentImages = [];
     if (product.images) {
@@ -435,9 +472,9 @@ window.editProduct = (id) => {
     }
     renderImagePreviews();
 
+    productModalOverlay.classList.remove('hidden');
     document.getElementById('formTitle').textContent = 'Edit Product';
-    productFormContainer.classList.remove('hidden');
-    productFormContainer.scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo(0, 0);
 };
 
 window.deleteProduct = async (id) => {
@@ -455,12 +492,18 @@ window.deleteProduct = async (id) => {
 
 document.getElementById('addNewBtn').addEventListener('click', () => {
     resetForm();
-    productFormContainer.classList.remove('hidden');
+    productModalOverlay.classList.remove('hidden');
     document.getElementById('formTitle').textContent = 'Add New Product';
 });
 
-document.getElementById('cancelBtn').addEventListener('click', () => {
-    productFormContainer.classList.add('hidden');
+const closeModal = () => {
+    productModalOverlay.classList.add('hidden');
+};
+
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+productModalOverlay.addEventListener('click', (e) => {
+    if (e.target === productModalOverlay) closeModal();
 });
 
 imageInput.addEventListener('change', async function () {
@@ -511,12 +554,31 @@ productForm.addEventListener('submit', async (e) => {
     const isEdit = !!id;
     const docId = isEdit ? id : 'prod-' + Date.now();
 
-    const name = document.getElementById('productName').value;
-    const hindiName = document.getElementById('productHindiName').value;
-    const category = document.getElementById('productCategory').value;
+    const name = document.getElementById('productName').value.trim();
+    const shortTitle = document.getElementById('productShortTitle').value.trim();
+    const hindiName = document.getElementById('productHindiName').value.trim();
+    
+    const categoryTags = window.getTagValues('categoryTagInput');
+    const category = categoryTags.length > 0 ? categoryTags[0] : 'Other Dry Fruits';
+    
     const price = Number(document.getElementById('productPrice').value);
     const originalPrice = document.getElementById('productOriginalPrice').value ? Number(document.getElementById('productOriginalPrice').value) : null;
-    const quantities = document.getElementById('productQuantities').value.split(',').map(s => s.trim()).filter(s => s);
+    
+    const quantities = window.getTagValues('quantitiesTagInput');
+    
+    const shortDescription = document.getElementById('productShortDescription').value.trim();
+    const details = document.getElementById('productLongDescription').value.trim();
+    const nutritionKey = document.getElementById('productNutritionKey').value;
+    const storageKey = document.getElementById('productStorageKey').value;
+    
+    const keywords = window.getTagValues('keywordsTagInput').map(s => s.toLowerCase());
+    const tags = window.getTagValues('tagsTagInput');
+    const groups = window.getTagValues('groupsTagInput');
+
+    let discount = 0;
+    if (originalPrice && originalPrice > price) {
+        discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+    }
 
     try {
         const imagesObject = {};
@@ -527,17 +589,29 @@ productForm.addEventListener('submit', async (e) => {
         const productData = {
             id: docId,
             name,
+            shortTitle,
             hindiName,
             category,
             price,
             originalPrice,
+            discount,
             quantities_available: quantities,
+            shortDescription,
+            longDescription: {
+                details,
+                nutritionKey: nutritionKey || null,
+                storageKey: storageKey || null
+            },
+            keywords,
+            tags,
+            groups,
             images: imagesObject,
-            createdAt: isEdit ? (allProducts.find(p => p._id === id)?.createdAt || Date.now()) : Date.now()
+            lastUpdated: new Date().toISOString(),
+            createdAt: isEdit ? (allProducts.find(p => p._id === id)?.createdAt || new Date().toISOString()) : new Date().toISOString()
         };
 
         await setDoc(doc(db, "products", docId), productData);
-        productFormContainer.classList.add('hidden');
+        productModalOverlay.classList.add('hidden');
         resetForm();
         loadProducts();
         alert('Product saved!');
@@ -552,6 +626,18 @@ function resetForm() {
     productForm.reset();
     document.getElementById('productId').value = '';
     document.getElementById('productOriginalPrice').value = '';
+    document.getElementById('productShortTitle').value = '';
+    document.getElementById('productShortDescription').value = '';
+    document.getElementById('productLongDescription').value = '';
+    document.getElementById('productNutritionKey').value = '';
+    document.getElementById('productStorageKey').value = '';
+    
+    window.setTagValues('categoryTagInput', []);
+    window.setTagValues('quantitiesTagInput', ['250g', '500g', '1kg']);
+    window.setTagValues('keywordsTagInput', []);
+    window.setTagValues('tagsTagInput', []);
+    window.setTagValues('groupsTagInput', []);
+    
     currentImages = [];
     imagePreviewContainer.innerHTML = '';
 }
@@ -605,13 +691,12 @@ async function loadCoupons() {
 function renderCoupons() {
     couponList.innerHTML = '';
     if (allCoupons.length === 0) {
-        couponList.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">No coupons created yet.</p>';
+        couponList.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666; padding: 2rem;">No coupons created yet.</td></tr>';
         return;
     }
 
     allCoupons.forEach(coupon => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
+        const tr = document.createElement('tr');
         
         let formattedExpiry = 'No Expiry';
         if (coupon.expiryDate) {
@@ -622,36 +707,48 @@ function renderCoupons() {
                 formattedExpiry = coupon.expiryDate;
             }
         }
+        
+        const discountStr = coupon.discountFlat ? `₹${coupon.discountFlat} OFF` : `${coupon.discountPercent}% OFF`;
+        
+        let eligibilityStr = 'Everyone';
+        if (coupon.eligibility) {
+            if (coupon.eligibility.type === 'new_users') eligibilityStr = `New Users (<${coupon.eligibility.threshold}d)`;
+            else if (coupon.eligibility.type === 'first_order') eligibilityStr = 'First Order Only';
+            else if (coupon.eligibility.type === 'profile_completion') eligibilityStr = 'Profile Completed';
+            else if (coupon.eligibility.type === 'total_spent') eligibilityStr = `Spent > ₹${coupon.eligibility.threshold}`;
+            else if (coupon.eligibility.type === 'specific_users') eligibilityStr = 'Specific Users';
+        }
+        
+        const maxUses = coupon.maxUsesGlobally || '∞';
+        const timesUsed = coupon.timesUsed || 0;
+        const limitsStr = `<div style="font-size: 0.85rem;">Used: ${timesUsed}/${maxUses}</div>
+                           <div style="font-size: 0.85rem; color: #666;">Min Order: ₹${coupon.minOrder || 0}</div>`;
 
-        div.innerHTML = `
-            <div class="item-info" style="flex: 1;">
-                <div style="width: 40px; height: 40px; background: #e0f2fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #0284c7; font-size: 1.25rem;">
-                    <i class="fas fa-ticket-alt"></i>
+        tr.innerHTML = `
+            <td>
+                <h4 style="margin: 0; font-family: monospace; font-size: 1.1rem; letter-spacing: 0.5px; color: var(--primary-dark);">${coupon.code}</h4>
+            </td>
+            <td style="font-weight: 600;">${discountStr}</td>
+            <td><span class="badge" style="background: #e0f2fe; color: #0284c7;">${eligibilityStr}</span></td>
+            <td>${limitsStr}</td>
+            <td>
+                <span class="badge ${coupon.active ? 'badge-completed' : 'badge-cancelled'}">
+                    ${coupon.active ? 'Active' : 'Inactive'}
+                </span>
+                <div style="font-size: 0.8rem; margin-top: 4px; color: #888;">Expires: ${formattedExpiry}</div>
+            </td>
+            <td style="text-align: right;">
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="btn btn-outline" onclick="window.toggleCouponActive('${coupon._id}', ${coupon.active})" style="padding: 5px 10px;">
+                        <i class="fas ${coupon.active ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                    </button>
+                    <button class="btn btn-danger" onclick="window.deleteCoupon('${coupon._id}')" style="padding: 5px 10px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                        <h4 style="margin: 0; font-family: monospace; font-size: 1.1rem; letter-spacing: 0.5px;">${coupon.code}</h4>
-                        <span class="badge ${coupon.active ? 'badge-completed' : 'badge-cancelled'}" style="font-size: 0.7rem; padding: 2px 8px;">
-                            ${coupon.active ? 'Active' : 'Inactive'}
-                        </span>
-                    </div>
-                    <p style="margin: 0; font-size: 0.85rem; color: #555;">
-                        <strong>Discount:</strong> ${coupon.discountPercent}% | 
-                        <strong>Min Order:</strong> ₹${coupon.minOrder || 0} | 
-                        <strong>Expires:</strong> ${formattedExpiry}
-                    </p>
-                </div>
-            </div>
-            <div class="item-actions" style="display: flex; align-items: center; gap: 8px;">
-                <button class="btn btn-outline" onclick="window.toggleCouponActive('${coupon._id}', ${coupon.active})" style="padding: 5px 12px; font-size: 0.8rem;">
-                    <i class="fas ${coupon.active ? 'fa-eye-slash' : 'fa-eye'}"></i> ${coupon.active ? 'Deactivate' : 'Activate'}
-                </button>
-                <button class="btn btn-danger" onclick="window.deleteCoupon('${coupon._id}')" style="padding: 5px 12px; font-size: 0.8rem;">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
+            </td>
         `;
-        couponList.appendChild(div);
+        couponList.appendChild(tr);
     });
 }
 
@@ -685,16 +782,98 @@ window.deleteCoupon = async (id) => {
     }
 };
 
-// Coupon Form Listeners
-document.getElementById('addCouponBtn').addEventListener('click', () => {
-    couponForm.reset();
-    document.getElementById('couponId').value = '';
-    document.getElementById('couponFormTitle').textContent = 'Add New Coupon';
-    couponFormContainer.classList.remove('hidden');
+// Coupon Modal Elements
+const couponModalOverlay = document.getElementById('couponModalOverlay');
+const closeCouponModalBtn = document.getElementById('closeCouponModalBtn');
+const cancelCouponBtnModal = document.getElementById('cancelCouponBtnModal');
+// couponForm is already declared at the top of the file
+
+// Eligibility Type change listener
+const couponEligibilityType = document.getElementById('couponEligibilityType');
+const eligibilityThresholdContainer = document.getElementById('eligibilityThresholdContainer');
+const eligibilityThresholdLabel = document.getElementById('eligibilityThresholdLabel');
+const eligibilityUidsContainer = document.getElementById('eligibilityUidsContainer');
+
+couponEligibilityType.addEventListener('change', (e) => {
+    const val = e.target.value;
+    eligibilityThresholdContainer.style.display = 'none';
+    eligibilityUidsContainer.style.display = 'none';
+    
+    if (val === 'new_users') {
+        eligibilityThresholdContainer.style.display = 'block';
+        eligibilityThresholdLabel.textContent = 'Days since registration';
+        document.getElementById('couponEligibilityThreshold').placeholder = 'e.g. 7';
+    } else if (val === 'total_spent') {
+        eligibilityThresholdContainer.style.display = 'block';
+        eligibilityThresholdLabel.textContent = 'Minimum Total Spent (₹)';
+        document.getElementById('couponEligibilityThreshold').placeholder = 'e.g. 1000';
+    } else if (val === 'specific_users') {
+        eligibilityUidsContainer.style.display = 'block';
+    }
 });
 
-document.getElementById('cancelCouponBtn').addEventListener('click', () => {
-    couponFormContainer.classList.add('hidden');
+function openCouponModal() {
+    couponForm.reset();
+    document.getElementById('couponId').value = '';
+    document.getElementById('couponTimesUsed').value = '0';
+    document.getElementById('couponFormTitle').textContent = 'Add New Coupon';
+    couponEligibilityType.dispatchEvent(new Event('change')); // reset UI
+    couponModalOverlay.classList.remove('hidden');
+}
+
+function closeCouponModal() {
+    couponModalOverlay.classList.add('hidden');
+}
+
+document.getElementById('addCouponBtn').addEventListener('click', openCouponModal);
+closeCouponModalBtn.addEventListener('click', closeCouponModal);
+cancelCouponBtnModal.addEventListener('click', closeCouponModal);
+
+// Seed Default Campaigns
+document.getElementById('seedCouponsBtn')?.addEventListener('click', async () => {
+    if (!confirm('This will automatically create 5 default smart campaigns (Welcome1, Welcome7, Welcome30, VIP1000, ProfileReward). Proceed?')) return;
+    loadingOverlay.style.display = 'flex';
+    
+    const defaultCoupons = [
+        {
+            code: 'WELCOME1', active: true, discountPercent: 20, discountFlat: 0, minOrder: 0, 
+            expiryDate: null, maxUsesGlobally: null, maxUsesPerUser: 1, timesUsed: 0,
+            restrictedCategories: [], restrictedTags: [], eligibility: { type: 'new_users', threshold: 1 }
+        },
+        {
+            code: 'WELCOME7', active: true, discountPercent: 15, discountFlat: 0, minOrder: 500, 
+            expiryDate: null, maxUsesGlobally: null, maxUsesPerUser: 1, timesUsed: 0,
+            restrictedCategories: [], restrictedTags: [], eligibility: { type: 'new_users', threshold: 7 }
+        },
+        {
+            code: 'WELCOME30', active: true, discountPercent: 10, discountFlat: 0, minOrder: 800, 
+            expiryDate: null, maxUsesGlobally: null, maxUsesPerUser: 1, timesUsed: 0,
+            restrictedCategories: [], restrictedTags: [], eligibility: { type: 'new_users', threshold: 30 }
+        },
+        {
+            code: 'VIP1000', active: true, discountPercent: 0, discountFlat: 200, minOrder: 1500, 
+            expiryDate: null, maxUsesGlobally: null, maxUsesPerUser: null, timesUsed: 0,
+            restrictedCategories: [], restrictedTags: [], eligibility: { type: 'total_spent', threshold: 1000 }
+        },
+        {
+            code: 'PROFILEPRO', active: true, discountPercent: 10, discountFlat: 0, minOrder: 0, 
+            expiryDate: null, maxUsesGlobally: null, maxUsesPerUser: 1, timesUsed: 0,
+            restrictedCategories: [], restrictedTags: [], eligibility: { type: 'profile_completion' }
+        }
+    ];
+
+    try {
+        for (const coupon of defaultCoupons) {
+            await setDoc(doc(db, "coupons", coupon.code), coupon);
+        }
+        loadCoupons();
+        alert('Default campaigns generated successfully!');
+    } catch (error) {
+        console.error("Error seeding coupons:", error);
+        alert('Failed to generate campaigns.');
+    } finally {
+        loadingOverlay.style.display = 'none';
+    }
 });
 
 couponForm.addEventListener('submit', async (e) => {
@@ -702,26 +881,64 @@ couponForm.addEventListener('submit', async (e) => {
     loadingOverlay.style.display = 'flex';
     
     const code = document.getElementById('couponCodeInput').value.trim().toUpperCase();
-    const discountPercent = Number(document.getElementById('couponDiscount').value);
-    const minOrder = Number(document.getElementById('couponMinOrder').value);
+    const active = document.getElementById('couponActive').checked;
+    
+    const discountType = document.getElementById('couponDiscountType').value;
+    const discountVal = Number(document.getElementById('couponDiscountValue').value);
+    
+    let discountPercent = 0;
+    let discountFlat = 0;
+    if (discountType === 'percent') discountPercent = discountVal;
+    if (discountType === 'flat') discountFlat = discountVal;
+    
+    const minOrder = Number(document.getElementById('couponMinOrder').value) || 0;
     const expiryDate = document.getElementById('couponExpiry').value;
+    const maxUsesGlobally = Number(document.getElementById('couponMaxUsesGlobally').value) || null;
+    const maxUsesPerUser = Number(document.getElementById('couponMaxUsesPerUser').value) || 1;
+    const timesUsed = Number(document.getElementById('couponTimesUsed').value) || 0;
+    
+    const restrictCatsStr = document.getElementById('couponRestrictedCategories').value.trim();
+    const restrictTagsStr = document.getElementById('couponRestrictedTags').value.trim();
+    
+    const restrictedCategories = restrictCatsStr ? restrictCatsStr.split(',').map(s=>s.trim()) : [];
+    const restrictedTags = restrictTagsStr ? restrictTagsStr.split(',').map(s=>s.trim()) : [];
+    
+    // Eligibility
+    const eligType = couponEligibilityType.value;
+    const eligThreshold = Number(document.getElementById('couponEligibilityThreshold').value) || 0;
+    const uidsStr = document.getElementById('couponAllowedUids').value.trim();
+    const allowedUids = uidsStr ? uidsStr.split(',').map(s=>s.trim()) : [];
+    
+    const eligibility = { type: eligType };
+    if (eligType === 'new_users' || eligType === 'total_spent') {
+        eligibility.threshold = eligThreshold;
+    } else if (eligType === 'specific_users') {
+        eligibility.allowedUids = allowedUids;
+    }
     
     try {
         const couponData = {
             code,
+            active,
             discountPercent,
+            discountFlat,
             minOrder,
             expiryDate,
-            active: true
+            maxUsesGlobally,
+            maxUsesPerUser,
+            timesUsed,
+            restrictedCategories,
+            restrictedTags,
+            eligibility
         };
         
-        const docId = code; // Use the coupon code as the document ID for simplicity and unique code check
+        // Remove undefined/nulls if preferred, but Firestore handles them ok or we can just send.
+        const docId = code; 
         await setDoc(doc(db, "coupons", docId), couponData);
         
-        couponFormContainer.classList.add('hidden');
-        couponForm.reset();
+        closeCouponModal();
         loadCoupons();
-        alert('Coupon saved successfully!');
+        // Removed alert per style, list reloads cleanly.
     } catch (error) {
         console.error("Error saving coupon:", error);
         alert('Failed to save coupon.');
@@ -858,3 +1075,185 @@ window.seedRandomReviews = async () => {
         document.querySelector('#loadingOverlay p').textContent = "Processing...";
     }
 };
+
+// --- TAG INPUT SYSTEM ---
+window.tagInputState = {};
+
+function initTagInputs() {
+    const containers = document.querySelectorAll('.tag-input-container');
+    containers.forEach(container => {
+        const id = container.id;
+        window.tagInputState[id] = [];
+        
+        container.innerHTML = `
+            <div class="pills-wrapper" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+            <input type="text" class="tag-input" placeholder="${container.dataset.placeholder || ''}">
+            <div class="tag-suggestions"></div>
+        `;
+        
+        const input = container.querySelector('.tag-input');
+        const suggestionsDiv = container.querySelector('.tag-suggestions');
+        const maxTags = parseInt(container.dataset.max) || Infinity;
+        
+        const getSuggestions = (query) => {
+            const set = new Set();
+            let prop = '';
+            if (id === 'categoryTagInput') prop = 'category';
+            if (id === 'quantitiesTagInput') prop = 'quantities_available';
+            if (id === 'keywordsTagInput') prop = 'keywords';
+            if (id === 'tagsTagInput') prop = 'tags';
+            if (id === 'groupsTagInput') prop = 'groups';
+            
+            allProducts.forEach(p => {
+                if (Array.isArray(p[prop])) {
+                    p[prop].forEach(v => set.add(v));
+                } else if (typeof p[prop] === 'string' && p[prop].trim() !== '') {
+                    set.add(p[prop]);
+                }
+            });
+            
+            const existing = window.tagInputState[id].map(t => t.toLowerCase());
+            return Array.from(set).filter(s => 
+                s.toLowerCase().includes(query.toLowerCase()) && !existing.includes(s.toLowerCase())
+            ).sort().slice(0, 5);
+        };
+        
+        const renderSuggestions = (query) => {
+            const matches = getSuggestions(query);
+            if (matches.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+            suggestionsDiv.innerHTML = matches.map((m, idx) => 
+                `<div class="tag-suggestion-item ${idx===0?'active':''}">${m}</div>`
+            ).join('');
+            suggestionsDiv.style.display = 'block';
+        };
+        
+        const addTag = (val) => {
+            const trimmed = val.trim();
+            if (!trimmed) return;
+            if (window.tagInputState[id].length >= maxTags) {
+                if (maxTags === 1) {
+                    window.tagInputState[id] = [trimmed]; // Replace for single
+                } else {
+                    return;
+                }
+            } else if (!window.tagInputState[id].some(t => t.toLowerCase() === trimmed.toLowerCase())) {
+                window.tagInputState[id].push(trimmed);
+            }
+            input.value = '';
+            renderPills();
+            suggestionsDiv.style.display = 'none';
+        };
+        
+        const renderPills = () => {
+            const wrapper = container.querySelector('.pills-wrapper');
+            wrapper.innerHTML = window.tagInputState[id].map(tag => `
+                <span class="tag-pill">
+                    ${tag}
+                    <span class="remove-tag" data-tag="${tag}">&times;</span>
+                </span>
+            `).join('');
+            
+            if (window.tagInputState[id].length >= maxTags && maxTags > 1) {
+                input.style.display = 'none';
+            } else {
+                input.style.display = 'block';
+            }
+        };
+        
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-tag')) {
+                const tagToRemove = e.target.dataset.tag;
+                window.tagInputState[id] = window.tagInputState[id].filter(t => t !== tagToRemove);
+                renderPills();
+            } else if (e.target.classList.contains('tag-suggestion-item')) {
+                addTag(e.target.textContent);
+            } else {
+                input.focus();
+            }
+        });
+        
+        input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.includes(',')) {
+                const parts = val.split(',');
+                parts.forEach(p => addTag(p));
+                e.target.value = '';
+            } else {
+                renderSuggestions(val);
+            }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const active = suggestionsDiv.querySelector('.active');
+                if (active && suggestionsDiv.style.display === 'block') {
+                    addTag(active.textContent);
+                } else {
+                    addTag(input.value);
+                }
+            } else if (e.key === 'Backspace' && input.value === '') {
+                window.tagInputState[id].pop();
+                renderPills();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const items = Array.from(suggestionsDiv.querySelectorAll('.tag-suggestion-item'));
+                const idx = items.findIndex(el => el.classList.contains('active'));
+                if (idx > -1 && idx < items.length - 1) {
+                    items[idx].classList.remove('active');
+                    items[idx + 1].classList.add('active');
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const items = Array.from(suggestionsDiv.querySelectorAll('.tag-suggestion-item'));
+                const idx = items.findIndex(el => el.classList.contains('active'));
+                if (idx > 0) {
+                    items[idx].classList.remove('active');
+                    items[idx - 1].classList.add('active');
+                }
+            }
+        });
+        
+        input.addEventListener('focus', () => renderSuggestions(input.value));
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+    });
+}
+
+window.getTagValues = (id) => {
+    return window.tagInputState[id] || [];
+};
+
+window.setTagValues = (id, values) => {
+    if (!window.tagInputState) window.tagInputState = {};
+    window.tagInputState[id] = [...values];
+    const container = document.getElementById(id);
+    if (container) {
+        const wrapper = container.querySelector('.pills-wrapper');
+        const input = container.querySelector('.tag-input');
+        const maxTags = parseInt(container.dataset.max) || Infinity;
+        if (wrapper) {
+            wrapper.innerHTML = window.tagInputState[id].map(tag => `
+                <span class="tag-pill">
+                    ${tag}
+                    <span class="remove-tag" data-tag="${tag}">&times;</span>
+                </span>
+            `).join('');
+            if (window.tagInputState[id].length >= maxTags && maxTags > 1) {
+                input.style.display = 'none';
+            } else {
+                input.style.display = 'block';
+            }
+        }
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initTagInputs();
+});

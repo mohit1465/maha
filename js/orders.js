@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 15px; margin-left: auto;">
-                            <button onclick="window.downloadInvoice('${btoa(JSON.stringify(order))}')" class="btn-download-invoice" style="background: white; border: 1.5px solid #fc6e20; color: #fc6e20; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                            <button onclick="window.downloadInvoice('${btoa(encodeURIComponent(JSON.stringify(order)))}')" class="btn-download-invoice" style="background: white; border: 1.5px solid #fc6e20; color: #fc6e20; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
                                 <i class="fas fa-file-pdf"></i> Download Invoice
                             </button>
                             <div style="text-align: right;">
@@ -299,7 +299,7 @@ async function loadJsPDF() {
 }
 
 window.downloadInvoice = async function(orderB64) {
-    const order = JSON.parse(atob(orderB64));
+    const order = JSON.parse(decodeURIComponent(atob(orderB64)));
     console.log("Generating invoice for order:", order);
     
     try {

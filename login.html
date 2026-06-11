@@ -21,6 +21,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/login-signup.css">
+    <style>
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: url("assets/Particles/Almond.png") 16 16, auto;
+            }
+        }
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            body,
+            body.custom-cursor-active,
+            body.custom-cursor-active * {
+                cursor: auto !important;
+            }
+        }
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none !important;
+        }
+        #customCursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 2147483647;
+            transform: translate(calc(-50% + 8px), calc(-50% + 8px));
+            display: none;
+            transition: transform 0.08s ease-out;
+        }
+    </style>
+    <!-- Lordicon -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
 </head>
 
 <body data-page="login">
@@ -108,6 +140,7 @@
                     <!-- STEP 6: Date of Birth -->
                     <div class="step" data-step="6">
                         <p class="auth-info-text">Select your date of birth <span class="optional-label">(Optional)</span></p>
+                        <p class="coupon-hint" style="color: #fc6e20; font-size: 13px; font-weight: 600; margin-top: -10px; margin-bottom: 15px;"><i class="fas fa-gift"></i> Answer to unlock a birthday coupon!</p>
                         <div class="auth-form-row">
                             <input type="date" placeholder="Date of Birth" id="dob">
                         </div>
@@ -121,12 +154,13 @@
                     <!-- STEP 7: Discovery Source -->
                     <div class="step" data-step="7">
                         <p class="auth-info-text">How did you hear about us? <span class="optional-label">(Optional)</span></p>
+                        <p class="coupon-hint" style="color: #fc6e20; font-size: 13px; font-weight: 600; margin-top: -10px; margin-bottom: 15px;"><i class="fas fa-ticket-alt"></i> Answer to unlock a welcome coupon!</p>
                         <div class="option-grid">
-                            <button class="option-btn" data-value="Instagram">Instagram</button>
-                            <button class="option-btn" data-value="Friend">Friend</button>
-                            <button class="option-btn" data-value="Google">Google</button>
-                            <button class="option-btn" data-value="YouTube">YouTube</button>
-                            <button class="option-btn" data-value="Other">Other</button>
+                            <button class="option-btn" data-value="Instagram"><i class="fab fa-instagram" style="margin-right: 8px; color: #E1306C; font-size: 1.1em;"></i>Instagram</button>
+                            <button class="option-btn" data-value="Friend"><i class="fas fa-user-friends" style="margin-right: 8px; color: #fc6e20; font-size: 1.1em;"></i>Friend</button>
+                            <button class="option-btn" data-value="Google"><i class="fab fa-google" style="margin-right: 8px; color: #4285F4; font-size: 1.1em;"></i>Google</button>
+                            <button class="option-btn" data-value="YouTube"><i class="fab fa-youtube" style="margin-right: 8px; color: #FF0000; font-size: 1.1em;"></i>YouTube</button>
+                            <button class="option-btn" data-value="Other"><i class="fas fa-globe" style="margin-right: 8px; color: #666; font-size: 1.1em;"></i>Other</button>
                         </div>
                         <input type="hidden" id="discoverySource">
                         <div class="auth-action-group">
@@ -138,11 +172,24 @@
                     <!-- STEP 8: Food Preference -->
                     <div class="step" data-step="8">
                         <p class="auth-info-text">What do you like the most? <span class="optional-label">(Optional)</span></p>
-                        <div class="option-grid">
-                            <button class="option-btn" data-value="Almonds">Almonds</button>
-                            <button class="option-btn" data-value="Cashews">Cashews</button>
-                            <button class="option-btn" data-value="Raisins">Raisins</button>
-                            <button class="option-btn" data-value="Mixed">Mixed Dry Fruits</button>
+                        <p class="coupon-hint" style="color: #fc6e20; font-size: 13px; font-weight: 600; margin-top: -10px; margin-bottom: 15px;"><i class="fas fa-star"></i> Answer to unlock personalized coupons!</p>
+                        <div class="image-selection-grid">
+                            <div class="image-option-card" data-value="Almonds">
+                                <img src="assets/almonds.png" alt="Almonds">
+                                <span>Almonds</span>
+                            </div>
+                            <div class="image-option-card" data-value="Cashews">
+                                <img src="assets/cat 2.png" alt="Cashews">
+                                <span>Cashews</span>
+                            </div>
+                            <div class="image-option-card" data-value="Raisins">
+                                <img src="assets/cat 3.png" alt="Raisins">
+                                <span>Raisins</span>
+                            </div>
+                            <div class="image-option-card" data-value="Mixed">
+                                <img src="assets/other-dryfruits.png" alt="Mixed Dry Fruits">
+                                <span>Mixed</span>
+                            </div>
                         </div>
                         <input type="hidden" id="foodPreference">
                         <div class="auth-action-group">
@@ -171,6 +218,7 @@
     </section>
 
     <script type="module" src="js/login-signup.js"></script>
+    <script src="js/cursor-effect.js"></script>
 </body>
 
 </html>

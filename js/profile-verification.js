@@ -109,7 +109,7 @@ class ProfileVerification {
         }
 
         if (this.verificationMessage) {
-            this.verificationMessage.textContent = `Please verify your email address to access all features.`;
+            this.verificationMessage.textContent = `Please verify your email address to unlock Coupons and Free Delivery on your first 2 orders.`;
         }
     }
 

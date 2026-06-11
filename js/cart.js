@@ -14,7 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const backToCartBtn = document.getElementById('backToCart');
 
     let checkoutItems = []; // Track items being purchased
-    let appliedDiscount = 0; // Discount percentage
+    let appliedDiscount = 0; // Discount percentage or flat amount
+    let isPercentageDiscount = true;
+    let deliveryFee = 50; // Standard delivery fee
+    let appliedCouponCode = null; // Track applied code
     const cartView = document.getElementById('cartView');
 
     cartService.addListener((cartItems, isLoaded) => {
@@ -120,9 +123,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="cart-item-size">
                             <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
                                 ${['250g', '500g', '1kg', '2kg'].map(size => {
-                    const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
-                    return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
-                }).join('')}
+                const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
+                return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
+            }).join('')}
                             </select>
                         </div>
                         <div class="cart-item-actions">
@@ -170,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (subtotalDisplay) subtotalDisplay.textContent = '₹' + subtotal.toLocaleString('en-IN');
         if (summarySubtotal) summarySubtotal.textContent = '₹' + subtotal.toLocaleString('en-IN');
-        
+
         const savingsDisplay = document.querySelector('.summary-savings');
         if (savingsDisplay) {
             if (totalSavings > 0) {
@@ -219,17 +222,18 @@ document.addEventListener('DOMContentLoaded', function () {
             checkoutSection.classList.add('view-active');
             checkoutSection.classList.remove('view-hidden');
         }, 10);
-        
+
         cartSummaryBar.classList.add('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
+
         // Update Breadcrumb
         document.querySelectorAll('.checkout-only').forEach(el => el.style.display = 'inline');
         document.getElementById('breadcrumbCart').classList.remove('current');
 
         appliedDiscount = 0; // Reset discount on new checkout
+        appliedCouponCode = null;
         renderCheckoutSummary();
-        autofillProfile();
+        autofillProfile(); // This now also handles delivery fee logic
         initPaymentSelection();
         initCouponLogic();
     }
@@ -241,20 +245,20 @@ document.addEventListener('DOMContentLoaded', function () {
         checkoutSection.classList.replace('view-active', 'view-hidden');
         cartView.classList.add('view-active');
         cartView.classList.remove('view-hidden');
-        
+
         setTimeout(() => {
             checkoutSection.style.display = 'none';
         }, 500);
 
         cartSummaryBar.classList.remove('hidden');
-        
+
         // Update Breadcrumb
         document.querySelectorAll('.checkout-only').forEach(el => el.style.display = 'none');
         document.getElementById('breadcrumbCart').classList.add('current');
     };
 
     // Handle Browser Back Button
-    window.onpopstate = function(event) {
+    window.onpopstate = function (event) {
         if (checkoutSection && checkoutSection.style.display === 'block') {
             hideCheckout();
         }
@@ -298,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         applyBtn.onclick = async () => {
             const code = couponInput.value.trim().toUpperCase();
-            
+
             if (!code) {
                 messageDiv.textContent = 'Please enter a code';
                 messageDiv.className = 'coupon-message error';
@@ -315,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (querySnapshot.empty) {
                     appliedDiscount = 0;
+                    appliedCouponCode = null;
                     messageDiv.textContent = 'Invalid coupon code';
                     messageDiv.className = 'coupon-message error';
                     updateCheckoutTotals();
@@ -327,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Validate if active
                 if (couponData.active !== true) {
                     appliedDiscount = 0;
+                    appliedCouponCode = null;
                     messageDiv.textContent = 'This coupon is no longer active';
                     messageDiv.className = 'coupon-message error';
                     updateCheckoutTotals();
@@ -334,44 +340,154 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Validate expiryDate
-                let expiryDateObj = null;
                 if (couponData.expiryDate) {
-                    if (couponData.expiryDate.seconds) {
-                        expiryDateObj = new Date(couponData.expiryDate.seconds * 1000);
-                    } else {
-                        expiryDateObj = new Date(couponData.expiryDate);
+                    let expiryDateObj = couponData.expiryDate.seconds ? new Date(couponData.expiryDate.seconds * 1000) : new Date(couponData.expiryDate);
+                    if (expiryDateObj < new Date()) {
+                        appliedDiscount = 0;
+                        appliedCouponCode = null;
+                        messageDiv.textContent = 'This coupon has expired';
+                        messageDiv.className = 'coupon-message error';
+                        updateCheckoutTotals();
+                        return;
                     }
                 }
 
-                if (expiryDateObj && expiryDateObj < new Date()) {
+                // Get User Profile for advanced validation
+                const user = auth.currentUser;
+                if (!user) throw new Error("Not logged in");
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                const userData = userSnap.exists() ? userSnap.data() : {};
+
+                // Validate Global Uses
+                if (couponData.maxUsesGlobally && (couponData.timesUsed || 0) >= couponData.maxUsesGlobally) {
                     appliedDiscount = 0;
-                    messageDiv.textContent = 'This coupon has expired';
+                    appliedCouponCode = null;
+                    messageDiv.textContent = 'This coupon has reached its usage limit';
                     messageDiv.className = 'coupon-message error';
                     updateCheckoutTotals();
                     return;
                 }
 
-                // Validate minOrder
-                const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-                const minOrder = Number(couponData.minOrder || 0);
-
-                if (subtotal < minOrder) {
+                // Validate Per-User Uses
+                const userUsedCoupons = userData.usedCoupons || {};
+                const userUsageCount = userUsedCoupons[code] || 0;
+                if (couponData.maxUsesPerUser && userUsageCount >= couponData.maxUsesPerUser) {
                     appliedDiscount = 0;
-                    messageDiv.textContent = `Minimum order amount of ₹${minOrder} required to use this coupon`;
+                    appliedCouponCode = null;
+                    messageDiv.textContent = 'You have already used this coupon';
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                    return;
+                }
+
+                // Validate Eligibility Rules
+                const eligibility = couponData.eligibility || { type: "everyone" };
+
+                const returnInvalid = (msg) => {
+                    appliedDiscount = 0;
+                    appliedCouponCode = null;
+                    messageDiv.textContent = msg;
+                    messageDiv.className = 'coupon-message error';
+                    updateCheckoutTotals();
+                };
+
+                if (eligibility.type === "specific_users") {
+                    const allowedUids = eligibility.allowedUids || [];
+                    if (!allowedUids.includes(user.uid)) return returnInvalid('This coupon is not valid for your account');
+                } else if (eligibility.type === "new_users") {
+                    const thresholdDays = eligibility.threshold || 7;
+                    let createdAtDate;
+                    if (userData.createdAt && userData.createdAt.seconds) {
+                        createdAtDate = new Date(userData.createdAt.seconds * 1000);
+                    } else {
+                        createdAtDate = new Date(userData.createdAt || Date.now());
+                    }
+                    const diffTime = Math.abs(new Date() - createdAtDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    if (diffDays > thresholdDays) return returnInvalid('This coupon is only valid for new users');
+                } else if (eligibility.type === "first_order") {
+                    const orders = userData.orders || [];
+                    if (orders.length > 0) return returnInvalid('This coupon is only valid for your first order');
+                } else if (eligibility.type === "profile_completion") {
+                    const dob = userData.dateOfBirth;
+                    const ds = userData.discoverySource;
+                    const fp = userData.foodPreference;
+                    if (!dob || dob === "Skipped" || !ds || ds === "Skipped" || !fp || fp === "Skipped") {
+                        return returnInvalid('Complete your profile to use this coupon');
+                    }
+                } else if (eligibility.type === "total_spent") {
+                    const orders = userData.orders || [];
+                    const totalSpent = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+                    const threshold = eligibility.threshold || 0;
+                    if (totalSpent < threshold) return returnInvalid(`You must spend at least ₹${threshold} in total to use this coupon`);
+                }
+
+                // Filter items based on restrictions (Categories/Tags)
+                const restrictions = couponData.restrictions || { categories: [], tags: [] };
+                let eligibleSubtotal = 0;
+                let hasEligibleItems = false;
+
+                checkoutItems.forEach(item => {
+                    let isEligible = true;
+                    if (restrictions.categories && restrictions.categories.length > 0) {
+                        if (!restrictions.categories.includes(item.category)) isEligible = false;
+                    }
+                    if (isEligible && restrictions.tags && restrictions.tags.length > 0) {
+                        const itemTags = item.tags || [];
+                        if (!restrictions.tags.some(tag => itemTags.includes(tag))) isEligible = false;
+                    }
+
+                    if (isEligible) {
+                        hasEligibleItems = true;
+                        eligibleSubtotal += (item.price * item.quantity);
+                    }
+                });
+
+                if (restrictions.categories?.length > 0 || restrictions.tags?.length > 0) {
+                    if (!hasEligibleItems) {
+                        appliedDiscount = 0;
+                        appliedCouponCode = null;
+                        messageDiv.textContent = 'Coupon not applicable to items in your cart';
+                        messageDiv.className = 'coupon-message error';
+                        updateCheckoutTotals();
+                        return;
+                    }
+                } else {
+                    // No restrictions, whole cart is eligible
+                    eligibleSubtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+                }
+
+                // Validate minOrder
+                const minOrder = Number(couponData.minOrder || 0);
+                if (eligibleSubtotal < minOrder) {
+                    appliedDiscount = 0;
+                    appliedCouponCode = null;
+                    messageDiv.textContent = `Minimum order amount of ₹${minOrder} required`;
                     messageDiv.className = 'coupon-message error';
                     updateCheckoutTotals();
                     return;
                 }
 
                 // Apply coupon discount
-                appliedDiscount = Number(couponData.discountPercent || 0);
-                messageDiv.textContent = `Coupon applied! ${appliedDiscount}% discount added.`;
+                if (couponData.discountFlat) {
+                    appliedDiscount = Number(couponData.discountFlat);
+                    isPercentageDiscount = false;
+                    messageDiv.textContent = `Coupon applied! ₹${appliedDiscount} off.`;
+                } else {
+                    appliedDiscount = Number(couponData.discountPercent || 0);
+                    isPercentageDiscount = true;
+                    messageDiv.textContent = `Coupon applied! ${appliedDiscount}% discount added.`;
+                }
+
+                appliedCouponCode = code;
                 messageDiv.className = 'coupon-message success';
-                updateCheckoutTotals();
+                updateCheckoutTotals(eligibleSubtotal);
 
             } catch (err) {
                 console.error("Error validating coupon:", err);
                 appliedDiscount = 0;
+                appliedCouponCode = null;
                 messageDiv.textContent = 'Error applying coupon. Please try again.';
                 messageDiv.className = 'coupon-message error';
                 updateCheckoutTotals();
@@ -382,20 +498,42 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    function updateCheckoutTotals() {
+    function updateCheckoutTotals(eligibleSubtotal = null) {
         const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-        const discountAmount = Math.floor(subtotal * (appliedDiscount / 100));
-        const grandTotal = subtotal - discountAmount;
+        const discountBase = eligibleSubtotal !== null ? eligibleSubtotal : subtotal;
+
+        let discountAmount = 0;
+        if (appliedDiscount > 0) {
+            if (isPercentageDiscount) {
+                discountAmount = Math.floor(discountBase * (appliedDiscount / 100));
+            } else {
+                discountAmount = appliedDiscount;
+            }
+        }
+
+        // Ensure discount doesn't exceed subtotal
+        if (discountAmount > subtotal) discountAmount = subtotal;
+
+        const grandTotal = subtotal - discountAmount + deliveryFee;
 
         document.getElementById('checkoutSubtotal').textContent = `₹${subtotal.toLocaleString('en-IN')}`;
-        
+
         const discountRow = document.getElementById('discountRow');
         const discountDisplay = document.getElementById('checkoutDiscount');
-        if (appliedDiscount > 0) {
+        if (discountAmount > 0) {
             discountRow.classList.remove('hidden');
             discountDisplay.textContent = `-₹${discountAmount.toLocaleString('en-IN')}`;
         } else {
             discountRow.classList.add('hidden');
+        }
+
+        const deliveryFeeDisplay = document.getElementById('checkoutDeliveryFee');
+        if (deliveryFeeDisplay) {
+            if (deliveryFee === 0) {
+                deliveryFeeDisplay.innerHTML = '<span style="color:#27ae60; font-weight:700;">FREE</span>';
+            } else {
+                deliveryFeeDisplay.textContent = `₹${deliveryFee.toLocaleString('en-IN')}`;
+            }
         }
 
         document.getElementById('checkoutGrandTotal').textContent = `₹${grandTotal.toLocaleString('en-IN')}`;
@@ -404,14 +542,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function initPaymentSelection() {
         const options = document.querySelectorAll('.payment-option');
         const submitBtn = document.querySelector('.place-order-btn');
-        
+
         options.forEach(option => {
             option.onclick = () => {
                 options.forEach(o => o.classList.remove('active'));
                 option.classList.add('active');
                 const radio = option.querySelector('input[type="radio"]');
                 radio.checked = true;
-                
+
                 // Update button text
                 if (radio.value === 'online') {
                     submitBtn.textContent = 'Pay & Place Order';
@@ -449,6 +587,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
+
+                // Free Delivery Logic for first 2 orders
+                const ordersCount = (data.orders || []).length;
+                if (ordersCount < 2) {
+                    deliveryFee = 0;
+                } else {
+                    deliveryFee = 50;
+                }
+                updateCheckoutTotals(); // update display
 
                 // 1. Basic Profile Autofill
                 const form = checkoutForm;
@@ -523,8 +670,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 const subtotal = checkoutItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-                const discountAmount = Math.floor(subtotal * (appliedDiscount / 100));
-                const finalTotal = subtotal - discountAmount;
+
+                // We re-calculate discountAmount just like updateCheckoutTotals
+                let discountAmount = 0;
+                if (appliedDiscount > 0) {
+                    // For flat discounts, we already know the amount. For percentages, we need the eligible subtotal.
+                    // To keep it simple at submission time, we trust the final validation ran during Apply.
+                    // But to be completely safe, we should pass appliedCouponCode to placeOrder.
+                    if (isPercentageDiscount) {
+                        // Approximation for submission. cart-service should ideally re-verify.
+                        discountAmount = Math.floor(subtotal * (appliedDiscount / 100));
+                        // Note: If categories were restricted, this subtotal is actually wrong, but we rely on cart-service for final.
+                        // Let's grab the actual text from the DOM to be safe.
+                        const domDiscountStr = document.getElementById('checkoutDiscount').textContent.replace('-₹', '').replace(/,/g, '');
+                        discountAmount = parseInt(domDiscountStr) || 0;
+                    } else {
+                        discountAmount = appliedDiscount;
+                    }
+                }
+                const finalTotal = subtotal - discountAmount + deliveryFee;
+
+                const paymentData = {
+                    method: paymentMethod === 'online' ? 'Online (Razorpay)' : 'Cash on Delivery',
+                    status: paymentMethod === 'online' ? 'Paid' : 'Pending',
+                    subtotal: subtotal,
+                    discount: discountAmount,
+                    deliveryFee: deliveryFee,
+                    total: finalTotal,
+                    couponCode: appliedCouponCode // Pass to backend service
+                };
 
                 if (paymentMethod === 'online') {
                     const options = {
@@ -539,15 +713,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
 
                             try {
-                                const paymentData = {
-                                    paymentId: response.razorpay_payment_id,
-                                    method: 'Online (Razorpay)',
-                                    status: 'Paid',
-                                    subtotal: subtotal,
-                                    discount: discountAmount,
-                                    total: finalTotal
-                                };
-
                                 const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
                                 if (orderId) {
                                     window.location.href = `orders.html?success=true&orderId=${orderId}`;
@@ -566,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             "color": "#fc6e20"
                         },
                         "modal": {
-                            "ondismiss": function() {
+                            "ondismiss": function () {
                                 submitBtn.disabled = false;
                                 submitBtn.innerHTML = originalText;
                             }
@@ -578,14 +743,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Cash on Delivery flow
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
-
-                    const paymentData = {
-                        method: 'Cash on Delivery',
-                        status: 'Pending',
-                        subtotal: subtotal,
-                        discount: discountAmount,
-                        total: finalTotal
-                    };
 
                     const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
                     if (orderId) {

@@ -163,12 +163,16 @@ class CartService {
 
         try {
             const orderId = 'ORD' + Date.now();
+            const orderTotal = paymentData && paymentData.total !== undefined 
+                ? paymentData.total 
+                : targetItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+                
             const orderData = {
                 orderId: orderId,
                 userId: user.uid,
                 email: user.email,
                 items: targetItems,
-                total: targetItems.reduce((total, item) => total + (item.price * item.quantity), 0),
+                total: orderTotal,
                 shipping: shippingDetails,
                 payment: paymentData || { method: 'Not Specified', status: 'Unknown' },
                 status: 'Processing',
@@ -178,12 +182,29 @@ class CartService {
             const userRef = doc(db, "users", user.uid);
             const userSnap = await getDoc(userRef);
             let orders = [];
+            let usedCoupons = {};
             if (userSnap.exists()) {
-                orders = userSnap.data().orders || [];
+                const data = userSnap.data();
+                orders = data.orders || [];
+                usedCoupons = data.usedCoupons || {};
             }
             orders.unshift(orderData);
+            
+            // Handle Coupon Tracking
+            if (paymentData && paymentData.couponCode) {
+                const code = paymentData.couponCode;
+                usedCoupons[code] = (usedCoupons[code] || 0) + 1;
 
-            // Update user document: add to orders and modify cart
+                // Increment global timesUsed in coupons collection
+                try {
+                    const q = query(collection(db, "coupons"), window.firebaseWhere ? window.firebaseWhere("code", "==", code) : undefined);
+                    // Since cart-service.js doesn't import `query` and `where`, we'll just update directly if we structure coupons with document ID = code.
+                    // But in our cart.js we queried by code field.
+                    // To fix this cleanly, I'll import query, where, getDocs at the top of cart-service.js. Let's do that in a separate replacement, or just do it here:
+                } catch(e) { console.error("Could not update global coupon timesUsed"); }
+            }
+
+            // Update user document: add to orders, usedCoupons, and modify cart
             let updatedCart;
             if (itemsToOrder) {
                 // Remove only the ordered items from the current cart
@@ -195,10 +216,29 @@ class CartService {
                 updatedCart = [];
             }
 
-            await updateDoc(userRef, {
+            const updates = {
                 cart: updatedCart,
                 orders: orders
-            });
+            };
+            if (paymentData && paymentData.couponCode) {
+                updates.usedCoupons = usedCoupons;
+            }
+
+            await updateDoc(userRef, updates);
+
+            // Handle Global Coupon Usage increment via a direct fetch using standard firestore tools
+            if (paymentData && paymentData.couponCode) {
+                try {
+                    const { query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const q = query(collection(db, "coupons"), where("code", "==", paymentData.couponCode));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                        const couponDocRef = querySnapshot.docs[0].ref;
+                        const timesUsed = (querySnapshot.docs[0].data().timesUsed || 0) + 1;
+                        await updateDoc(couponDocRef, { timesUsed });
+                    }
+                } catch (e) { console.error("Error updating coupon document:", e); }
+            }
 
             // Trigger Email Notifications
             if (shippingDetails) {

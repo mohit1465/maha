@@ -1,3 +1,28 @@
+:root {
+    /* Typography Scale */
+    --text-tiny: 11px;
+    --text-small: 13px;
+    --text-body: 15px;
+    --text-body-lg: 17px;
+    --text-h4: 20px;
+    --text-h3: 24px;
+    --text-h2: 32px;
+    --text-h1: 44px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --text-tiny: 10px;
+        --text-small: 12px;
+        --text-body: 14px;
+        --text-body-lg: 15px;
+        --text-h4: 18px;
+        --text-h3: 21px;
+        --text-h2: 26px;
+        --text-h1: 34px;
+    }
+}
+
 * {
     box-sizing: border-box;
     font-family: "Bricolage Grotesque", sans-serif;
@@ -281,6 +306,52 @@ input:focus,
     background: #fff9f5;
     color: #fc6e20;
     font-weight: 600;
+}
+
+.image-selection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.image-option-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-option-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.image-option-card span {
+    padding: 12px;
+    font-size: var(--text-small);
+    font-weight: 500;
+    color: #333;
+}
+
+.image-option-card:hover,
+.image-option-card.selected {
+    border-color: #fc6e20;
+    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.15);
+}
+
+.image-option-card:hover span,
+.image-option-card.selected span {
+    color: #fc6e20;
+    font-weight: 700;
+    background: #fff9f5;
 }
 
 .divider {

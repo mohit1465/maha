@@ -301,8 +301,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers to search icons specifically
-    const headerSearchIcon = document.querySelector('.header-icons .fa-search');
-    const mobileSearchIcon = document.querySelector('.mobile-nav-icons .fa-search');
+    const headerSearchIcon = document.querySelector('.header-icons [data-section="search"]');
+    const mobileSearchIcon = document.querySelector('.mobile-nav-icons [data-section="search"]');
 
     if (headerSearchIcon) {
         headerSearchIcon.addEventListener('click', function (e) {
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add click handlers to home links specifically
     const headerHomeLink = document.querySelector('.nav-links li:first-child a');
-    const mobileHomeIcon = document.querySelector('.mobile-nav-icons .fa-home');
+    const mobileHomeIcon = document.querySelector('.mobile-nav-icons [data-section="home"]');
 
     if (headerHomeLink) {
         headerHomeLink.addEventListener('click', function (e) {
@@ -341,8 +341,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers for cart icons
-    const headerCartIcon = document.querySelector('.header-icons .fa-shopping-bag');
-    const mobileCartIcon = document.querySelector('.mobile-nav-icons .fa-shopping-bag');
+    const headerCartIcon = document.querySelector('.header-icons [data-section="cart"]');
+    const mobileCartIcon = document.querySelector('.mobile-nav-icons [data-section="cart"]');
 
     if (headerCartIcon) {
         headerCartIcon.addEventListener('click', function (e) {
@@ -361,8 +361,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers for profile icons
-    const headerProfileIcon = document.querySelector('.header-icons .fa-user');
-    const mobileProfileIcon = document.querySelector('.mobile-nav-icons .fa-user');
+    const headerProfileIcon = document.querySelector('.header-icons [data-section="profile"]');
+    const mobileProfileIcon = document.querySelector('.mobile-nav-icons [data-section="profile"]');
 
     if (headerProfileIcon) {
         headerProfileIcon.addEventListener('click', function (e) {
@@ -401,8 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers for wishlist icons
-    const headerWishlistIcon = document.querySelector('.header-icons .fa-heart');
-    const mobileWishlistIcon = document.querySelector('.mobile-nav-icons .fa-heart');
+    const headerWishlistIcon = document.querySelector('.header-icons [data-section="wishlist"]');
+    const mobileWishlistIcon = document.querySelector('.mobile-nav-icons [data-section="wishlist"]');
 
     if (headerWishlistIcon) {
         headerWishlistIcon.addEventListener('click', function (e) {
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers for mobile Shop icon - navigate to search page (separate HTML)
-    const mobileShopIcon = document.querySelector('.mobile-nav-icons .fa-store');
+    const mobileShopIcon = document.querySelector('.mobile-nav-icons [data-section="shop"]');
     if (mobileShopIcon) {
         mobileShopIcon.addEventListener('click', function (e) {
             e.preventDefault();
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Add click handlers for mobile About Us icon
-    const mobileAboutIcon = document.querySelector('.mobile-nav-icons .fa-info-circle');
+    const mobileAboutIcon = document.querySelector('.mobile-nav-icons [data-section="about"]');
     if (mobileAboutIcon) {
         mobileAboutIcon.addEventListener('click', function (e) {
             e.preventDefault();
@@ -602,6 +602,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 showCartSection();
             }
             break;
+    }
+
+    // Handle mobile search bar focus expansion
+    const headerSearchInput = document.querySelector('.header-search-input');
+    const topHeader = document.querySelector('.top-header');
+    if (headerSearchInput && topHeader) {
+        headerSearchInput.addEventListener('focus', function() {
+            if (window.innerWidth <= 800) {
+                topHeader.classList.add('search-focused');
+            }
+        });
+        headerSearchInput.addEventListener('blur', function() {
+            if (window.innerWidth <= 800) {
+                topHeader.classList.remove('search-focused');
+            }
+        });
+
+        // Add clear button dynamically
+        const searchForm = document.querySelector('.header-search-bar form');
+        if (searchForm) {
+            const clearBtn = document.createElement('button');
+            clearBtn.type = 'button';
+            clearBtn.className = 'header-search-clear';
+            clearBtn.innerHTML = '<i class="fas fa-times"></i>';
+            searchForm.appendChild(clearBtn);
+
+            headerSearchInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    clearBtn.style.display = 'flex';
+                } else {
+                    clearBtn.style.display = 'none';
+                }
+            });
+
+            // Initialize state
+            if (headerSearchInput.value.length > 0) {
+                clearBtn.style.display = 'flex';
+            }
+
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                headerSearchInput.value = '';
+                clearBtn.style.display = 'none';
+                headerSearchInput.focus();
+                
+                // Trigger input event for live search functionality
+                const event = new Event('input', { bubbles: true });
+                headerSearchInput.dispatchEvent(event);
+            });
+        }
     }
 });
 
@@ -853,3 +903,24 @@ function updateCategoryRowAlignment() {
 // Run on load and resize
 window.addEventListener('load', updateCategoryRowAlignment);
 window.addEventListener('resize', updateCategoryRowAlignment);
+
+
+// Lordicon color hover effect
+document.addEventListener('mouseover', function(e) {
+    const iconWrapper = e.target.closest('.icon');
+    if (iconWrapper) {
+        const lordIcon = iconWrapper.querySelector('lord-icon');
+        if (lordIcon) {
+            lordIcon.setAttribute('colors', 'primary:#fc6e20');
+        }
+    }
+});
+document.addEventListener('mouseout', function(e) {
+    const iconWrapper = e.target.closest('.icon');
+    if (iconWrapper) {
+        const lordIcon = iconWrapper.querySelector('lord-icon');
+        if (lordIcon) {
+            lordIcon.setAttribute('colors', 'primary:#ffffff');
+        }
+    }
+});

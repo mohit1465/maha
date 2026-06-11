@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isMobileDevice) {
         cursorImg = document.createElement('img');
         cursorImg.id = 'customCursor';
-        cursorImg.src = '../assets/Particles/Almond.png';
+        cursorImg.src = 'assets/Particles/Almond.png';
         cursorImg.alt = '';
         cursorImg.draggable = false;
         cursorImg.style.position = 'fixed';
@@ -332,7 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function unlockTextSelection() {
         if (!selectionLocked) {
-            clearTextSelection();
             return;
         }
 
@@ -341,7 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.webkitUserSelect = selectionStyles.bodyWebkitUserSelect;
         document.documentElement.style.webkitUserSelect = selectionStyles.htmlWebkitUserSelect;
         selectionLocked = false;
-        clearTextSelection();
     }
 
     function animate(now) {
@@ -379,16 +377,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resizeCanvas);
 
     if (isMobileDevice) {
-        window.addEventListener('touchmove', movePointer, { passive: true });
+        window.addEventListener('touchmove', (event) => {
+            updateCursor(event);
+
+            if (!pointer.down) {
+                return;
+            }
+
+            if (!isEditableTarget(event.target)) {
+                clearTextSelection();
+            }
+            spawnTrail(pointer.x, pointer.y, updatePointer(event));
+        }, { passive: true });
         window.addEventListener('touchstart', (event) => {
             pointer.down = true;
             updatePointer(event);
             updateCursor(event);
             const point = normalizeEvent(event);
             spawnBloom(point.clientX, point.clientY);
-            clearTextSelection();
 
             if (!isEditableTarget(event.target)) {
+                clearTextSelection();
                 lockTextSelection();
             }
         }, { passive: true });
@@ -403,7 +412,18 @@ document.addEventListener('DOMContentLoaded', () => {
             hideCursor();
         });
     } else {
-        window.addEventListener('pointermove', movePointer, { passive: true });
+        window.addEventListener('pointermove', (event) => {
+            updateCursor(event);
+
+            if (!pointer.down) {
+                return;
+            }
+
+            if (!isEditableTarget(event.target)) {
+                clearTextSelection();
+            }
+            spawnTrail(pointer.x, pointer.y, updatePointer(event));
+        }, { passive: true });
         window.addEventListener('pointerdown', (event) => {
             if (event.button !== undefined && event.button !== 0) {
                 return;
@@ -413,9 +433,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePointer(event);
             updateCursor(event);
             spawnBloom(event.clientX, event.clientY);
-            clearTextSelection();
 
             if (!isEditableTarget(event.target)) {
+                clearTextSelection();
                 lockTextSelection();
             }
 

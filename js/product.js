@@ -84,11 +84,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
     
+    const ProductShortcuts = {
+        storage: {
+            DEFAULT: "Store in an airtight container in a cool, dry place away from direct sunlight.",
+            REFRIGERATE: "Keep refrigerated in an airtight container to preserve crunch and freshness."
+        },
+        nutrition: {
+            ALMONDS: "Rich in Protein, Vitamin E, Magnesium, and heart-healthy fats.",
+            WALNUTS: "Excellent source of Omega-3 fatty acids, antioxidants, and brain-boosting nutrients.",
+            PINE_NUTS: "Packed with heart-healthy fats, iron, and energy-boosting nutrients.",
+            FIGS: "High in dietary fiber, natural sugars, and essential minerals for digestive health.",
+            RAISINS: "Rich in iron, potassium, and natural antioxidants.",
+            PISTACHIOS: "High in protein, fiber, and eye-protecting antioxidants.",
+            APRICOTS: "Excellent source of Vitamin A, Vitamin C, and dietary fiber.",
+            BLUEBERRIES: "A true superfood packed with powerful antioxidants and vitamins.",
+            CASHEWS: "Rich in heart-healthy monounsaturated fats, zinc, and copper.",
+            MIXED: "A perfectly balanced blend of essential vitamins, minerals, and natural energy."
+        }
+    };
+
     /**
      * Format the long description nicely for UX
      */
-    function formatLongDescription(text) {
-        if (!text) return '';
+    function formatLongDescription(descData) {
+        if (!descData) return '';
+        
+        let text = typeof descData === 'object' ? descData.details : descData;
+        if (!text) text = '';
         
         const lines = text.split('\n').filter(line => line.trim() !== '');
         
@@ -169,6 +191,24 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         if (inHighlights) {
             html += '</div>';
+        }
+
+        // Add dynamically resolved shortcuts if they exist
+        if (typeof descData === 'object') {
+            if (descData.nutritionKey && ProductShortcuts.nutrition[descData.nutritionKey]) {
+                html += `
+                <div class="product-info-shortcut nutrition">
+                    <i class="fas fa-leaf" style="color: #4CAF50;"></i>
+                    <span><strong>Nutrition:</strong> ${ProductShortcuts.nutrition[descData.nutritionKey]}</span>
+                </div>`;
+            }
+            if (descData.storageKey && ProductShortcuts.storage[descData.storageKey]) {
+                html += `
+                <div class="product-info-shortcut storage">
+                    <i class="fas fa-snowflake" style="color: #2196F3;"></i>
+                    <span><strong>Storage:</strong> ${ProductShortcuts.storage[descData.storageKey]}</span>
+                </div>`;
+            }
         }
         
         html += '</div>';

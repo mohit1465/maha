@@ -4,9 +4,18 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/f
 import { createProductCard } from './card-renderer.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const searchInput = document.querySelector('.search-input');
+    const searchInput = document.querySelector('.header-search-input');
     const productGrid = document.querySelector('.search-results .product-grid');
     const categoryChips = document.querySelectorAll('#categoryFilters input');
+
+    // Prevent form submission on search page for live filtering
+    const searchForm = document.querySelector('.header-search-bar form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // applyFilters is called by the 'input' event anyway, but we ensure it prevents reload
+        });
+    }
 
     let allProducts = [];
 
@@ -22,8 +31,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 allProducts.push(doc.data());
             });
 
-            // Check URL for category filter
+            // Check URL for category and query filters
             const urlParams = new URLSearchParams(window.location.search);
+            
+            const qParam = urlParams.get('q');
+            if (qParam && searchInput) {
+                searchInput.value = qParam;
+            }
+
             const categoryParam = urlParams.get('category');
             if (categoryParam) {
                 const decodedCategory = decodeURIComponent(categoryParam).trim();
@@ -52,8 +67,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         products.forEach(product => {
             const cardHtml = createProductCard(product);
             const wrapper = document.createElement('div');
+            wrapper.className = 'product-card-wrapper';
             wrapper.innerHTML = cardHtml;
-            productGrid.appendChild(wrapper.firstElementChild);
+            productGrid.appendChild(wrapper);
         });
     }
 
@@ -131,17 +147,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         let skeletonsHtml = '';
         for (let i = 0; i < 8; i++) {
             skeletonsHtml += `
-            <div class="product-card">
-                <div class="card-image-container skeleton"></div>
-                <div class="card-content">
-                    <div class="skeleton skeleton-title" style="width: 80%;"></div>
-                    <div class="skeleton skeleton-text" style="width: 40%;"></div>
-                    <div class="card-options" style="margin-top: 10px;">
-                        <div class="skeleton skeleton-text" style="height: 32px; flex: 1; border-radius: 12px;"></div>
-                        <div class="skeleton skeleton-text" style="height: 32px; width: 40px; border-radius: 12px;"></div>
-                    </div>
-                    <div class="card-footer" style="margin-top: 10px; height: 40px; background: transparent;">
-                        <div class="skeleton skeleton-btn"></div>
+            <div class="product-card-wrapper">
+                <div class="product-card">
+                    <div class="card-image-container skeleton"></div>
+                    <div class="card-content">
+                        <div class="skeleton skeleton-title" style="width: 80%;"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                        <div class="card-options" style="margin-top: 10px;">
+                            <div class="skeleton skeleton-text" style="height: 32px; flex: 1; border-radius: 12px;"></div>
+                            <div class="skeleton skeleton-text" style="height: 32px; width: 40px; border-radius: 12px;"></div>
+                        </div>
+                        <div class="card-footer" style="margin-top: 10px; height: 40px; background: transparent;">
+                            <div class="skeleton skeleton-btn"></div>
+                        </div>
                     </div>
                 </div>
             </div>

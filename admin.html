@@ -404,6 +404,131 @@
             object-fit: cover;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: flex !important; /* Keep flex for transition, but block pointer events */
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.hidden .modal-content {
+            transform: scale(0.95);
+        }
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+            border-radius: 16px 16px 0 0;
+        }
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+        .modal-close {
+            background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;
+        }
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Tag Input Styles */
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: white;
+            min-height: 42px;
+            position: relative;
+            cursor: text;
+        }
+        .tag-input-container:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(252, 110, 32, 0.1);
+        }
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #f0f0f0;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .tag-pill .remove-tag {
+            margin-left: 6px;
+            cursor: pointer;
+            color: #888;
+            font-weight: bold;
+        }
+        .tag-pill .remove-tag:hover {
+            color: var(--danger-color);
+        }
+        .tag-input {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            min-width: 120px;
+            background: transparent;
+            font-size: 0.95rem;
+            padding: 4px;
+        }
+        .tag-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            margin-top: 4px;
+        }
+        .tag-suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .tag-suggestion-item:hover, .tag-suggestion-item.active {
+            background: #f8f9fa;
+            color: var(--primary-color);
+        }
+        
         .remove-img {
             position: absolute;
             top: 4px;
@@ -419,7 +544,111 @@
             justify-content: center;
             cursor: pointer;
         }
+
+        /* Admin Table Styles */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .admin-table tbody tr:hover {
+            background-color: #fffaf5;
+        }
+
+        .admin-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .prod-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+
+        .prod-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .tag-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #e3f2fd;
+            color: #1565c0;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin: 2px;
+            font-weight: 500;
+        }
+        .group-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin: 2px;
+            font-weight: 500;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            body {
+                cursor: url("assets/Particles/Almond.png") 16 16, auto;
+            }
+        }
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            body,
+            body.custom-cursor-active,
+            body.custom-cursor-active * {
+                cursor: auto !important;
+            }
+        }
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none !important;
+        }
+        #customCursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 2147483647;
+            transform: translate(calc(-50% + 8px), calc(-50% + 8px));
+            display: none;
+            transition: transform 0.08s ease-out;
+        }
     </style>
+    <!-- Lordicon -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
 </head>
 
 <body>
@@ -447,7 +676,7 @@
                 <i class="fas fa-box"></i> Products
             </div>
             <div class="nav-item" data-tab="orders">
-                <i class="fa-solid fa-cart-shopping"></i> Orders
+                <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon> Orders
             </div>
             <div class="nav-item" data-tab="users">
                 <i class="fas fa-users"></i> Users
@@ -472,62 +701,148 @@
                         </button>
                     </div>
 
-                    <div id="productFormContainer" class="hidden"
-                        style="margin-bottom: 2rem; padding: 1.5rem; background: #fafafa; border-radius: 12px; border: 1px dashed var(--primary-color);">
-                        <h3 id="formTitle" style="margin-bottom: 1rem;">Add New Product</h3>
-                        <form id="productForm">
-                            <input type="hidden" id="productId">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group">
-                                    <label>English Name</label>
-                                    <input type="text" id="productName" required placeholder="e.g. Premium Almonds">
-                                </div>
-                                <div class="form-group">
-                                    <label>Hindi Name</label>
-                                    <input type="text" id="productHindiName" placeholder="e.g. बादाम">
-                                </div>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group">
-                                    <label>Category</label>
-                                    <select id="productCategory">
-                                        <option value="Almonds">Almonds</option>
-                                        <option value="Walnuts">Walnuts</option>
-                                        <option value="Cashews">Cashews</option>
-                                        <option value="Pistachios">Pistachios</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Selling Price (₹)</label>
-                                    <input type="number" id="productPrice" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Original Price / MRP (₹)</label>
-                                    <input type="number" id="productOriginalPrice" placeholder="Optional - for price cut">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Available Quantities (comma separated)</label>
-                                <input type="text" id="productQuantities" value="250g, 500g, 1kg, 2kg">
-                            </div>
-                            <div class="form-group">
-                                <label>Product Images (Up to 5)</label>
-                                <input type="file" id="productImageInput" accept="image/*" multiple>
-                                <div id="imagePreviewContainer" class="preview-container"></div>
-                            </div>
-                            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                                <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Product</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div id="productList" class="grid-list">
-                        <!-- Products will be injected here -->
+                    <!-- Form moved to Modal -->
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th width="80">Image</th>
+                                    <th>Product Details</th>
+                                    <th>Classification</th>
+                                    <th>Price & Stock</th>
+                                    <th width="120" style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productList">
+                                <!-- Products will be injected here as rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
+
+<!-- Modals -->
+<div id="productModalOverlay" class="modal-overlay hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="formTitle">Add New Product</h3>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <!-- Section 1: Basic Info -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Basic Info</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>Product Name (Full)</label>
+                        <input type="text" id="productName" required placeholder="e.g. American Almonds (Badam Giri) – Premium">
+                    </div>
+                    <div class="form-group">
+                        <label>Short Title (For breadcrumbs/cards)</label>
+                        <input type="text" id="productShortTitle" required placeholder="e.g. American Badam Giri">
+                    </div>
+                    <div class="form-group">
+                        <label>Hindi Name (Optional)</label>
+                        <input type="text" id="productHindiName" placeholder="e.g. बादाम">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <div class="tag-input-container" id="categoryTagInput" data-max="1" data-placeholder="Select or type category"></div>
+                        <input type="hidden" id="productCategory">
+                    </div>
+                </div>
+
+                <!-- Section 2: Pricing & Stock -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-tags"></i> Pricing & Stock</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>Selling Price (₹)</label>
+                        <input type="number" id="productPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Original Price / MRP (₹)</label>
+                        <input type="number" id="productOriginalPrice" placeholder="Optional - for price cut">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Available Quantities (Type and press Enter)</label>
+                        <div class="tag-input-container" id="quantitiesTagInput" data-placeholder="e.g. 250g, 500g"></div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Descriptions & SEO -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-align-left"></i> Descriptions & SEO</h4>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>Short Description (1-2 sentences)</label>
+                        <textarea id="productShortDescription" rows="2" placeholder="Brief punchy description for cards..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Long Description Details (Full text for details page)</label>
+                        <textarea id="productLongDescription" rows="4" placeholder="Detailed product info..."></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Nutrition Shortcut Key</label>
+                            <select id="productNutritionKey">
+                                <option value="">None</option>
+                                <option value="ALMONDS">Almonds</option>
+                                <option value="WALNUTS">Walnuts</option>
+                                <option value="PINE_NUTS">Pine Nuts</option>
+                                <option value="FIGS">Figs</option>
+                                <option value="RAISINS">Raisins</option>
+                                <option value="PISTACHIOS">Pistachios</option>
+                                <option value="APRICOTS">Apricots</option>
+                                <option value="BLUEBERRIES">Blueberries</option>
+                                <option value="CASHEWS">Cashews</option>
+                                <option value="MIXED">Mixed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Storage Shortcut Key</label>
+                            <select id="productStorageKey">
+                                <option value="">None</option>
+                                <option value="DEFAULT">Default (Cool Dry Place)</option>
+                                <option value="REFRIGERATE">Refrigerate</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Classification -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-sitemap"></i> Classification</h4>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>Keywords (Type and press Enter)</label>
+                        <div class="tag-input-container" id="keywordsTagInput" data-placeholder="e.g. premium badam"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags (e.g. Premium Choice, Farm Fresh)</label>
+                        <div class="tag-input-container" id="tagsTagInput" data-placeholder="Type tag..."></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Groups (e.g. GYM, Daily, Student)</label>
+                        <div class="tag-input-container" id="groupsTagInput" data-placeholder="Type group..."></div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Media -->
+                <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-image"></i> Media</h4>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label>Product Images (Up to 5)</label>
+                    <input type="file" id="productImageInput" accept="image/*" multiple>
+                    <div id="imagePreviewContainer" class="preview-container"></div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
             <!-- Orders Tab -->
             <section id="ordersTab" class="hidden">
@@ -562,53 +877,135 @@
         
             <!-- Coupons Tab -->
             <section id="couponsTab" class="hidden">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Coupons & Promo Codes</h2>
-                        <button class="btn btn-primary" id="addCouponBtn">
-                            <i class="fas fa-plus"></i> Add Coupon
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 1.5rem; color: var(--primary-dark);">Coupon Management</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="seedCouponsBtn" class="btn btn-outline" style="padding: 10px 20px; font-weight: 600;">
+                            <i class="fas fa-magic"></i> Auto-Generate Default Campaigns
+                        </button>
+                        <button id="addCouponBtn" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600;">
+                            <i class="fas fa-plus"></i> Add New Coupon
                         </button>
                     </div>
+                </div>
 
-                    <div id="couponFormContainer" class="hidden"
-                        style="margin-bottom: 2rem; padding: 1.5rem; background: #fafafa; border-radius: 12px; border: 1px dashed var(--primary-color);">
-                        <h3 id="couponFormTitle" style="margin-bottom: 1rem;">Add New Coupon</h3>
-                        <form id="couponForm">
-                            <input type="hidden" id="couponId">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group">
-                                    <label>Coupon Code (Uppercase)</label>
-                                    <input type="text" id="couponCodeInput" required placeholder="e.g. MAHARAJA20" style="text-transform: uppercase;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Discount Percentage (%)</label>
-                                    <input type="number" id="couponDiscount" required min="1" max="100" placeholder="e.g. 20">
-                                </div>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group">
-                                    <label>Minimum Order Value (₹)</label>
-                                    <input type="number" id="couponMinOrder" required min="0" placeholder="e.g. 500">
-                                </div>
-                                <div class="form-group">
-                                    <label>Expiry Date</label>
-                                    <input type="date" id="couponExpiry" required>
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                                <button type="button" class="btn btn-outline" id="cancelCouponBtn">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Coupon</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div id="couponList" class="grid-list">
-                        <p style="text-align: center; color: #666; padding: 2rem;">Loading coupons...</p>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Eligibility</th>
+                                    <th>Usage / Limits</th>
+                                    <th>Status</th>
+                                    <th width="120" style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="couponList">
+                                <!-- Coupons will be injected here -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
-
         </main>
+    </div>
+
+    <!-- Coupon Modal -->
+    <div id="couponModalOverlay" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="couponFormTitle">Add New Coupon</h3>
+                <button class="modal-close" id="closeCouponModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="couponForm">
+                    <input type="hidden" id="couponId">
+                    <input type="hidden" id="couponTimesUsed" value="0">
+                    
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Basic Info</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Coupon Code (Uppercase)</label>
+                            <input type="text" id="couponCodeInput" required placeholder="e.g. WELCOME10" style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
+                            <label>Status</label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                <input type="checkbox" id="couponActive" checked style="width: auto;"> Active / Playable
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Type</label>
+                            <select id="couponDiscountType">
+                                <option value="percent">Percentage (%)</option>
+                                <option value="flat">Flat Amount (₹)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Value</label>
+                            <input type="number" id="couponDiscountValue" required min="1" placeholder="e.g. 20">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-users"></i> Target Audience & Eligibility</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Eligibility Type</label>
+                            <select id="couponEligibilityType">
+                                <option value="everyone">Everyone (Default)</option>
+                                <option value="new_users">New Users (Days Threshold)</option>
+                                <option value="first_order">First Order Only</option>
+                                <option value="profile_completion">Profile Completed</option>
+                                <option value="total_spent">High Value (Total Spent > X)</option>
+                                <option value="specific_users">Specific Users (By UID)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="eligibilityThresholdContainer" style="display: none;">
+                            <label id="eligibilityThresholdLabel">Threshold Value</label>
+                            <input type="number" id="couponEligibilityThreshold" placeholder="e.g. 7 for days, 1000 for ₹">
+                        </div>
+                        <div class="form-group" id="eligibilityUidsContainer" style="grid-column: 1 / -1; display: none;">
+                            <label>Allowed UIDs (Comma separated)</label>
+                            <input type="text" id="couponAllowedUids" placeholder="uid1, uid2, ...">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;"><i class="fas fa-shield-alt"></i> Limits & Restrictions</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="form-group">
+                            <label>Min Order Value (₹)</label>
+                            <input type="number" id="couponMinOrder" placeholder="0 for no minimum">
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="datetime-local" id="couponExpiry">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Uses Globally (Total pool)</label>
+                            <input type="number" id="couponMaxUsesGlobally" placeholder="Leave empty for unlimited">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Uses Per User</label>
+                            <input type="number" id="couponMaxUsesPerUser" value="1" placeholder="Usually 1">
+                        </div>
+                        <div class="form-group">
+                            <label>Restrict to Categories (Comma separated)</label>
+                            <input type="text" id="couponRestrictedCategories" placeholder="e.g. Almonds, Walnuts">
+                        </div>
+                        <div class="form-group">
+                            <label>Restrict to Tags (Comma separated)</label>
+                            <input type="text" id="couponRestrictedTags" placeholder="e.g. Premium, Bestseller">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem;">
+                        <button type="button" class="btn btn-outline" id="cancelCouponBtnModal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Coupon</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- User Details Modal -->
@@ -630,35 +1027,10 @@
         </div>
     </div>
 
+    <!-- Main Application Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/admin.js"></script>
-    <script type="module" src="js/update-products-seo.js"></script>
-    <script>
-        // Add SEO & Data update buttons to admin panel
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                const seoSection = document.createElement('div');
-                seoSection.innerHTML = `
-                    <div style="padding: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">SEO & Data Tools</h4>
-                        <button onclick="updateProductsSEO()" style="width: 100%; margin-bottom: 0.5rem; padding: 0.75rem; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            🚀 Update All Products with SEO Content
-                        </button>
-                        <button onclick="addMissingSEOProducts()" style="width: 100%; margin-bottom: 0.5rem; padding: 0.75rem; background: var(--success-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            ➕ Add Missing SEO Products
-                        </button>
-                        <button onclick="seedRandomReviews()" style="width: 100%; padding: 0.75rem; background: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s;">
-                            ⭐ Seed 2-8 Reviews on All Products
-                        </button>
-                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
-                            ⚠️ These tools will modify product listings and customer reviews in the live database.
-                        </div>
-                    </div>
-                `;
-                sidebar.appendChild(seoSection);
-            }
-        });
-    </script>
+    <script src="js/cursor-effect.js"></script>
 </body>
 
 </html>

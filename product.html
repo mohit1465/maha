@@ -98,27 +98,36 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Lordicon -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
 </head>
 
 <body data-page="product">
 
 <header class="header">
         <div class="top-header">
-            <div class="logo-container">
-                <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo" class="logo">
+            <div class="header-left">
+                <div class="logo-container">
+                    <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo" class="logo">
+                </div>
+                <div class="brand-name">
+                    <h1>MAHARAJA</h1>
+                    <p class="tagline">Dry Fruit</p>
+                </div>
             </div>
-            <div class="brand-name">
-                <h1>MAHARAJA</h1>
-                <p class="tagline">Dry Fruit</p>
+            <div class="header-search-bar">
+                <form action="search.html" method="get">
+                    <input type="text" name="q" class="header-search-input" placeholder="Search for dry fruits, nuts, seeds..." required>
+                    <button type="submit" class="header-search-btn"><lord-icon src="https://cdn.lordicon.com/vayiyuqd.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></button>
+                </form>
             </div>
             <div class="header-icons">
-                <a href="search.html" class="icon" data-section="search"><i class="fas fa-search"></i></a>
-                <a href="wishlist.html" class="icon" data-section="wishlist"><i class="fas fa-heart"></i></a>
+                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
                 <a href="cart.html" class="icon" data-section="cart">
-                    <i class="fa-solid fa-cart-shopping"></i>
+                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                     <span class="cart-count">0</span>
                 </a>
-                <a href="login.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
+                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
             </div>
         </div>
         <nav class="main-nav">
@@ -164,7 +173,7 @@
             <div class="product-container">
                 <!-- Breadcrumb -->
                 <div class="breadcrumb" id="breadcrumb">
-                    <span class="breadcrumb-item" data-section="home"><i class="fas fa-home"></i> Home</span>
+                    <span class="breadcrumb-item" data-section="home"><lord-icon src="https://cdn.lordicon.com/ewtxwele.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon> Home</span>
                     <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
                     <span class="breadcrumb-item current">Product Name</span>
                 </div>
@@ -299,7 +308,7 @@
                             <!-- Product Action Buttons -->
                             <div class="product-actions-grid">
                                 <button class="btn btn-primary btn-add-to-cart" id="mainAddToCartBtn">
-                                    <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon> Add to Cart
                                 </button>
                                 <button class="btn btn-buy btn-buy-now" id="mainBuyNowBtn">
                                     <i class="fas fa-bolt"></i> Buy Now
@@ -542,7 +551,7 @@
                                 <i class="fas fa-bolt"></i> Buy Now
                             </button>
                             <button class="add-to-cart-btn">
-                                <i class="fa-solid fa-cart-shopping"></i>
+                                <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                             </button>
                         </div>
                     </div>
@@ -578,7 +587,7 @@
                                 <i class="fas fa-bolt"></i> Buy Now
                             </button>
                             <button class="mobile-add-to-cart-btn">
-                                <i class="fa-solid fa-cart-shopping"></i>
+                                <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                             </button>
                         </div>
                     </div>
@@ -618,28 +627,27 @@
         </div>
         <div class="mobile-nav-icons">
             <a href="index.html" data-section="home" title="Home">
-                <i class="fas fa-home"></i>
+                <lord-icon src="https://cdn.lordicon.com/ewtxwele.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <div class="active-dot"></div>
             </a>
             <a href="wishlist.html" data-section="wishlist" title="Wishlist">
-                <i class="fas fa-heart"></i>
+                <lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <div class="active-dot"></div>
             </a>
 
             <div class="nav-extra-space"></div> <!-- Space for the cutout -->
 
             <a href="search.html" data-section="search" title="Search" class="nav-item-special">
-                <i class="fas fa-search"></i>
+                <lord-icon src="https://cdn.lordicon.com/vayiyuqd.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon>
             </a>
 
             <a href="cart.html" data-section="cart" title="Cart">
-                <i class="fa-solid fa-cart-shopping"></i>
+                <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <span class="cart-count">0</span>
                 <div class="active-dot"></div>
             </a>
-            <a href="login.html" data-section="profile" title="Profile">
-                <i class="fas fa-user"></i>
-                <div class="active-dot"></div>
+            <a href="profile.html" data-section="profile" class="mobile-profile-btn-wrapper" title="Profile">
+                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></span>
             </a>
         </div>
     </nav>

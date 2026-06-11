@@ -60,7 +60,7 @@ class AuthFlow {
 
         // Step 8: Food Preference
         this.foodPreference = document.getElementById('foodPreference');
-        this.foodButtons = document.querySelectorAll('.step[data-step="8"] .option-btn');
+        this.foodButtons = document.querySelectorAll('.step[data-step="8"] .option-btn, .step[data-step="8"] .image-option-card');
         this.startShoppingBtn = document.getElementById('startShoppingBtn');
         this.foodSkipBtn = document.getElementById('foodSkipBtn');
 

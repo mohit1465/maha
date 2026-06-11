@@ -37,27 +37,36 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Lordicon -->
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
 </head>
 
 <body data-page="profile">
     
     <header class="header">
         <div class="top-header">
-            <div class="logo-container">
-                <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo" class="logo">
+            <div class="header-left">
+                <div class="logo-container">
+                    <img src="assets/MAHARAJA logo.png" alt="Maharaja Logo" class="logo">
+                </div>
+                <div class="brand-name">
+                    <h1>MAHARAJA</h1>
+                    <p class="tagline">Dry Fruit</p>
+                </div>
             </div>
-            <div class="brand-name">
-                <h1>MAHARAJA</h1>
-                <p class="tagline">Dry Fruit</p>
+            <div class="header-search-bar">
+                <form action="search.html" method="get">
+                    <input type="text" name="q" class="header-search-input" placeholder="Search for dry fruits, nuts, seeds..." required>
+                    <button type="submit" class="header-search-btn"><lord-icon src="https://cdn.lordicon.com/vayiyuqd.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></button>
+                </form>
             </div>
             <div class="header-icons">
-                <a href="search.html" class="icon" data-section="search"><i class="fas fa-search"></i></a>
-                <a href="wishlist.html" class="icon" data-section="wishlist"><i class="fas fa-heart"></i></a>
+                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
                 <a href="cart.html" class="icon" data-section="cart">
-                    <i class="fa-solid fa-cart-shopping"></i>
+                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                     <span class="cart-count">0</span>
                 </a>
-                <a href="login.html" class="icon" data-section="profile"><i class="fas fa-user"></i></a>
+                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
             </div>
         </div>
         <nav class="main-nav">
@@ -116,13 +125,30 @@
                         </div>
                         <div class="verification-text">
                             <h4>Email Verification Required</h4>
-                            <p id="verificationMessage">Please verify your email address to access all features.</p>
+                            <p id="verificationMessage">Please verify your email address to unlock Coupons and Free Delivery on your first 2 orders.</p>
                             <p class="verification-email">Email: <span id="verificationUserEmail">...</span></p>
                         </div>
                         <div class="verification-actions">
                             <button id="resendVerificationBtn" class="btn btn-primary">Resend Verification</button>
                             <button id="dismissBannerBtn" class="btn btn-secondary">Dismiss</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Profile Completion Widget (Hidden by default) -->
+                <div id="profileCompletionWidget" class="completion-widget" style="display: none;">
+                    <div class="completion-rewards-icon"><i class="fas fa-gift"></i></div>
+                    <div class="completion-header">
+                        <h4>Unlock Exclusive Coupons</h4>
+                        <span id="completionProgressText">0%</span>
+                    </div>
+                    <p class="completion-subtext">Complete your profile details below to reveal personalized coupons and free delivery perks!</p>
+                    <div class="completion-progress-bar">
+                        <div class="completion-progress-fill" id="completionProgressFill"></div>
+                    </div>
+                    
+                    <div id="missingStepsContainer" class="missing-steps">
+                        <!-- Dynamic content injected by profile.js -->
                     </div>
                 </div>
 
@@ -134,9 +160,16 @@
                                 <!-- Orange Circle as per design -->
                             </div>
                         </div>
-                        <div class="profile-info">
+                        <div class="profile-info" style="flex: 1;">
                             <h2 class="profile-name" id="userName">User</h2>
                             <p class="profile-email" id="userEmail">Please Login for More Details.</p>
+                        </div>
+                        <!-- Dynamic Coupon Stack -->
+                        <div class="coupon-stack-widget" id="profileCouponStack" style="display: none;" onclick="window.location.href='coupons.html'">
+                            <div class="stack-badge" id="couponCountBadge">0</div>
+                            <div class="stack-cards" id="stackCardsContainer">
+                                <!-- Cards injected by JS -->
+                            </div>
                         </div>
                     </div>
 
@@ -156,7 +189,7 @@
                         </div>
                         <div class="action-card secondary" onclick="window.location.href='wishlist.html'">
                             <div class="card-icon">
-                                <i class="fas fa-heart"></i>
+                                <lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                             </div>
                             <div class="card-content">
                                 <h3>Wishlist</h3>
@@ -178,8 +211,11 @@
                 <!-- Profile Menu -->
                 <div class="profile-menu-container">
                     <div class="menu-list">
-                        <div class="menu-row" onclick="window.location.href='coupons.html'">
-                            <span>My Coupons</span>
+                        <div class="menu-row" id="myCouponsMenuRow" onclick="window.location.href='coupons.html'">
+                            <span style="display: flex; align-items: center; gap: 10px;">
+                                My Coupons
+                                <span class="badge" id="myCouponsMenuBadge" style="display: none; background: #fc6e20; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 4px;">New</span>
+                            </span>
                         </div>
                         <div class="menu-row" onclick="window.location.href='addresses.html'">
                             <span>Manage Addresses</span>
@@ -231,28 +267,27 @@
         </div>
         <div class="mobile-nav-icons">
             <a href="index.html" data-section="home" title="Home">
-                <i class="fas fa-home"></i>
+                <lord-icon src="https://cdn.lordicon.com/ewtxwele.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <div class="active-dot"></div>
             </a>
             <a href="wishlist.html" data-section="wishlist" title="Wishlist">
-                <i class="fas fa-heart"></i>
+                <lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <div class="active-dot"></div>
             </a>
 
             <div class="nav-extra-space"></div> <!-- Space for the cutout -->
 
             <a href="search.html" data-section="search" title="Search" class="nav-item-special">
-                <i class="fas fa-search"></i>
+                <lord-icon src="https://cdn.lordicon.com/vayiyuqd.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon>
             </a>
 
             <a href="cart.html" data-section="cart" title="Cart">
-                <i class="fa-solid fa-cart-shopping"></i>
+                <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
                 <span class="cart-count">0</span>
                 <div class="active-dot"></div>
             </a>
-            <a href="login.html" data-section="profile" title="Profile">
-                <i class="fas fa-user"></i>
-                <div class="active-dot"></div>
+            <a href="profile.html" data-section="profile" class="mobile-profile-btn-wrapper" title="Profile">
+                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></span>
             </a>
         </div>
     </nav>
