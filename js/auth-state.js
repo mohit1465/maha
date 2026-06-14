@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     
                     infoContainer.innerHTML = `
-                        <span class="header-user-name">Hi, ${firstName}</span>
+                        <span class="header-user-name">Hi, ${firstName} <i class="fas fa-chevron-down header-chevron"></i></span>
                         <span class="header-user-location" id="headerUserLocationText"><i class="fas fa-map-marker-alt"></i> ${userLocation}</span>
                     `;
                     
@@ -208,19 +208,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Desktop Header Location Popup Logic ---
     window.renderLocationPopup = function(uid) {
+        const infoContainer = document.getElementById('headerUserInfo');
         let existingPopup = document.getElementById('headerLocationPopup');
+        
+        // Define cleanup function to close popup properly
+        const closePopup = () => {
+            const popupEl = document.getElementById('headerLocationPopup');
+            if (popupEl) popupEl.remove();
+            if (infoContainer) infoContainer.classList.remove('active');
+            document.removeEventListener('click', closePopupOnOutsideClick);
+        };
+
+        const closePopupOnOutsideClick = (e) => {
+            if (infoContainer && !infoContainer.contains(e.target)) {
+                closePopup();
+            }
+        };
+
         if (existingPopup) {
-            existingPopup.remove();
+            closePopup();
             return; // Toggle off if already showing
         }
 
-        const infoContainer = document.getElementById('headerUserInfo');
         if (!infoContainer) return;
+        infoContainer.classList.add('active');
 
         const popup = document.createElement('div');
         popup.id = 'headerLocationPopup';
         popup.className = 'location-popup-widget';
         popup.innerHTML = `
+            <div class="loc-header-icon-container">
+                <div class="loc-icon-ring">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+            </div>
             <h4>Set Your Location</h4>
             <p>Get accurate delivery estimates and localized offers.</p>
             <button class="loc-btn loc-detect-btn" id="locDetectBtn">
@@ -241,12 +262,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prevent closing when clicking inside popup
         popup.onclick = (e) => e.stopPropagation();
 
+        // Close popup when clicking outside
+        setTimeout(() => {
+            document.addEventListener('click', closePopupOnOutsideClick);
+        }, 0);
+
         // Click handlers
         document.getElementById('locSkipBtn').onclick = (e) => {
             e.stopPropagation();
             sessionStorage.setItem('skippedLocation', 'true');
             document.getElementById('headerUserLocationText').innerHTML = '<i class="fas fa-map-marker-alt"></i> Select Location';
-            popup.remove();
+            closePopup();
         };
 
         document.getElementById('locManualBtn').onclick = (e) => {
@@ -260,13 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             const val = document.getElementById('locManualInput').value.trim();
             if (!val) return;
-            await saveUserLocation(uid, val, popup);
+            await saveUserLocation(uid, val, closePopup);
         };
 
         document.getElementById('locDetectBtn').onclick = (e) => {
             e.stopPropagation();
             const btn = document.getElementById('locDetectBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+            btn.innerHTML = '<i class="fas fa-location-arrow"></i> Detecting...';
             
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
@@ -278,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const data = await response.json();
                         
                         let city = data.address.city || data.address.town || data.address.village || data.address.county || 'Unknown Location';
-                        await saveUserLocation(uid, city, popup);
+                        await saveUserLocation(uid, city, closePopup);
                     } catch (error) {
                         console.error('Error detecting location:', error);
                         btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Detection Failed';
@@ -299,13 +325,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    async function saveUserLocation(uid, locationString, popupEl) {
+    async function saveUserLocation(uid, locationString, closePopupFn) {
         try {
             await updateDoc(doc(db, 'users', uid), {
                 currentLocation: locationString
             });
             document.getElementById('headerUserLocationText').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${locationString}`;
-            popupEl.remove();
+            closePopupFn();
         } catch (error) {
             console.error('Error saving location', error);
             alert('Failed to save location.');

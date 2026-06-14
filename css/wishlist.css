@@ -11,40 +11,6 @@
     padding-bottom: 120px;
 }
 
-/* Breadcrumb Styles */
-.wishlist-section .breadcrumb {
-    font-size: var(--text-small);
-    color: #666;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    font-weight: 300;
-    gap: 8px;
-}
-
-.wishlist-section .breadcrumb-item {
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.wishlist-section .breadcrumb-item:hover {
-    color: #fc6e20;
-}
-
-.wishlist-section .breadcrumb-item.current {
-    color: #323232;
-    font-weight: 500;
-    cursor: default;
-}
-
-.wishlist-section .breadcrumb-item.current:hover {
-    color: #323232;
-}
-
-.wishlist-section .breadcrumb-separator {
-    color: #999;
-    font-weight: 300;
-}
 
 /* Page Title */
 .page-title {

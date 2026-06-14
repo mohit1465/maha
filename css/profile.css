@@ -36,15 +36,6 @@ span {
     padding-bottom: 120px;
 }
 
-/* Breadcrumb Styles */
-.profile-section .breadcrumb {
-    font-size: var(--text-small);
-    color: var(--color-text-secondary);
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 
 /* Profile Card (Dark Header) */
 .profile-card {

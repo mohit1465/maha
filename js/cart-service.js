@@ -51,6 +51,26 @@ class CartService {
         return bp * 1; // Default for 250g or others
     }
 
+    getVariantPrice(product, size) {
+        if (!size) {
+            return { price: parseFloat(product.price) || 0, originalPrice: parseFloat(product.originalPrice) || null };
+        }
+        const normSize = size.toLowerCase().replace(/\s+/g, '').replace('gm', 'g');
+        if (product.variants && product.variants.length > 0) {
+            const variant = product.variants.find(v => v.weight && v.weight.toLowerCase().replace(/\s+/g, '').replace('gm', 'g') === normSize);
+            if (variant) {
+                return { 
+                    price: parseFloat(variant.price) || 0, 
+                    originalPrice: variant.originalPrice ? parseFloat(variant.originalPrice) : null 
+                };
+            }
+        }
+        // Fallback for legacy size pricing
+        const price = this.getPriceForSize(product.price, normSize);
+        const originalPrice = product.originalPrice ? this.getPriceForSize(product.originalPrice, normSize) : null;
+        return { price, originalPrice };
+    }
+
     async addToCart(product, quantity = 1, size = '250g') {
         const user = auth.currentUser;
         if (!user) {
@@ -67,8 +87,9 @@ class CartService {
         const basePrice = parseFloat(product.basePrice || product.price) || 0;
         const baseOriginalPrice = parseFloat(product.baseOriginalPrice || product.originalPrice) || 0;
         
-        const currentPrice = this.getPriceForSize(basePrice, normalizedSize);
-        const currentOriginalPrice = baseOriginalPrice ? this.getPriceForSize(baseOriginalPrice, normalizedSize) : 0;
+        const variantData = this.getVariantPrice(product, normalizedSize);
+        const currentPrice = variantData.price;
+        const currentOriginalPrice = variantData.originalPrice || 0;
 
         let newCart = [...this.cartItems];
         if (existingItemIndex > -1) {
@@ -85,7 +106,8 @@ class CartService {
                 images: product.images || { '1': 'https://placehold.co/150x150?text=Maharaja' },
                 category: product.category || 'Dry Fruits',
                 quantity: parseInt(quantity),
-                size: normalizedSize
+                size: normalizedSize,
+                quantities_available: product.quantities_available || (product.variants ? product.variants.map(v => v.weight) : [normalizedSize])
             });
         }
 
@@ -110,9 +132,7 @@ class CartService {
         const cartRef = doc(db, "users", user.uid);
         const newCart = this.cartItems.map(item => {
             if (item.id === productId && item.size === normalizedSize) {
-                const newPrice = this.getPriceForSize(item.basePrice, normalizedSize);
-                const newOriginalPrice = item.baseOriginalPrice ? this.getPriceForSize(item.baseOriginalPrice, normalizedSize) : 0;
-                return { ...item, quantity: parseInt(quantity), price: newPrice, originalPrice: newOriginalPrice };
+                return { ...item, quantity: parseInt(quantity) };
             }
             return item;
         });
@@ -133,10 +153,32 @@ class CartService {
         let newCart = [...this.cartItems];
         const existingItemIndex = newCart.findIndex(item => item.id === productId && item.size === normNewSize);
 
+        let currentPrice = itemToUpdate.price;
+        let currentOriginalPrice = itemToUpdate.originalPrice || 0;
+
+        try {
+            const prodSnap = await getDoc(doc(db, "products", productId));
+            if (prodSnap.exists()) {
+                const product = prodSnap.data();
+                product.id = productId;
+                const variantData = this.getVariantPrice(product, normNewSize);
+                currentPrice = variantData.price;
+                currentOriginalPrice = variantData.originalPrice || 0;
+            } else {
+                currentPrice = this.getPriceForSize(itemToUpdate.basePrice, normNewSize);
+                currentOriginalPrice = itemToUpdate.baseOriginalPrice ? this.getPriceForSize(itemToUpdate.baseOriginalPrice, normNewSize) : 0;
+            }
+        } catch (e) {
+            console.error("Error fetching product for size update:", e);
+            currentPrice = this.getPriceForSize(itemToUpdate.basePrice, normNewSize);
+            currentOriginalPrice = itemToUpdate.baseOriginalPrice ? this.getPriceForSize(itemToUpdate.baseOriginalPrice, normNewSize) : 0;
+        }
+
         if (existingItemIndex > -1) {
             // If new size already exists, merge quantities and remove old size entry
             newCart[existingItemIndex].quantity += itemToUpdate.quantity;
-            newCart[existingItemIndex].price = this.getPriceForSize(itemToUpdate.basePrice, normNewSize);
+            newCart[existingItemIndex].price = currentPrice;
+            newCart[existingItemIndex].originalPrice = currentOriginalPrice;
             newCart = newCart.filter(item => !(item.id === productId && item.size === normOldSize));
         } else {
             // Otherwise just update the size and price of the existing item
@@ -145,8 +187,8 @@ class CartService {
                     return {
                         ...item,
                         size: normNewSize,
-                        price: this.getPriceForSize(item.basePrice, normNewSize),
-                        originalPrice: item.baseOriginalPrice ? this.getPriceForSize(item.baseOriginalPrice, normNewSize) : 0
+                        price: currentPrice,
+                        originalPrice: currentOriginalPrice
                     };
                 }
                 return item;

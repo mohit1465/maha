@@ -23,8 +23,60 @@ let allCoupons = [];
 let allOrders = [];
 let currentImages = [];
 
+// --- VARIANTS LOGIC ---
+window.addVariantRow = function(weight = '', price = '', originalPrice = '') {
+    const variantsContainer = document.getElementById('variantsContainer');
+    if (!variantsContainer) return;
+    const row = document.createElement('div');
+    row.className = 'variant-row';
+    row.innerHTML = `
+        <div class="form-group">
+            <label>Weight</label>
+            <input type="text" class="var-weight" list="weightSuggestions" value="${weight}" required placeholder="e.g. 250g">
+        </div>
+        <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" class="var-price" value="${price}" required min="0">
+        </div>
+        <div class="form-group">
+            <label>MRP (₹)</label>
+            <input type="number" class="var-original-price" value="${originalPrice}" min="0" placeholder="Optional">
+        </div>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="padding: 10px; height: 42px; align-self: flex-end;"><i class="fas fa-trash"></i></button>
+    `;
+    variantsContainer.appendChild(row);
+}
+
+window.updateWeightSuggestions = function(products) {
+    const weightSuggestions = document.getElementById('weightSuggestions');
+    if(!weightSuggestions) return;
+    const weights = new Set();
+    products.forEach(p => {
+        if(p.variants) {
+            p.variants.forEach(v => weights.add(v.weight));
+        } else if(p.quantities_available) {
+            p.quantities_available.forEach(w => weights.add(w));
+        }
+    });
+    weightSuggestions.innerHTML = '';
+    weights.forEach(w => {
+        const opt = document.createElement('option');
+        opt.value = w;
+        weightSuggestions.appendChild(opt);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const addVariantBtn = document.getElementById('addVariantBtn');
+    if (addVariantBtn) {
+        addVariantBtn.addEventListener('click', () => window.addVariantRow());
+    }
+});
+// ----------------------
+
+
 // Admin Emails
-const ADMIN_EMAILS = ["haryalidryfruits@gmail.com", "mohit8307521465@gmail.com"];
+const ADMIN_EMAILS = ["haryalidryfruits@gmail.com", "mohit8307521465@gmail.com", "ravinder.cgwb@gmail.com"];
 
 // Auth handling
 onAuthStateChanged(auth, (user) => {
@@ -77,6 +129,7 @@ async function loadProducts() {
         querySnapshot.forEach((doc) => {
             allProducts.push({ _id: doc.id, ...doc.data() });
         });
+        if (window.updateWeightSuggestions) window.updateWeightSuggestions(allProducts);
         renderProducts();
     } catch (error) {
         console.error("Error loading products:", error);
@@ -437,13 +490,36 @@ window.editProduct = (id) => {
     
     // Tag inputs
     window.setTagValues('categoryTagInput', product.category ? [product.category] : ['Other Dry Fruits']);
-    window.setTagValues('quantitiesTagInput', product.quantities_available || []);
     window.setTagValues('keywordsTagInput', product.keywords || []);
     window.setTagValues('tagsTagInput', product.tags || []);
     window.setTagValues('groupsTagInput', product.groups || []);
     
-    document.getElementById('productPrice').value = product.price || '';
-    document.getElementById('productOriginalPrice').value = product.originalPrice || '';
+    const variantsContainer = document.getElementById('variantsContainer');
+    if (variantsContainer) variantsContainer.innerHTML = '';
+    
+    const getLegacyPriceForSize = (basePrice, size) => {
+        const bp = parseFloat(basePrice) || 0;
+        if (!size) return bp;
+        const s = size.toLowerCase().replace(/\s+/g, '').replace('gm', 'g');
+        if (s.includes('500g')) return bp * 2;
+        if (s.includes('1kg')) return bp * 4;
+        if (s.includes('2kg')) return bp * 8;
+        return bp * 1;
+    };
+
+    if (product.variants && product.variants.length > 0) {
+        product.variants.forEach(v => {
+            window.addVariantRow(v.weight, v.price, v.originalPrice || '');
+        });
+    } else if (product.quantities_available && product.quantities_available.length > 0) {
+        product.quantities_available.forEach(qty => {
+            const price = getLegacyPriceForSize(product.price, qty);
+            const originalPrice = product.originalPrice ? getLegacyPriceForSize(product.originalPrice, qty) : '';
+            window.addVariantRow(qty, price, originalPrice);
+        });
+    } else {
+        window.addVariantRow('250g', product.price || '', product.originalPrice || '');
+    }
     
     document.getElementById('productShortDescription').value = product.shortDescription || '';
     
@@ -561,10 +637,30 @@ productForm.addEventListener('submit', async (e) => {
     const categoryTags = window.getTagValues('categoryTagInput');
     const category = categoryTags.length > 0 ? categoryTags[0] : 'Other Dry Fruits';
     
-    const price = Number(document.getElementById('productPrice').value);
-    const originalPrice = document.getElementById('productOriginalPrice').value ? Number(document.getElementById('productOriginalPrice').value) : null;
-    
-    const quantities = window.getTagValues('quantitiesTagInput');
+    // Gather variants
+    const variantsContainer = document.getElementById('variantsContainer');
+    const variantRows = variantsContainer ? variantsContainer.querySelectorAll('.variant-row') : [];
+    const variants = [];
+    variantRows.forEach(row => {
+        const weight = row.querySelector('.var-weight').value.trim();
+        const price = Number(row.querySelector('.var-price').value);
+        const originalPriceInput = row.querySelector('.var-original-price').value;
+        const originalPrice = originalPriceInput ? Number(originalPriceInput) : null;
+        
+        if(weight && price > 0) {
+            let discount = 0;
+            if (originalPrice && originalPrice > price) {
+                discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+            }
+            variants.push({ weight, price, originalPrice, discount });
+        }
+    });
+
+    if(variants.length === 0) {
+        alert("Please add at least one valid variant with a weight and price.");
+        loadingOverlay.style.display = 'none';
+        return;
+    }
     
     const shortDescription = document.getElementById('productShortDescription').value.trim();
     const details = document.getElementById('productLongDescription').value.trim();
@@ -575,10 +671,7 @@ productForm.addEventListener('submit', async (e) => {
     const tags = window.getTagValues('tagsTagInput');
     const groups = window.getTagValues('groupsTagInput');
 
-    let discount = 0;
-    if (originalPrice && originalPrice > price) {
-        discount = Math.round(((originalPrice - price) / originalPrice) * 100);
-    }
+    // discount calculated per variant
 
     try {
         const imagesObject = {};
@@ -592,10 +685,11 @@ productForm.addEventListener('submit', async (e) => {
             shortTitle,
             hindiName,
             category,
-            price,
-            originalPrice,
-            discount,
-            quantities_available: quantities,
+            variants,
+            price: variants[0]?.price || 0,
+            originalPrice: variants[0]?.originalPrice || null,
+            discount: variants[0]?.discount || 0,
+            quantities_available: variants.map(v => v.weight),
             shortDescription,
             longDescription: {
                 details,
@@ -625,7 +719,6 @@ productForm.addEventListener('submit', async (e) => {
 function resetForm() {
     productForm.reset();
     document.getElementById('productId').value = '';
-    document.getElementById('productOriginalPrice').value = '';
     document.getElementById('productShortTitle').value = '';
     document.getElementById('productShortDescription').value = '';
     document.getElementById('productLongDescription').value = '';
@@ -633,7 +726,9 @@ function resetForm() {
     document.getElementById('productStorageKey').value = '';
     
     window.setTagValues('categoryTagInput', []);
-    window.setTagValues('quantitiesTagInput', ['250g', '500g', '1kg']);
+    const variantsContainer = document.getElementById('variantsContainer');
+    if (variantsContainer) variantsContainer.innerHTML = '';
+    window.addVariantRow();
     window.setTagValues('keywordsTagInput', []);
     window.setTagValues('tagsTagInput', []);
     window.setTagValues('groupsTagInput', []);
@@ -1099,7 +1194,6 @@ function initTagInputs() {
             const set = new Set();
             let prop = '';
             if (id === 'categoryTagInput') prop = 'category';
-            if (id === 'quantitiesTagInput') prop = 'quantities_available';
             if (id === 'keywordsTagInput') prop = 'keywords';
             if (id === 'tagsTagInput') prop = 'tags';
             if (id === 'groupsTagInput') prop = 'groups';

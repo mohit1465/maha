@@ -159,8 +159,8 @@ span {
 .top-header {
     z-index: 10;
     background-color: #1b1b1b;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 1fr;
     align-items: center;
     padding: 10px 5%;
     border-bottom: 1px solid #323232;
@@ -211,6 +211,7 @@ span {
     display: flex;
     gap: 20px;
     align-items: center;
+    justify-content: flex-end;
 }
 
 .header-icons .icon {
@@ -958,6 +959,7 @@ span {
     }
 
     .top-header {
+        display: flex;
         background-color: #1b1b1b;
         border-bottom: 1px solid #3b3b3b;
         padding: 5px 5%;
@@ -2287,8 +2289,9 @@ span {
 
 /* Global Header Search Bar (Desktop) */
 .header-search-bar {
-    flex: 1;
-    max-width: 500px;
+    width: 100%;
+    max-width: 900px;
+    justify-self: center;
 }
 
 .header-search-bar form {

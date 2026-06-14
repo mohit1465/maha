@@ -13,43 +13,7 @@
     /* Extra padding for fixed bottom bar */
 }
 
-/* Breadcrumb Styles */
-.cart-section .breadcrumb {
-    font-size: var(--text-small);
-    color: #666;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 
-.cart-section .breadcrumb-item {
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.cart-section .breadcrumb-item#breadcrumbCart.current {
-    cursor: default;
-}
-
-.cart-section .breadcrumb-item:hover {
-    color: #fc6e20;
-}
-
-.cart-section .breadcrumb-item.current {
-    color: #323232;
-    font-weight: 500;
-    cursor: default;
-}
-
-.cart-section .breadcrumb-item.current:hover {
-    color: #323232;
-}
-
-.cart-section .breadcrumb-separator {
-    color: #999;
-    font-weight: 300;
-}
 
 /* Cart List Container */
 .cart-list {

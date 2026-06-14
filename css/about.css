@@ -13,39 +13,7 @@
     /* Extra padding for fixed bottom bar */
 }
 
-/* Breadcrumb Styles */
-.about-section .breadcrumb {
-    font-size: var(--text-small);
-    color: #666;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 
-.about-section .breadcrumb-item {
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.about-section .breadcrumb-item:hover {
-    color: #fc6e20;
-}
-
-.about-section .breadcrumb-item.current {
-    color: #323232;
-    font-weight: 500;
-    cursor: default;
-}
-
-.about-section .breadcrumb-item.current:hover {
-    color: #323232;
-}
-
-.about-section .breadcrumb-separator {
-    color: #999;
-    font-weight: 300;
-}
 
 /* Page Title */
 .page-title {

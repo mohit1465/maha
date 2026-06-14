@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="cart-item-size">
                         <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
-                            ${['250g', '500g', '1kg', '2kg'].map(size => {
+                            ${(item.quantities_available || ['250g', '500g', '1kg', '2kg']).map(size => {
                 const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
                 return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
             }).join('')}
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                         <div class="cart-item-size">
                             <select class="size-select" onchange="changeSize('${item.id}', '${item.size}', this.value)">
-                                ${['250g', '500g', '1kg', '2kg'].map(size => {
+                                ${(item.quantities_available || ['250g', '500g', '1kg', '2kg']).map(size => {
                 const isSelected = item.size.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
                 return `<option value="${size}" ${isSelected ? 'selected' : ''}>${size}</option>`;
             }).join('')}

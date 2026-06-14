@@ -95,7 +95,7 @@ export function createProductCard(product) {
 
     // Construct HTML matching the exact image layout
     const cardHtml = `
-        <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}" data-original-price="${product.originalPrice || ''}">
+        <div class="product-card" id="product-card-${product.id}" data-id="${product.id}" data-base-price="${product.price}" data-original-price="${product.originalPrice || ''}" data-variants='${JSON.stringify(product.variants || []).replace(/'/g, "&apos;")}'>
             <div class="card-image-wrapper">
                 ${badgeHtml}
                 <div class="card-wishlist ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product.id}', this, event)">
@@ -307,7 +307,22 @@ function updateCardLivePrice(card) {
         }
     }
 
-    const unitPrice = cartService.getPriceForSize(basePriceNum, size);
+    let variants = [];
+    try {
+        variants = JSON.parse(card.dataset.variants || '[]');
+    } catch(e) {}
+    
+    let unitPrice = basePriceNum;
+    let originalUnitPrice = card.dataset.originalPrice ? parseFloat(card.dataset.originalPrice) : null;
+    
+    if (variants && variants.length > 0) {
+        const matchedVariant = variants.find(v => v.weight.toLowerCase() === size.toLowerCase());
+        if (matchedVariant) {
+            unitPrice = matchedVariant.price;
+            originalUnitPrice = matchedVariant.originalPrice || null;
+        }
+    }
+
     const totalPrice = unitPrice * qty;
 
     const priceDisplay = card.querySelector('.card-price');
@@ -316,11 +331,8 @@ function updateCardLivePrice(card) {
     }
 
     // Update Original Price and Savings Pill if they exist
-    const originalPrice = card.dataset.originalPrice;
-    if (originalPrice) {
-        const originalPriceNum = parseFloat(originalPrice);
-        const scaledOriginal = cartService.getPriceForSize(originalPriceNum, size);
-        const totalOriginal = scaledOriginal * qty;
+    if (originalUnitPrice) {
+        const totalOriginal = originalUnitPrice * qty;
         
         const originalDisplay = card.querySelector('.card-original-price');
         if (originalDisplay) {
