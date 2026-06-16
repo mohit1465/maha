@@ -178,6 +178,12 @@ document.addEventListener('DOMContentLoaded', function () {
             flyToCart(this);
         });
     }
+    const mobileAddToCartBtn = document.getElementById('mobileAddToCartBtn');
+    if (mobileAddToCartBtn) {
+        mobileAddToCartBtn.addEventListener('click', function () {
+            flyToCart(this);
+        });
+    }
 
     /* ============================================================
        8. SCROLL-REVEAL ANIMATIONS
@@ -216,6 +222,8 @@ document.addEventListener('DOMContentLoaded', function () {
        ============================================================ */
     const filterBtns = document.querySelectorAll('.filter-btn');
     const ratingBarRows = document.querySelectorAll('.rating-bar-row');
+    const activeFilterIndicator = document.getElementById('activeFilterIndicator');
+    const filterRatingText = document.getElementById('filterRatingText');
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function () {
@@ -232,6 +240,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
+            // Update active filter banner indicator
+            if (activeFilterIndicator) {
+                if (rating === 'all') {
+                    activeFilterIndicator.style.display = 'none';
+                } else {
+                    activeFilterIndicator.style.display = 'inline-flex';
+                    if (filterRatingText) filterRatingText.textContent = `${rating}★`;
+                }
+            }
+
             // Filter review cards
             const reviewCards = document.querySelectorAll('.review-card');
             reviewCards.forEach(card => {
@@ -244,6 +262,14 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    const clearReviewFilterBtn = document.getElementById('clearReviewFilterBtn');
+    if (clearReviewFilterBtn) {
+        clearReviewFilterBtn.addEventListener('click', function () {
+            const allBtn = document.querySelector('.filter-btn[data-rating="all"]');
+            if (allBtn) allBtn.click();
+        });
+    }
 
     /* ============================================================
        10. CAROUSEL ARROWS
@@ -490,5 +516,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Run after product.js populates variants
     setTimeout(enhanceVariantCards, 500);
+
+    /* ============================================================
+       21. REVIEW DRAWER TOGGLE
+       ============================================================ */
+    const initReviewDrawer = () => {
+        const backdrop = document.getElementById('reviewDrawerBackdrop');
+        const drawer = document.getElementById('reviewDrawer');
+        const closeBtn = document.getElementById('closeReviewDrawerBtn');
+
+        function openDrawer() {
+            if (drawer && backdrop) {
+                drawer.classList.add('open');
+                backdrop.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling background
+            }
+        }
+
+        // Declared closeDrawer as block-scoped variable inside initReviewDrawer
+        function closeDrawer() {
+            if (drawer && backdrop) {
+                drawer.classList.remove('open');
+                backdrop.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Event delegation to catch write review buttons
+        document.addEventListener('click', function (e) {
+            const writeBtn = e.target.closest('.product-write-btn') || e.target.closest('#openReviewDrawerBtn');
+            if (writeBtn) {
+                e.preventDefault();
+                openDrawer();
+            }
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeDrawer);
+        }
+        if (backdrop) {
+            backdrop.addEventListener('click', closeDrawer);
+        }
+    };
+
+    initReviewDrawer();
 
 });

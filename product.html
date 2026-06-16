@@ -89,7 +89,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
-    <link rel="stylesheet" href="css/qc-product.css">
+    <link rel="stylesheet" href="css/product.css">
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/profile.css">
     <link rel="stylesheet" href="css/contact.css">
@@ -122,12 +122,12 @@
                 </form>
             </div>
             <div class="header-icons">
-                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
+                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></a>
                 <a href="cart.html" class="icon" data-section="cart">
-                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon>
                     <span class="cart-count">0</span>
                 </a>
-                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
+                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></a>
             </div>
         </div>
         <nav class="main-nav">
@@ -168,79 +168,79 @@
         </nav>
     </header>
 
-        <main class="qc-main">
-        <div class="qc-container">
+        <main class="product-main">
+        <div class="product-container">
             <!-- Breadcrumb -->
-            <div class="qc-breadcrumb" id="breadcrumb">
-                <span class="breadcrumb-item" data-section="home"><i class="fas fa-home"></i></span>
-                <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <div class="breadcrumb" id="breadcrumb">
+                <span class="breadcrumb-item" data-section="home">Home</span>
+                <span class="breadcrumb-separator">&gt;</span>
                 <span class="breadcrumb-item current" id="breadcrumbProduct">Product Name</span>
             </div>
 
-            <div class="qc-product-grid">
+            <div class="product-detail-grid skeleton-loading-active">
                 <!-- Left: Image Gallery (Sticky) -->
-                <div class="qc-gallery-section">
-                    <div class="qc-image-wrapper">
-                        <button class="qc-back-btn" onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" aria-label="Go back"><i class="fas fa-chevron-left"></i> Back</button>
-                        <img class="qc-main-image" id="mainImage" src="" alt="Product">
+                <div class="product-gallery-section">
+                    <div class="product-image-wrapper">
+                        <button class="product-back-btn" onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" aria-label="Go back"><i class="fas fa-chevron-left"></i> Back</button>
+                        <img class="product-main-image" id="mainImage" src="" alt="Product">
                         
-                        <div class="qc-image-actions">
-                            <button class="qc-icon-btn" id="imageShareBtn" aria-label="Share product"><i class="fas fa-share-nodes"></i></button>
-                            <button class="qc-icon-btn" id="imageWishlistBtn" aria-label="Add to wishlist"><i class="far fa-heart"></i></button>
+                        <div class="product-image-actions">
+                            <button class="product-icon-btn" id="imageShareBtn" aria-label="Share product"><i class="fas fa-share-nodes"></i></button>
+                            <button class="product-icon-btn" id="imageWishlistBtn" aria-label="Add to wishlist"><i class="far fa-heart"></i></button>
                         </div>
                     </div>
-                    <div class="qc-thumbnail-strip" id="thumbnailColumn">
+                    <div class="product-thumbnail-strip" id="thumbnailColumn">
                         <!-- Thumbnails injected here -->
                     </div>
                 </div>
 
                 <!-- Right: Details Cards -->
-                <div class="qc-details-section">
+                <div class="product-details-section">
                     
                     <!-- Card 1: Title & Price -->
-                    <div class="qc-card qc-header-card">
-                        <h1 class="qc-product-title">Product Name</h1>
-                        <div class="qc-product-meta">
-                            <span class="qc-category">Category</span>
-                            <span class="qc-rating"><i class="fas fa-star"></i> <span id="productAvgRatingVal">0.0</span></span>
+                    <div class="product-detail-card product-header-card">
+                        <h1 class="product-detail-title">Product Name</h1>
+                        <div class="product-detail-meta">
+                            <span class="product-detail-category">Category</span>
+                            <span class="product-detail-rating"><i class="fas fa-star"></i> <span id="productAvgRatingVal">0.0</span></span>
                         </div>
-                        <div class="qc-price-block">
-                            <div class="qc-price-main" id="productPriceDisplay">₹0</div>
-                            <div class="qc-price-original" id="productOriginalPriceDisplay">₹0</div>
-                            <div class="qc-price-discount" id="productDiscountDisplay">0% OFF</div>
+                        <div class="product-price-block">
+                            <div class="product-price-main" id="productPriceDisplay">₹0</div>
+                            <div class="product-price-original" id="productOriginalPriceDisplay">₹0</div>
+                            <div class="product-price-discount" id="productDiscountDisplay">0% OFF</div>
                         </div>
-                        <div class="qc-tax-note">Inclusive of all taxes</div>
+                        <div class="product-tax-note">Inclusive of all taxes</div>
                     </div>
 
                     <!-- Card 2: Variants (Unit Selection) -->
-                    <div class="qc-card qc-variants-card">
-                        <h3 class="qc-card-title">Select Unit</h3>
-                        <div class="qc-variant-list" id="variantOptions">
+                    <div class="product-detail-card product-variants-card">
+                        <h3 class="product-detail-card-title">Select Unit</h3>
+                        <div class="product-variant-list" id="variantOptions">
                             <!-- Variant Pills Injected Here -->
                         </div>
                     </div>
 
                     <!-- Card 3: Why Shop From Us (Trust Badges) -->
-                    <div class="qc-card qc-trust-card">
-                        <h3 class="qc-card-title">Why Shop From Us?</h3>
-                        <div class="qc-trust-list">
-                            <div class="qc-trust-item">
-                                <div class="qc-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" alt="Fast" style="width:24px;height:24px;opacity:0.8;"></div>
-                                <div class="qc-trust-text">
+                    <div class="product-detail-card product-trust-card">
+                        <h3 class="product-detail-card-title">Why Shop From Us?</h3>
+                        <div class="product-trust-list">
+                            <div class="product-trust-item">
+                                <div class="product-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/2830/2830305.png" alt="Fast" style="width:24px;height:24px;opacity:0.8;"></div>
+                                <div class="product-trust-text">
                                     <strong>Superfast Delivery</strong>
                                     <span>Get your order to your doorstep at lightning speed.</span>
                                 </div>
                             </div>
-                            <div class="qc-trust-item">
-                                <div class="qc-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/10008/10008985.png" alt="Genuine" style="width:24px;height:24px;opacity:0.8;"></div>
-                                <div class="qc-trust-text">
+                            <div class="product-trust-item">
+                                <div class="product-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/10008/10008985.png" alt="Genuine" style="width:24px;height:24px;opacity:0.8;"></div>
+                                <div class="product-trust-text">
                                     <strong>100% Genuine</strong>
                                     <span>Directly sourced from trusted farms and brands.</span>
                                 </div>
                             </div>
-                            <div class="qc-trust-item">
-                                <div class="qc-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/2950/2950005.png" alt="Packaging" style="width:24px;height:24px;opacity:0.8;"></div>
-                                <div class="qc-trust-text">
+                            <div class="product-trust-item">
+                                <div class="product-trust-icon"><img src="https://cdn-icons-png.flaticon.com/512/2950/2950005.png" alt="Packaging" style="width:24px;height:24px;opacity:0.8;"></div>
+                                <div class="product-trust-text">
                                     <strong>Secure Packaging</strong>
                                     <span>Packed hygienically to ensure maximum freshness.</span>
                                 </div>
@@ -249,77 +249,170 @@
                     </div>
 
                     <!-- Card 4: Action Desktop (Mobile is sticky bottom) -->
-                    <div class="qc-card qc-action-card desktop-only">
-                        <div class="qc-action-row" style="display: flex; gap: 12px; width: 100%;">
-                            <!-- Desktop Add to Cart / Qty Capsule wrapper -->
-                            <div class="qc-cart-btn-wrapper" style="flex: 1; display: flex;">
-                                <!-- Desktop add to cart -->
-                                <button class="qc-add-btn" id="mainAddToCartBtn" style="width: 100%;">Add to Cart</button>
-                                <!-- Quantity selector -->
-                                <div class="qc-qty-capsule" style="display:none; width: 100%;" id="desktopQtyCapsule">
-                                    <button class="qc-qty-btn minus" aria-label="Decrease"><i class="fas fa-minus"></i></button>
-                                    <span class="qc-qty-val">1</span>
-                                    <button class="qc-qty-btn plus" aria-label="Increase"><i class="fas fa-plus"></i></button>
-                                </div>
+                    <div class="product-detail-card product-action-card desktop-only">
+                        <div class="product-action-row" style="display: flex; gap: 12px; width: 100%; align-items: center;">
+                            <!-- Desktop Quantity Selector (Always visible, on left of Add to Cart) -->
+                            <div class="product-qty-capsule" id="productQtyCapsule" style="max-width: 120px; flex: 0 0 120px; display: flex;">
+                                <button class="product-qty-btn minus" aria-label="Decrease"><i class="fas fa-minus"></i></button>
+                                <span class="product-qty-val" style="font-size: 16px;">1</span>
+                                <button class="product-qty-btn plus" aria-label="Increase"><i class="fas fa-plus"></i></button>
                             </div>
-                            <!-- Desktop Buy Now button -->
-                            <button class="qc-buy-btn" id="mainBuyNowBtn">Buy Now</button>
+                            <!-- Desktop Add to Cart Button (Always visible) -->
+                            <button class="product-add-btn" id="mainAddToCartBtn" style="flex: 1;">Add to Cart</button>
+                            <!-- Desktop Buy Now Button (Always visible) -->
+                            <button class="product-buy-btn" id="mainBuyNowBtn" style="flex: 1;">Buy Now</button>
                         </div>
                     </div>
 
-                    <!-- Card 5: Details (Overview, Nutrition, Storage) -->
-                    <div class="qc-card qc-info-card">
-                        <h3 class="qc-card-title">Product Details</h3>
-                        
-                        <div class="qc-info-block">
-                            <h4>Overview</h4>
-                            <div class="product-description" id="productOverview"></div>
-                        </div>
+                    <!-- Card 5: About this Product -->
+                    <div class="product-detail-card product-info-card" id="productOverviewCard">
+                        <h3 class="product-detail-card-title">About this Product</h3>
+                        <div class="product-description" id="productOverview"></div>
+                    </div>
 
-                        <hr class="qc-divider" id="nutritionDivider">
-
-                        <div class="qc-info-block" id="nutritionBlock">
-                            <h4>Nutrition Facts (Per 100g)</h4>
-                            <div class="qc-nutrition-grid" id="nutritionGrid">
-                                <div class="qc-nutrition-item"><span>Protein</span><strong>21g</strong></div>
-                                <div class="qc-nutrition-item"><span>Fats</span><strong>50g</strong></div>
-                                <div class="qc-nutrition-item"><span>Carbs</span><strong>22g</strong></div>
-                                <div class="qc-nutrition-item"><span>Fiber</span><strong>12g</strong></div>
-                                <div class="qc-nutrition-item"><span>Calories</span><strong>579 kcal</strong></div>
-                            </div>
-                        </div>
-
-                        <hr class="qc-divider" id="storageDivider">
-
-                        <div class="qc-info-block" id="storageBlock">
-                            <h4>Storage Instructions</h4>
-                            <ul class="qc-storage-list" id="storageList">
-                                <li>Store in a cool & dry place away from sunlight.</li>
-                                <li>Transfer to an airtight container after opening.</li>
-                                <li>Best consumed within 6 months of packaging.</li>
-                            </ul>
+                    <!-- Card 6: Product Specifications -->
+                    <div class="product-detail-card product-info-card" id="productSpecsCard">
+                        <h3 class="product-detail-card-title">Product Specifications</h3>
+                        <div class="product-specs-grid" id="specsGrid">
+                            <!-- Injected by JS -->
                         </div>
                     </div>
+
+                    <!-- Card 7: Nutrition Facts -->
+                    <div class="product-detail-card product-info-card" id="productNutritionCard">
+                        <h3 class="product-detail-card-title">Nutrition Facts <span style="font-size: 11px; font-weight: normal; color: var(--product-text-muted); margin-left: 5px;">(Per 100g)</span></h3>
+                        <div class="product-nutrition-grid" id="nutritionGrid">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Card 8: Storage & Usage -->
+                    <div class="product-detail-card product-info-card" id="productStorageCard">
+                        <h3 class="product-detail-card-title">Storage & Usage</h3>
+                        <ul class="product-storage-list" id="storageList">
+                            <!-- Injected by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+                <div class="reviews-header">
+                    <h2>Customer Reviews</h2>
+                    <div class="product-filter-wrap">
+                        <span class="product-active-filter-indicator" id="activeFilterIndicator" style="display: none;">
+                            Filtering: <strong id="filterRatingText">5★</strong>
+                            <button id="clearReviewFilterBtn" class="product-clear-filter-btn" aria-label="Clear filter"><i class="fas fa-times-circle"></i></button>
+                        </span>
+                        <div class="reviews-filter" id="reviewsFilter">
+                            <button class="filter-btn active" data-rating="all">All Reviews</button>
+                            <button class="filter-btn" data-rating="5">5★</button>
+                            <button class="filter-btn" data-rating="4">4★</button>
+                            <button class="filter-btn" data-rating="3">3★</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-reviews-dashboard">
+                    <!-- Column 1: Circular Progress Gauge -->
+                    <div class="product-detail-rating-radial-box">
+                        <div class="product-radial-container">
+                            <svg class="product-radial-svg" viewBox="0 0 120 120">
+                                <circle class="product-radial-bg" cx="60" cy="60" r="50"></circle>
+                                <circle class="product-radial-progress" id="ratingRadialProgress" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+                            </svg>
+                            <div class="product-radial-content">
+                                <span class="product-radial-number" id="avgRatingNumber">0.0</span>
+                                <span class="product-radial-out-of">out of 5</span>
+                            </div>
+                        </div>
+                        <div class="product-radial-stars" id="avgStarsDisplay"></div>
+                        <div class="product-radial-text" id="totalReviewsCountText">Based on 0 reviews</div>
+                    </div>
+
+                    <!-- Column 2: Rating Breakdown Bars -->
+                    <div class="product-breakdown-box" id="ratingBreakdown">
+                        <div class="product-breakdown-row rating-bar-row" data-star="5">
+                            <span class="product-breakdown-star">5 <i class="fas fa-star" style="color: #ffb300; font-size: 10px;"></i></span>
+                            <div class="product-breakdown-track">
+                                <div class="product-breakdown-fill rating-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="product-breakdown-count bar-count">0</span>
+                        </div>
+                        <div class="product-breakdown-row rating-bar-row" data-star="4">
+                            <span class="product-breakdown-star">4 <i class="fas fa-star" style="color: #ffb300; font-size: 10px;"></i></span>
+                            <div class="product-breakdown-track">
+                                <div class="product-breakdown-fill rating-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="product-breakdown-count bar-count">0</span>
+                        </div>
+                        <div class="product-breakdown-row rating-bar-row" data-star="3">
+                            <span class="product-breakdown-star">3 <i class="fas fa-star" style="color: #ffb300; font-size: 10px;"></i></span>
+                            <div class="product-breakdown-track">
+                                <div class="product-breakdown-fill rating-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="product-breakdown-count bar-count">0</span>
+                        </div>
+                        <div class="product-breakdown-row rating-bar-row" data-star="2">
+                            <span class="product-breakdown-star">2 <i class="fas fa-star" style="color: #ffb300; font-size: 10px;"></i></span>
+                            <div class="product-breakdown-track">
+                                <div class="product-breakdown-fill rating-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="product-breakdown-count bar-count">0</span>
+                        </div>
+                        <div class="product-breakdown-row rating-bar-row" data-star="1">
+                            <span class="product-breakdown-star">1 <i class="fas fa-star" style="color: #ffb300; font-size: 10px;"></i></span>
+                            <div class="product-breakdown-track">
+                                <div class="product-breakdown-fill rating-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="product-breakdown-count bar-count">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Write a Review CTA -->
+                    <div class="product-write-review-cta">
+                        <div class="product-cta-title">Share Your Experience</div>
+                        <div class="product-cta-desc">Have you purchased this product? Let us know what you think!</div>
+                        <button class="product-write-btn" id="openReviewDrawerBtn"><i class="fas fa-pen-fancy"></i> Write a Review</button>
+                    </div>
+                </div>
+                
+                <div class="product-reviews-feed" id="dynamicReviewsContainer">
+                    <!-- Reviews will be loaded dynamically here -->
+                </div>
+            </div>
+
+            <!-- Similar Products — Grid -->
+            <div class="similar-products-section">
+                <div class="similar-header">
+                    <h2>You may also like 🛍️</h2>
+                </div>
+                <div class="product-grid" id="similarProductGrid">
+                    <!-- Similar products will be loaded dynamically here -->
                 </div>
             </div>
         </div>
 
         <!-- Sticky Mobile Action Bar -->
-        <div class="qc-mobile-action-bar mobile-only">
-            <div class="qc-mobile-price">
-                <span class="qc-mobile-price-val" id="mobilePriceVal">₹0</span>
-                <span class="qc-mobile-price-unit" id="mobileUnitVal">1 Unit</span>
+        <div class="product-mobile-action-bar mobile-only">
+            <div class="product-mobile-price">
+                <span class="product-mobile-price-val" id="mobilePriceVal">₹0</span>
+                <span class="product-mobile-price-unit" id="mobileUnitVal">1 Unit</span>
             </div>
-            <div class="qc-mobile-action" style="flex: 1; display: flex; gap: 8px; justify-content: flex-end; margin-left: 12px;">
-                <div class="qc-mobile-cart-btn-wrapper" style="flex: 1; display: flex; max-width: 130px;">
-                    <button class="qc-mobile-add-btn" id="mobileAddToCartBtn" style="padding: 10px 8px; font-size: 14px; white-space: nowrap;">Add to Cart</button>
-                    <div class="qc-mobile-qty-capsule" style="display:none;" id="mobileQtyCapsule">
-                        <button class="qc-mobile-qty-btn minus" style="padding: 10px 4px;"><i class="fas fa-minus"></i></button>
-                        <span class="qc-mobile-qty-val" style="padding: 0 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">1</span>
-                        <button class="qc-mobile-qty-btn plus" style="padding: 10px 4px;"><i class="fas fa-plus"></i></button>
-                    </div>
+            <div class="product-mobile-action" style="flex: 1; display: flex; gap: 6px; justify-content: flex-end; margin-left: 8px; align-items: center;">
+                <!-- Mobile Quantity Selector (Always visible, on left of Add to Cart) -->
+                <div class="product-qty-capsule" id="productQtyCapsuleMobile" style="max-width: 90px; flex: 0 0 90px; height: 38px; display: flex; align-items: center;">
+                    <button class="product-qty-btn minus" aria-label="Decrease" style="padding: 0; height: 100%; flex: 1; display: flex; align-items: center; justify-content: center;"><i class="fas fa-minus" style="font-size: 12px;"></i></button>
+                    <span class="product-qty-val" style="flex: 1; text-align: center; color: #fff; font-weight: 700; font-size: 14px;">1</span>
+                    <button class="product-qty-btn plus" aria-label="Increase" style="padding: 0; height: 100%; flex: 1; display: flex; align-items: center; justify-content: center;"><i class="fas fa-plus" style="font-size: 12px;"></i></button>
                 </div>
-                <button class="qc-mobile-buy-btn" id="mobileBuyNowBtn">Buy Now</button>
+                <!-- Mobile Add to Cart Button (Always visible) -->
+                <div class="product-mobile-cart-btn-wrapper" style="flex: 1; display: flex; max-width: 100px;">
+                    <button class="product-mobile-add-btn" id="mobileAddToCartBtn" style="padding: 10px 8px; font-size: 13px; white-space: nowrap; width: 100%; height: 38px; display: flex; align-items: center; justify-content: center;">Add to Cart</button>
+                </div>
+                <!-- Mobile Buy Now Button (Always visible) -->
+                <button class="product-mobile-buy-btn" id="mobileBuyNowBtn" style="flex: 1; max-width: 95px; height: 38px; display: flex; align-items: center; justify-content: center; padding: 10px 4px; font-size: 13px;">Buy Now</button>
             </div>
         </div>
     </main>
@@ -375,10 +468,27 @@
                 <div class="active-dot"></div>
             </a>
             <a href="profile.html" data-section="profile" class="mobile-profile-btn-wrapper" title="Profile">
-                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></span>
+                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:26px;height:26px"></lord-icon></span>
+                <div class="active-dot"></div>
             </a>
         </div>
     </nav>
+
+    <!-- Slide-out Drawer backdrop & Drawer for Write Review -->
+    <div class="product-drawer-backdrop" id="reviewDrawerBackdrop"></div>
+    <div class="product-drawer" id="reviewDrawer">
+        <div class="product-drawer-header">
+            <h3>Share Your Feedback</h3>
+            <button class="product-drawer-close" id="closeReviewDrawerBtn" aria-label="Close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="product-drawer-body">
+            <div id="addReviewFormContainer">
+                <div style="text-align: center; padding: 15px; color: #888;">
+                    <i class="fas fa-spinner fa-spin"></i> Checking review eligibility...
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Fly-to-cart animation element -->
     <div class="flying-cart-dot" id="flyingCartDot"></div>

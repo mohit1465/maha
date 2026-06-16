@@ -61,12 +61,12 @@
                 </form>
             </div>
             <div class="header-icons">
-                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
+                <a href="wishlist.html" class="icon" data-section="wishlist"><lord-icon src="https://cdn.lordicon.com/yucrjnnl.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></a>
                 <a href="cart.html" class="icon" data-section="cart">
-                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon>
+                    <lord-icon src="https://cdn.lordicon.com/fmsilsqx.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon>
                     <span class="cart-count">0</span>
                 </a>
-                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></a>
+                <a href="login.html" class="icon" data-section="profile"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:20px;height:20px"></lord-icon></a>
             </div>
         </div>
         <nav class="main-nav">
@@ -111,9 +111,9 @@
         <section class="profile-section">
             <div class="profile-container">
                 <!-- Breadcrumb -->
-                <div class="breadcrumb">
+                <div class="breadcrumb" id="breadcrumb">
                     <span class="breadcrumb-item" data-section="home">Home</span>
-                    <span class="breadcrumb-separator">></span>
+                    <span class="breadcrumb-separator">&gt;</span>
                     <span class="breadcrumb-item current">Profile</span>
                 </div>
 
@@ -136,7 +136,7 @@
                 </div>
 
                 <!-- Profile Completion Widget (Hidden by default) -->
-                <div id="profileCompletionWidget" class="completion-widget" style="display: none;">
+                <div id="profileCompletionWidget" class="completion-widget">
                     <div class="completion-rewards-icon"><i class="fas fa-gift"></i></div>
                     <div class="completion-header">
                         <h4>Unlock Exclusive Coupons</h4>
@@ -159,6 +159,9 @@
                             <div class="profile-avatar">
                                 <!-- Orange Circle as per design -->
                             </div>
+                            <button class="edit-avatar-overlay-btn" id="editAvatarBtn" title="Change Profile Picture">
+                                <i class="fas fa-camera"></i>
+                            </button>
                         </div>
                         <div class="profile-info" style="flex: 1;">
                             <h2 class="profile-name" id="userName">User</h2>
@@ -205,7 +208,7 @@
                 <!-- Verification Status -->
                 <div class="verification-status-card">
                     <span class="label">Verification Status</span>
-                    <span class="status verified" id="emailVerificationStatus">Verified</span>
+                    <span class="status" id="emailVerificationStatus">Checking...</span>
                 </div>
 
                 <!-- Profile Menu -->
@@ -287,10 +290,62 @@
                 <div class="active-dot"></div>
             </a>
             <a href="profile.html" data-section="profile" class="mobile-profile-btn-wrapper" title="Profile">
-                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:24px;height:24px"></lord-icon></span>
+                <span class="mobile-profile-btn"><lord-icon src="https://cdn.lordicon.com/spzqjmbt.json" trigger="hover" colors="primary:#ffffff" style="width:26px;height:26px"></lord-icon></span>
+                <div class="active-dot"></div>
             </a>
         </div>
     </nav>
+
+    <!-- Avatar Selection Modal -->
+    <div class="avatar-modal-backdrop" id="avatarModalBackdrop" style="display: none;"></div>
+    <div class="avatar-modal" id="avatarModal" style="display: none;">
+        <div class="avatar-modal-header">
+            <h3>Choose Profile Picture</h3>
+            <button class="avatar-modal-close" id="closeAvatarModalBtn">&times;</button>
+        </div>
+        <div class="avatar-modal-body">
+            <div class="avatar-options-grid">
+                <!-- Option 1: Google Photo -->
+                <div class="avatar-option-card" id="avatarOptionGoogle" data-avatar-type="google">
+                    <div class="avatar-option-preview" id="googlePhotoPreview">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <span>Google Photo</span>
+                </div>
+                <!-- Option 2: Default Initials -->
+                <div class="avatar-option-card" id="avatarOptionDefault" data-avatar-type="default">
+                    <div class="avatar-option-preview initials-preview" id="defaultInitialsPreview">
+                        JD
+                    </div>
+                    <span>Default Picture</span>
+                </div>
+                <!-- Male Preset 1 -->
+                <div class="avatar-option-card" data-avatar-type="male-1">
+                    <div class="avatar-option-preview preset-preview" id="male1Preview"></div>
+                    <span>Male 1</span>
+                </div>
+                <!-- Male Preset 2 -->
+                <div class="avatar-option-card" data-avatar-type="male-2">
+                    <div class="avatar-option-preview preset-preview" id="male2Preview"></div>
+                    <span>Male 2</span>
+                </div>
+                <!-- Female Preset 1 -->
+                <div class="avatar-option-card" data-avatar-type="female-1">
+                    <div class="avatar-option-preview preset-preview" id="female1Preview"></div>
+                    <span>Female 1</span>
+                </div>
+                <!-- Female Preset 2 -->
+                <div class="avatar-option-card" data-avatar-type="female-2">
+                    <div class="avatar-option-preview preset-preview" id="female2Preview"></div>
+                    <span>Female 2</span>
+                </div>
+            </div>
+        </div>
+        <div class="avatar-modal-footer">
+            <button class="btn btn-secondary" id="cancelAvatarBtn">Cancel</button>
+            <button class="btn btn-primary" id="saveAvatarBtn">Save Changes</button>
+        </div>
+    </div>
 
     <script src="js/script.js"></script>
     <script type="module" src="js/auth-state.js"></script>

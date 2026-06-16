@@ -8,7 +8,7 @@ import router from './router.js';
 import { getProductImageUrl, getAllProductImages } from './image-helper.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const productSection = document.querySelector('.qc-main, .product-section');
+    const productSection = document.querySelector('.product-main, .product-section');
 
     // Get product ID from URL (handle multiple formats)
     let productId = null;
@@ -40,7 +40,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!productId) {
             // No product ID, redirect to search or home?
             console.error("No product ID provided");
-            document.querySelector('.product-container').innerHTML = '<div class="error-msg">No product ID provided</div>';
+            const productGrid = document.querySelector('.product-detail-grid');
+            if (productGrid) {
+                productGrid.classList.remove('skeleton-loading-active');
+                productGrid.innerHTML = '<div class="error-msg">No product ID provided</div>';
+            }
             return;
         }
 
@@ -66,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 setupAdditionalInteractions();
 
                 // Load similar products
-                renderSimilarProducts(product.category, productId);
+                renderSimilarProducts(product, productId);
 
                 // Update breadcrumb
                 const breadcrumbCurrent = document.querySelector('.breadcrumb-item.current');
@@ -74,13 +78,55 @@ document.addEventListener('DOMContentLoaded', async function () {
                     breadcrumbCurrent.textContent = product.shortTitle || product.name;
                 }
                 initReviews(product);
+
+                // Remove skeleton loading state after image loads
+                const productGrid = document.querySelector('.product-detail-grid');
+                if (productGrid) {
+                    const mainImage = document.getElementById('mainImage');
+                    if (mainImage) {
+                        let classRemoved = false;
+                        const removeSkeleton = () => {
+                            if (!classRemoved) {
+                                classRemoved = true;
+                                productGrid.classList.remove('skeleton-loading-active');
+                            }
+                        };
+                        
+                        // Fallback timeout of 2.5 seconds
+                        const timeoutId = setTimeout(removeSkeleton, 2500);
+
+                        if (mainImage.complete) {
+                            clearTimeout(timeoutId);
+                            removeSkeleton();
+                        } else {
+                            mainImage.addEventListener('load', () => {
+                                clearTimeout(timeoutId);
+                                removeSkeleton();
+                            });
+                            mainImage.addEventListener('error', () => {
+                                clearTimeout(timeoutId);
+                                removeSkeleton();
+                            });
+                        }
+                    } else {
+                        productGrid.classList.remove('skeleton-loading-active');
+                    }
+                }
             } else {
                 console.log("No such product!");
-                document.querySelector('.product-container').innerHTML = '<div class="error-msg">Product not found</div>';
+                const productGrid = document.querySelector('.product-detail-grid');
+                if (productGrid) {
+                    productGrid.classList.remove('skeleton-loading-active');
+                    productGrid.innerHTML = '<div class="error-msg">Product not found</div>';
+                }
             }
         } catch (error) {
             console.error("Error getting document:", error);
-            document.querySelector('.product-container').innerHTML = '<div class="error-msg">Error loading product</div>';
+            const productGrid = document.querySelector('.product-detail-grid');
+            if (productGrid) {
+                productGrid.classList.remove('skeleton-loading-active');
+                productGrid.innerHTML = '<div class="error-msg">Error loading product</div>';
+            }
         }
     }
 
@@ -290,21 +336,21 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function populateProductDetails(product) {
         // Title (including Hindi name if present)
-        const titleElement = document.querySelector('.qc-product-title');
+        const titleElement = document.querySelector('.product-detail-title');
         if (titleElement) {
             if (product.hindiName) {
-                titleElement.innerHTML = `${product.name} <span class="qc-product-hindi-name" style="font-family: 'Inter', sans-serif; font-size: 0.6em; color: #888; margin-left: 10px; font-weight: normal;">(${product.hindiName})</span>`;
+                titleElement.innerHTML = `${product.name} <span class="product-hindi-name" style="font-family: 'Inter', sans-serif; font-size: 0.6em; color: #888; margin-left: 10px; font-weight: normal;">(${product.hindiName})</span>`;
             } else {
                 titleElement.textContent = product.name;
             }
         }
         
         // Category and tags badges
-        const metaContainer = document.querySelector('.qc-product-meta');
+        const metaContainer = document.querySelector('.product-detail-meta');
         if (metaContainer) {
             // Keep original category and rating elements
-            const categoryEl = metaContainer.querySelector('.qc-category');
-            const ratingEl = metaContainer.querySelector('.qc-rating');
+            const categoryEl = metaContainer.querySelector('.product-detail-category');
+            const ratingEl = metaContainer.querySelector('.product-detail-rating');
             metaContainer.innerHTML = '';
             
             if (categoryEl) {
@@ -316,7 +362,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (product.tags && Array.isArray(product.tags)) {
                 product.tags.forEach(tag => {
                     const tagSpan = document.createElement('span');
-                    tagSpan.className = 'qc-tag-badge';
+                    tagSpan.className = 'product-tag-badge';
                     tagSpan.textContent = tag;
                     metaContainer.appendChild(tagSpan);
                 });
@@ -343,45 +389,56 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         }
 
+        // Dynamic Specifications Section
+        const specsCard = document.getElementById('productSpecsCard');
+        const specsGrid = document.getElementById('specsGrid');
+        if (specsCard && specsGrid) {
+            specsCard.style.display = 'block';
+            const shelfLife = product.category.toLowerCase().includes('fruit') || product.category.toLowerCase().includes('nut') ? '6 Months' : '3 Months';
+            const packaging = product.name.toLowerCase().includes('jar') ? 'Sealed Premium Pet Jar' : 'Premium Sealed Pouch';
+            specsGrid.innerHTML = `
+                <div class="product-spec-item"><span>Brand</span><strong>Maharaja Dry Fruits</strong></div>
+                <div class="product-spec-item"><span>Category</span><strong>${product.category}</strong></div>
+                <div class="product-spec-item"><span>Shelf Life</span><strong>${shelfLife}</strong></div>
+                <div class="product-spec-item"><span>Diet Type</span><strong>Vegetarian</strong></div>
+                <div class="product-spec-item"><span>Packaging</span><strong>${packaging}</strong></div>
+                <div class="product-spec-item"><span>Origin</span><strong>India</strong></div>
+            `;
+        }
+
         // Dynamic Nutrition Facts Section
         const nutKey = product.longDescription?.nutritionKey;
-        const nutritionDivider = document.getElementById('nutritionDivider');
-        const nutritionBlock = document.getElementById('nutritionBlock');
+        const nutritionCard = document.getElementById('productNutritionCard');
         const nutritionGrid = document.getElementById('nutritionGrid');
         
         if (nutKey && NutritionDetails[nutKey]) {
-            if (nutritionDivider) nutritionDivider.style.display = 'block';
-            if (nutritionBlock) nutritionBlock.style.display = 'block';
+            if (nutritionCard) nutritionCard.style.display = 'block';
             if (nutritionGrid) {
                 const data = NutritionDetails[nutKey];
                 nutritionGrid.innerHTML = Object.entries(data).map(([key, val]) => `
-                    <div class="qc-nutrition-item">
+                    <div class="product-nutrition-item">
                         <span>${key}</span>
                         <strong>${val}</strong>
                     </div>
                 `).join('');
             }
         } else {
-            if (nutritionDivider) nutritionDivider.style.display = 'none';
-            if (nutritionBlock) nutritionBlock.style.display = 'none';
+            if (nutritionCard) nutritionCard.style.display = 'none';
         }
 
         // Dynamic Storage Instructions Section
         const storKey = product.longDescription?.storageKey;
-        const storageDivider = document.getElementById('storageDivider');
-        const storageBlock = document.getElementById('storageBlock');
+        const storageCard = document.getElementById('productStorageCard');
         const storageList = document.getElementById('storageList');
         
         if (storKey && StorageDetails[storKey]) {
-            if (storageDivider) storageDivider.style.display = 'block';
-            if (storageBlock) storageBlock.style.display = 'block';
+            if (storageCard) storageCard.style.display = 'block';
             if (storageList) {
                 const list = StorageDetails[storKey];
                 storageList.innerHTML = list.map(item => `<li>${item}</li>`).join('');
             }
         } else {
-            if (storageDivider) storageDivider.style.display = 'none';
-            if (storageBlock) storageBlock.style.display = 'none';
+            if (storageCard) storageCard.style.display = 'none';
         }
 
         // Images
@@ -436,7 +493,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function getVariantPrice(product, size) {
-        const activePill = document.querySelector('.qc-variant-pill.active');
+        const activePill = document.querySelector('.product-variant-pill.active');
         if (activePill && activePill.dataset.price) {
             return { 
                 price: parseFloat(activePill.dataset.price), 
@@ -452,15 +509,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         return { price: product.price, originalPrice: product.originalPrice };
     }
 
-    function syncProductDetails(product) {
-        // Desktop quantity
-        const desktopQty = parseInt(document.querySelector('#desktopQtyCapsule .qc-qty-val')?.textContent) || 1;
-        // Mobile quantity
-        const mobileQty = parseInt(document.querySelector('#mobileQtyCapsule .qc-mobile-qty-val')?.textContent) || 1;
-        
-        const currentQuantity = window.innerWidth <= 768 ? mobileQty : desktopQty;
+    function getProductQuantity() {
+        const qtyValEl = document.querySelector('#productQtyCapsule .product-qty-val') || document.querySelector('#productQtyCapsuleMobile .product-qty-val');
+        return qtyValEl ? (parseInt(qtyValEl.textContent) || 1) : 1;
+    }
 
-        const activeVariant = document.querySelector('.qc-variant-pill.active .var-weight');
+    function syncProductDetails(product) {
+        const currentQuantity = getProductQuantity();
+
+        const activeVariant = document.querySelector('.product-variant-pill.active .var-weight');
         const selectedSize = activeVariant ? activeVariant.textContent : '250g';
         
         const variantData = getVariantPrice(product, selectedSize);
@@ -520,20 +577,20 @@ document.addEventListener('DOMContentLoaded', async function () {
             const hasDiscount = discountPercent > 0;
 
             const btn = document.createElement('div');
-            btn.className = `qc-variant-pill ${index === 0 ? 'active' : ''} ${hasDiscount ? 'has-discount' : ''}`;
+            btn.className = `product-variant-pill ${index === 0 ? 'active' : ''} ${hasDiscount ? 'has-discount' : ''}`;
             btn.dataset.price = v.price;
             btn.dataset.originalPrice = v.originalPrice;
             
             let html = '';
             if (hasDiscount) {
-                html += `<div class="var-discount-tag">Save upto ${discountPercent}%</div>`;
+                html += `<div class="var-discount-tag">Save ${discountPercent}%</div>`;
             }
             html += `<div class="var-weight-box"><span class="var-weight">${normalizedQty}</span></div>`;
 
             btn.innerHTML = html;
 
             btn.addEventListener('click', function () {
-                optionsContainer.querySelectorAll('.qc-variant-pill').forEach(b => b.classList.remove('active'));
+                optionsContainer.querySelectorAll('.product-variant-pill').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 syncProductDetails(product);
             });
@@ -545,66 +602,50 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function setupQuantitySelector(product) {
-        const updateQty = (capsule, delta) => {
-            const valEl = capsule.querySelector(capsule.id === 'desktopQtyCapsule' ? '.qc-qty-val' : '.qc-mobile-qty-val');
-            let current = parseInt(valEl.textContent) || 1;
-            let next = current + delta;
-            if (next >= 1 && next <= 10) {
-                valEl.textContent = next;
-                syncProductDetails(product);
-            } else if (next < 1) {
-                capsule.style.display = 'none';
-                if (capsule.id === 'desktopQtyCapsule') {
-                    document.getElementById('mainAddToCartBtn').style.display = 'block';
-                } else {
-                    document.getElementById('mobileAddToCartBtn').style.display = 'block';
-                }
+        const desktopCapsule = document.getElementById('productQtyCapsule');
+        const mobileCapsule = document.getElementById('productQtyCapsuleMobile');
+
+        const updateBoth = (newVal) => {
+            if (newVal < 1 || newVal > 10) return;
+            
+            if (desktopCapsule) {
+                const valEl = desktopCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = newVal;
             }
+            if (mobileCapsule) {
+                const valEl = mobileCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = newVal;
+            }
+            
+            syncProductDetails(product);
         };
 
-        const setupCapsule = (addBtnId, capsuleId) => {
-            const addBtn = document.getElementById(addBtnId);
-            const capsule = document.getElementById(capsuleId);
-            if (!addBtn || !capsule) return;
+        const setupCapsuleEvents = (capsule) => {
+            if (!capsule) return;
+            const minusBtn = capsule.querySelector('.minus');
+            const plusBtn = capsule.querySelector('.plus');
+            const valEl = capsule.querySelector('.product-qty-val');
 
-            addBtn.addEventListener('click', () => {
-                addBtn.style.display = 'none';
-                capsule.style.display = 'flex';
-                const size = document.querySelector('.qc-variant-pill.active .var-weight')?.textContent || '250g';
-                const qty = parseInt(capsule.querySelector(capsuleId === 'desktopQtyCapsule' ? '.qc-qty-val' : '.qc-mobile-qty-val').textContent);
-                cartService.addToCart(product, qty, size).then(() => {
-                    if (typeof cartService.notifyListeners === 'function') {
-                        cartService.notifyListeners();
-                    }
-                });
+            if (!minusBtn || !plusBtn || !valEl) return;
+
+            minusBtn.addEventListener('click', () => {
+                let current = parseInt(valEl.textContent) || 1;
+                updateBoth(current - 1);
             });
 
-            capsule.querySelector('.minus').addEventListener('click', () => updateQty(capsule, -1));
-            capsule.querySelector('.plus').addEventListener('click', () => updateQty(capsule, 1));
+            plusBtn.addEventListener('click', () => {
+                let current = parseInt(valEl.textContent) || 1;
+                updateBoth(current + 1);
+            });
         };
 
-        setupCapsule('mainAddToCartBtn', 'desktopQtyCapsule');
-        setupCapsule('mobileAddToCartBtn', 'mobileQtyCapsule');
+        setupCapsuleEvents(desktopCapsule);
+        setupCapsuleEvents(mobileCapsule);
     }
 
     async function handleBuyNow(product) {
-        // Find current selected size
-        const size = document.querySelector('.qc-variant-pill.active .var-weight')?.textContent || '250g';
-        
-        // Find current quantity (from visible capsule or default to 1)
-        let qty = 1;
-        const desktopCapsule = document.getElementById('desktopQtyCapsule');
-        const mobileCapsule = document.getElementById('mobileQtyCapsule');
-        
-        if (window.innerWidth <= 768) {
-            if (mobileCapsule && mobileCapsule.style.display !== 'none') {
-                qty = parseInt(mobileCapsule.querySelector('.qc-mobile-qty-val').textContent) || 1;
-            }
-        } else {
-            if (desktopCapsule && desktopCapsule.style.display !== 'none') {
-                qty = parseInt(desktopCapsule.querySelector('.qc-qty-val').textContent) || 1;
-            }
-        }
+        const size = document.querySelector('.product-variant-pill.active .var-weight')?.textContent || '250g';
+        const qty = getProductQuantity();
         
         try {
             await cartService.addToCart(product, qty, size);
@@ -619,6 +660,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function setupActionButtons(product) {
+        const mainAddToCartBtn = document.getElementById('mainAddToCartBtn');
+        const mobileAddToCartBtn = document.getElementById('mobileAddToCartBtn');
+
+        const handleAddToCart = async () => {
+            const size = document.querySelector('.product-variant-pill.active .var-weight')?.textContent || '250g';
+            const qty = getProductQuantity();
+            try {
+                await cartService.addToCart(product, qty, size);
+                if (typeof cartService.notifyListeners === 'function') {
+                    cartService.notifyListeners();
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+            }
+        };
+
+        if (mainAddToCartBtn) {
+            mainAddToCartBtn.addEventListener('click', handleAddToCart);
+        }
+        if (mobileAddToCartBtn) {
+            mobileAddToCartBtn.addEventListener('click', handleAddToCart);
+        }
+
         document.getElementById('mainBuyNowBtn')?.addEventListener('click', () => handleBuyNow(product));
         document.getElementById('mobileBuyNowBtn')?.addEventListener('click', () => handleBuyNow(product));
     }
@@ -810,6 +874,14 @@ async function loadReviewsList(productId, product) {
         if (avgStarsDisplay) avgStarsDisplay.innerHTML = renderStarsHTML(avgRating);
         if (totalReviewsCountText) totalReviewsCountText.textContent = `Based on ${count} ${count === 1 ? 'review' : 'reviews'}`;
 
+        // Update Radial Progress Offset
+        const ratingRadialProgress = document.getElementById('ratingRadialProgress');
+        if (ratingRadialProgress) {
+            const circumference = 314.16; // 2 * Math.PI * 50
+            const offset = circumference - (circumference * (avgRating / 5));
+            ratingRadialProgress.style.strokeDashoffset = offset;
+        }
+
         // Update Product Title Rating summary
         if (summaryAvg) summaryAvg.textContent = avgRating.toFixed(1);
         if (summaryStars) summaryStars.innerHTML = renderStarsHTML(avgRating);
@@ -859,23 +931,25 @@ async function loadReviewsList(productId, product) {
                 const color = getAvatarColor(name);
                 const ratingVal = Math.round(review.rating || 0);
                 return `
-                        <div class="review-card" data-rating="${ratingVal}" style="animation-delay:${idx * 0.05}s">
-                            <div class="review-header">
-                                <div class="review-left">
-                                    <div class="reviewer-name">${name}</div>
-                                    <div class="review-date">${formattedDate}</div>
-                                    <div class="review-rating-stars">${renderStarsHTML(review.rating)}</div>
-                                    <div class="review-badges">
-                                        ${review.verifiedBuyer ? '<span class="review-badge"><i class="fas fa-check-circle"></i> Verified Buyer</span>' : ''}
+                        <div class="product-review-card review-card" data-rating="${ratingVal}" style="animation-delay:${idx * 0.05}s">
+                            <div class="product-review-header">
+                                <div class="product-review-user">
+                                    <div class="product-review-avatar" style="background-color: ${color};">${initial}</div>
+                                    <div class="product-review-info">
+                                        <div class="product-review-name">
+                                            ${name}
+                                            ${review.verifiedBuyer ? '<span class="product-verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
+                                        </div>
+                                        <div class="product-review-date">${formattedDate}</div>
                                     </div>
                                 </div>
+                                <div class="product-review-rating">${renderStarsHTML(review.rating)}</div>
                             </div>
-                            ${review.reviewTitle ? `<p class="review-title">${review.reviewTitle}</p>` : ''}
-                            <p class="review-text">${review.reviewText}</p>
-                            <div class="review-footer">
-                                <button class="review-helpful" aria-label="Mark as helpful">
-                                    <i class="far fa-thumbs-up"></i>
-                                    <span class="review-helpful-count">0</span>
+                            ${review.reviewTitle ? `<h4 class="product-review-title">${review.reviewTitle}</h4>` : ''}
+                            <p class="product-review-body">${review.reviewText}</p>
+                            <div class="product-review-footer">
+                                <button class="product-helpful-btn review-helpful-btn" aria-label="Mark as helpful">
+                                    <i class="far fa-thumbs-up"></i> Helpful (<span class="product-helpful-count helpful-count">0</span>)
                                 </button>
                             </div>
                         </div>
@@ -1041,6 +1115,15 @@ function renderReviewForm(product, user, isVerifiedBuyer) {
                 s.style.color = '#ccc';
             });
 
+            // Close review drawer
+            const drawer = document.getElementById('reviewDrawer');
+            const backdrop = document.getElementById('reviewDrawerBackdrop');
+            if (drawer && backdrop) {
+                drawer.classList.remove('open');
+                backdrop.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
         } catch (err) {
             console.error("Error submitting review:", err);
             alert("Failed to submit review. Please try again.");
@@ -1109,44 +1192,52 @@ if (productSection) {
 }
 });
 
-async function renderSimilarProducts(category, currentProductId) {
+async function renderSimilarProducts(product, currentProductId) {
     const similarGrid = document.querySelector('.similar-products-section .product-grid');
     if (!similarGrid) return;
 
     try {
-        const { collection, query, where, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+        const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
 
-        // Fetch products from same category, excluding current product
-        const q = query(
-            collection(db, "products"),
-            where("category", "==", category),
-            limit(5)
-        );
-
-        const querySnapshot = await getDocs(q);
-        const similarProducts = [];
+        // Fetch all products from Firestore
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const candidates = [];
+        
         querySnapshot.forEach((doc) => {
-            const data = doc.data();
             if (doc.id !== currentProductId) {
-                similarProducts.push({ id: doc.id, ...data });
+                candidates.push({ id: doc.id, ...doc.data() });
             }
         });
 
-        // If not enough similar products, fetch some random ones
-        if (similarProducts.length < 4) {
-            const allQ = query(collection(db, "products"), limit(6));
-            const allSnapshot = await getDocs(allQ);
-            allSnapshot.forEach((doc) => {
-                if (doc.id !== currentProductId && !similarProducts.find(p => p.id === doc.id)) {
-                    similarProducts.push({ id: doc.id, ...doc.data() });
-                }
-            });
-        }
+        const currentTags = product.tags || [];
+        const currentCategory = product.category;
+
+        // Score products based on category matching and tag overlapping similarity
+        const scored = candidates.map(c => {
+            let score = 0;
+            if (c.category === currentCategory) {
+                score += 10;
+            }
+            if (c.tags && Array.isArray(c.tags)) {
+                c.tags.forEach(t => {
+                    if (currentTags.includes(t)) {
+                        score += 5;
+                    }
+                });
+            }
+            return { product: c, score };
+        });
+
+        // Sort scored products by score in descending order
+        scored.sort((a, b) => b.score - a.score);
+
+        // Slice top 8 products (minimum 8 products)
+        const finalProducts = scored.slice(0, 8).map(item => item.product);
 
         similarGrid.innerHTML = '';
 
-        similarProducts.slice(0, 4).forEach(product => {
-            const cardHtml = createProductCard(product);
+        finalProducts.forEach(prod => {
+            const cardHtml = createProductCard(prod);
             const wrapper = document.createElement('div');
             wrapper.className = 'product-card-wrapper';
             wrapper.innerHTML = cardHtml;
@@ -1163,7 +1254,7 @@ async function renderSimilarProducts(category, currentProductId) {
 window.showProductSection = function () {
     const homeSection = document.querySelector('.home-section');
     const searchSection = document.querySelector('.search-section');
-    const productSection = document.querySelector('.qc-main, .product-section');
+    const productSection = document.querySelector('.product-main, .product-section');
     const cartSection = document.querySelector('.cart-section');
     const profileSection = document.querySelector('.profile-section');
     const contactSection = document.querySelector('.contact-section');

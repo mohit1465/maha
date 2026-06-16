@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const homeSection = document.querySelector('.home-section');
     const searchSection = document.querySelector('.search-section');
     const shopSection = document.querySelector('.shop-section');
-    const productSection = document.querySelector('.qc-main, .product-section');
+    const productSection = document.querySelector('.product-main, .product-section');
     const cartSection = document.querySelector('.cart-section');
     const profileSection = document.querySelector('.profile-section');
     const contactSection = document.querySelector('.contact-section');
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(() => {
             breadcrumb.innerHTML = `
                 <span class="breadcrumb-item" data-section="${sourceSection}">${sourceText}</span>
-                <span class="breadcrumb-separator">></span>
+                <span class="breadcrumb-separator">&gt;</span>
                 <span class="breadcrumb-item current">Product Name</span>
             `;
 

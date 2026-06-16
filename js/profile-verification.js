@@ -4,12 +4,29 @@ class ProfileVerification {
     constructor() {
         console.log('ProfileVerification: Constructor called');
         this.initializeElements();
+        this.applyCachedVerificationStatus();
         this.checkEmailVerificationStatus();
         this.attachEventListeners();
 
         // Rate limiting
         this.lastResendTime = 0;
         this.resendCooldown = 60000; // 1 minute cooldown (60 seconds)
+    }
+
+    applyCachedVerificationStatus() {
+        const cacheLoggedIn = localStorage.getItem('maha_logged_in') === 'true';
+        if (!cacheLoggedIn) return;
+
+        const emailVerified = localStorage.getItem('maha_email_verified');
+        const email = localStorage.getItem('maha_user_email') || '';
+
+        if (emailVerified === 'true') {
+            this.hideVerificationBanner();
+            this.updateProfileSection(true, email);
+        } else if (emailVerified === 'false') {
+            this.showVerificationBanner(email);
+            this.updateProfileSection(false, email);
+        }
     }
 
     initializeElements() {
@@ -65,6 +82,7 @@ class ProfileVerification {
 
             if (result.success && !result.isVerified) {
                 console.log('ProfileVerification: Email not verified, showing banner and updating profile');
+                localStorage.setItem('maha_email_verified', 'false');
                 // Show verification banner
                 this.showVerificationBanner(user.email);
 
@@ -72,6 +90,7 @@ class ProfileVerification {
                 this.updateProfileSection(false, user.email);
             } else if (result.success && result.isVerified) {
                 console.log('ProfileVerification: Email verified, hiding banner and updating profile');
+                localStorage.setItem('maha_email_verified', 'true');
                 // Hide verification banner
                 this.hideVerificationBanner();
 
