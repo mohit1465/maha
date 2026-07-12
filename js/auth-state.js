@@ -203,18 +203,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loginBtn) loginBtn.style.display = 'none';
             } else {
                 if (profileIcon) {
-                    profileIcon.style.display = 'flex';
-                    profileIcon.style.flexDirection = 'row';
+                    profileIcon.style.display = 'none';
                 }
                 if (wishlistIcon) {
-                    wishlistIcon.classList.remove('show');
-                    wishlistIcon.style.display = 'none';
+                    wishlistIcon.style.display = 'flex';
+                    wishlistIcon.offsetHeight; // force reflow
+                    wishlistIcon.classList.add('show');
                 }
                 if (cartIcon) {
-                    cartIcon.classList.remove('show');
-                    cartIcon.style.display = 'none';
+                    cartIcon.style.display = 'flex';
+                    cartIcon.offsetHeight; // force reflow
+                    cartIcon.classList.add('show');
                 }
-                if (loginBtn) loginBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'inline-flex';
                 renderHeaderAvatar('default', null, null, null);
             }
         }
@@ -554,8 +555,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const cachedPhotoUrl = localStorage.getItem('maha_user_photo_url') || '';
         const cachedEmail = localStorage.getItem('maha_user_email') || '';
 
+        const headerIconsContainer = document.querySelector('.header-icons');
         const wishlistIcon = document.querySelector('.header-icons [data-section="wishlist"]');
         const cartIcon = document.querySelector('.header-icons [data-section="cart"]');
+        
+        let loginBtn = null;
+        if (headerIconsContainer) {
+            loginBtn = headerIconsContainer.querySelector('.header-login-btn');
+            if (!loginBtn) {
+                loginBtn = document.createElement('a');
+                loginBtn.href = 'login.html';
+                loginBtn.className = 'btn btn-primary header-login-btn';
+                loginBtn.style.padding = '4px 18px';
+                loginBtn.style.height = '32px';
+                loginBtn.style.minHeight = '32px';
+                loginBtn.style.marginLeft = '12px';
+                loginBtn.style.textDecoration = 'none';
+                loginBtn.style.borderRadius = '50px';
+                loginBtn.style.fontSize = '0.85rem';
+                loginBtn.textContent = 'Login';
+                headerIconsContainer.appendChild(loginBtn);
+            }
+        }
 
         if (cacheLoggedIn && headerProfileLink) {
             // Render cached avatar
@@ -598,6 +619,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 cartIcon.style.display = 'flex';
                 cartIcon.classList.add('show');
             }
+            if (headerProfileLink) {
+                headerProfileLink.style.display = 'flex';
+            }
+            if (loginBtn) {
+                loginBtn.style.display = 'none';
+            }
 
             const isAdmin = cachedEmail === 'admin@maharaja.com';
             const profileTarget = isAdmin ? "admin.html" : "profile.html";
@@ -628,12 +655,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (wishlistIcon) {
-                wishlistIcon.classList.remove('show');
-                wishlistIcon.style.display = 'none';
+                wishlistIcon.style.display = 'flex';
+                wishlistIcon.classList.add('show');
             }
             if (cartIcon) {
-                cartIcon.classList.remove('show');
-                cartIcon.style.display = 'none';
+                cartIcon.style.display = 'flex';
+                cartIcon.classList.add('show');
+            }
+            if (headerProfileLink) {
+                headerProfileLink.style.display = 'none';
+            }
+            if (loginBtn) {
+                loginBtn.style.display = 'inline-flex';
             }
 
             // Mobile profile button shows 'Login' immediately

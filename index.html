@@ -125,8 +125,13 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-1-mobile.png">
-                                    <img src="assets/banner-1-desktop.png" alt="Maharaja Dry Fruits - Royal Taste, Premium Quality">
+                                    <img src="assets/banner-1-desktop.png" alt="Maharaja Dry Fruits">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">Maharaja Dry Fruits</h2>
+                                    <p class="hero-slide-sub-title">Royal Taste, Premium Quality. Direct from the finest orchards to your doorstep.</p>
+                                    <span class="hero-slide-cta">Shop Now</span>
+                                </div>
                             </a>
                         </div>
 
@@ -134,8 +139,13 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-2-mobile.png">
-                                    <img src="assets/banner-2-desktop.png" alt="Explosive Deals - Premium Cashews & Almonds">
+                                    <img src="assets/banner-2-desktop.png" alt="Explosive Deals">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">Explosive Deals</h2>
+                                    <p class="hero-slide-sub-title">Up to 40% Off on Premium Cashews & Almonds. Handpicked, crunchy, and fresh.</p>
+                                    <span class="hero-slide-cta">View Offers</span>
+                                </div>
                             </a>
                         </div>
 
@@ -143,8 +153,13 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-3-mobile.png">
-                                    <img src="assets/banner-3-desktop.png" alt="Healthy Living - 100% Organic & Natural Superfoods">
+                                    <img src="assets/banner-3-desktop.png" alt="Healthy Living">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">Healthy Living</h2>
+                                    <p class="hero-slide-sub-title">100% Organic & Natural Superfoods. Energize your day with nutrient-rich nuts & seeds.</p>
+                                    <span class="hero-slide-cta">Explore Organic</span>
+                                </div>
                             </a>
                         </div>
 
@@ -152,8 +167,13 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-4-mobile.png">
-                                    <img src="assets/banner-4-desktop.png" alt="The Gift of Health - Luxury Gift Boxes">
+                                    <img src="assets/banner-4-desktop.png" alt="The Gift of Health">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">The Gift of Health</h2>
+                                    <p class="hero-slide-sub-title">Luxury Gift Boxes for your loved ones. Specially crafted for festivals & celebrations.</p>
+                                    <span class="hero-slide-cta">Discover Gifts</span>
+                                </div>
                             </a>
                         </div>
 
@@ -161,8 +181,13 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-5-mobile.png">
-                                    <img src="assets/banner-5-desktop.png" alt="Hot Deals - Best Quality Walnuts & Raisins">
+                                    <img src="assets/banner-5-desktop.png" alt="Weekly Hot Deals">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">Weekly Hot Deals</h2>
+                                    <p class="hero-slide-sub-title">Best Quality Walnuts & Premium Raisins. Freshness guaranteed at wholesale prices.</p>
+                                    <span class="hero-slide-cta">Buy Now</span>
+                                </div>
                             </a>
                         </div>
 
@@ -170,11 +195,27 @@
                             <a href="search.html" class="slide-link">
                                 <picture>
                                     <source media="(max-width: 768px)" srcset="assets/banner-6-mobile.png">
-                                    <img src="assets/banner-6-desktop.png" alt="Exotic Delights - Handpicked Dried Figs & Blueberries">
+                                    <img src="assets/banner-6-desktop.png" alt="Exotic Delights">
                                 </picture>
+                                <div class="hero-slide-content">
+                                    <h2 class="hero-slide-title">Exotic Delights</h2>
+                                    <p class="hero-slide-sub-title">Handpicked Dried Figs & Blueberries. Treat yourself to wholesome luxury.</p>
+                                    <span class="hero-slide-cta">Shop Collection</span>
+                                </div>
                             </a>
                         </div>
 
+                    </div>
+
+                    <!-- Slide Controls -->
+                    <div class="hero-controls">
+                        <button class="hero-prev-btn" id="heroPrevBtn" aria-label="Previous Slide">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="hero-indicators" id="heroIndicators"></div>
+                        <button class="hero-next-btn" id="heroNextBtn" aria-label="Next Slide">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
             </section>
@@ -236,37 +277,75 @@
             <section class="search-by-category">
                 <h2>Shop by Category</h2>
 
-                <div class="category-row">
-                    <a href="search.html?category=Almonds" class="category-item">
-                        <div class="category-circle">
-                            <img src="assets/cat 1.png" alt="Almonds">
+                <div class="category-slider-container">
+                    <!-- Background decorative blobs -->
+                    <div class="bg-blob blob-blue"></div>
+                    <div class="bg-blob blob-orange"></div>
+
+                    <div class="category-track" id="categoryTrack">
+                        <!-- Almonds -->
+                        <div class="category-card" data-index="0" data-link="search.html?category=Almonds">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Almonds">
+                            </div>
+                            <span class="category-card-name">Almonds</span>
                         </div>
-                        <span class="category-name">Almonds</span>
-                    </a>
-                    <a href="search.html?category=Walnuts" class="category-item">
-                        <div class="category-circle">
-                            <img src="assets/cat 2.png" alt="Walnuts">
+                        <!-- Walnuts -->
+                        <div class="category-card" data-index="1" data-link="search.html?category=Walnuts">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Walnuts">
+                            </div>
+                            <span class="category-card-name">Walnuts</span>
                         </div>
-                        <span class="category-name">Walnuts</span>
-                    </a>
-                    <a href="search.html?category=Cashews" class="category-item">
-                        <div class="category-circle">
-                            <img src="assets/cat 1.png" alt="Cashews">
+                        <!-- Cashews -->
+                        <div class="category-card" data-index="2" data-link="search.html?category=Cashews">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Cashews">
+                            </div>
+                            <span class="category-card-name">Cashews</span>
                         </div>
-                        <span class="category-name">Cashews</span>
-                    </a>
-                    <a href="search.html?category=Pistachios" class="category-item">
-                        <div class="category-circle">
-                            <img src="assets/cat 2.png" alt="Pistachios">
+                        <!-- Pistachios -->
+                        <div class="category-card" data-index="3" data-link="search.html?category=Pistachios">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Pistachios">
+                            </div>
+                            <span class="category-card-name">Pistachios</span>
                         </div>
-                        <span class="category-name">Pistachios</span>
-                    </a>
-                    <a href="search.html?category=Other%20Dry%20Fruits" class="category-item">
-                        <div class="category-circle">
-                            <img src="assets/cat 3.png" alt="Others">
+                        <!-- Raisins -->
+                        <div class="category-card" data-index="4" data-link="search.html?category=Raisins">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Raisins">
+                            </div>
+                            <span class="category-card-name">Raisins</span>
                         </div>
-                        <span class="category-name">More</span>
-                    </a>
+                        <!-- Dates -->
+                        <div class="category-card" data-index="5" data-link="search.html?category=Dates">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Dates">
+                            </div>
+                            <span class="category-card-name">Dates</span>
+                        </div>
+                        <!-- Figs -->
+                        <div class="category-card" data-index="6" data-link="search.html?category=Figs">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Figs">
+                            </div>
+                            <span class="category-card-name">Figs</span>
+                        </div>
+                        <!-- Apricots -->
+                        <div class="category-card" data-index="7" data-link="search.html?category=Apricots">
+                            <div class="category-card-inner">
+                                <img src="assets/Particles/Almond.png" alt="Apricots">
+                            </div>
+                            <span class="category-card-name">Apricots</span>
+                        </div>
+                    </div>
+
+                    <!-- Category Slider Controls -->
+                    <div class="category-controls">
+                        <button class="category-control-btn" id="catPrevBtn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="category-control-btn" id="catNextBtn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
                 </div>
             </section>
 
