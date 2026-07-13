@@ -1350,4 +1350,72 @@ window.setTagValues = (id, values) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     initTagInputs();
+
+    const applySeoBtn = document.getElementById('applySeoBtn');
+    if (applySeoBtn) {
+        applySeoBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to apply the SEO updates to all 4 products?')) return;
+            applySeoBtn.disabled = true;
+            applySeoBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+            try {
+                const productsUpdates = {
+                    "prod-1781540888057": {
+                        "name": "Sanora Almonds – Pure Crunch with Everyday Nourishment",
+                        "shortTitle": "Sanora Almonds",
+                        "hindiName": "बादाम",
+                        "shortDescription": "Premium quality California and Sanora almonds. Handpicked, crunchy, and packed with nutrition for a healthy lifestyle.",
+                        "longDescription": {
+                            "nutritionKey": "ALMONDS",
+                            "storageKey": "DEFAULT",
+                            "details": "Indulge in the rich taste and superior crunch of Maharaja's Premium Sanora Almonds. Sourced from the finest orchards, these almonds are carefully sorted to ensure only the highest quality kernels reach you. Perfect as a daily morning ritual, a quick energy-boosting snack, or an addition to your favorite recipes.\n📦 Premium Extra Bold Size\n💰 Best Price and Quality Guaranteed\n👉 Order Online for Fast Delivery\n✔ 100% natural, raw, and preservative-free\n✔ Rich in plant-based protein, dietary fiber, and healthy monounsaturated fats\n✔ Excellent source of Vitamin E, magnesium, and essential antioxidants\n✔ Helps support heart health, brain function, and skin glow\nEnjoy the premium crunch of fresh almonds every day to boost your health and vitality."
+                        }
+                    },
+                    "prod-1783856830710": {
+                        "name": "100% Natural Kashmiri Mamra Badam – Premium Single-Tree Almonds",
+                        "shortTitle": "Kasmiri Badam",
+                        "hindiName": "कश्मीरी बादाम",
+                        "shortDescription": "Authentic Kashmiri almonds known for their rich oil content, sweet taste, and high nutritional value.",
+                        "longDescription": {
+                            "nutritionKey": "ALMONDS",
+                            "storageKey": "DEFAULT",
+                            "details": "Experience the pure goodness of authentic Kashmiri Badam. Unlike regular almonds, Kashmiri almonds are smaller in size but contain a significantly higher natural oil content, giving them a rich, sweet flavor and superior health benefits. Sourced directly from the valleys of Kashmir, these single-tree almonds are 100% natural.\n📦 100% Authentic Valley Sourced\n💰 Pure and Rich Natural Oils\n👉 Hand-picked Premium Selection\n✔ Small-sized but highly potent Mamra-grade kernels\n✔ Abundant in natural almond oil for brain development and heart health\n✔ No chemical treatment or artificial polish\n✔ Rich source of dietary fiber, iron, calcium, and vitamin E\nRegular consumption of Kashmiri Badam is highly recommended for children, seniors, and active individuals for sharp memory and strong immunity."
+                        }
+                    },
+                    "prod-1783857199555": {
+                        "name": "Premium Seedless Green Kismis – Juicy & Sweet Long Raisins",
+                        "shortTitle": "Kismis",
+                        "hindiName": "किशमिश",
+                        "shortDescription": "Sweet, juicy, and premium seedless green raisins. A delicious natural source of iron, potassium, and instant energy.",
+                        "longDescription": {
+                            "nutritionKey": "RAISINS",
+                            "storageKey": "DEFAULT",
+                            "details": "Treat yourself to the natural sweetness and chewiness of Maharaja's Premium Kismis. These seedless green raisins are naturally sun-dried to lock in their natural sweetness, vitamins, and minerals. They are soft, sweet, and juicy, making them a perfect healthy alternative to sugary sweets.\n📦 Extra long and seedless green grade\n💰 Premium Grade and Sweet Taste\n👉 Hand-sorted and Hygienically Packed\n✔ 100% natural, sweet, and free from artificial color or sulfur\n✔ Loaded with natural dietary fiber, aiding in digestion\n✔ Rich in iron, potassium, and natural antioxidants for blood health\n✔ Ideal for snacking, baking, oatmeal, or traditional Indian desserts\nIncorporate these premium raisins into your daily diet for a natural energy boost and healthy digestion."
+                        }
+                    },
+                    "prod-1783857358162": {
+                        "name": "Premium Roasted & Lightly Salted Pista – Jumbo Crunchy Pistachios",
+                        "shortTitle": "Pista",
+                        "hindiName": "पिस्ता",
+                        "shortDescription": "Premium roasted and lightly salted pistachios in shells. A crunchy, protein-rich, and healthy snack.",
+                        "longDescription": {
+                            "nutritionKey": "PISTACHIOS",
+                            "storageKey": "DEFAULT",
+                            "details": "Enjoy the crunch and rich, buttery flavor of Maharaja's Premium Roasted & Salted Pistachios. These pistachios are lightly salted and roasted to perfection, highlighting their natural flavor while maintaining a delightful crunch. Encased in easy-to-open shells, they make a fun and highly nutritious snack.\n📦 Premium Jumbo Size Shells\n💰 Perfectly Roasted and Lightly Salted\n👉 Premium Dry Fruit Snack\n✔ Lightly dry-roasted to preserve natural nutritional value\n✔ Rich in protein, dietary fiber, and healthy unsaturated fats\n✔ Excellent source of Vitamin B6, potassium, and antioxidants\n✔ Supports weight management, heart health, and muscle recovery\nPistachios are the perfect guilt-free snack for office, travel, or parties. Crack open a shell and savor the premium taste!"
+                        }
+                    }
+                };
+                for (const [docId, updateData] of Object.entries(productsUpdates)) {
+                    await updateDoc(doc(db, "products", docId), updateData);
+                }
+                alert('All products successfully updated with SEO-optimized details!');
+                loadProducts();
+            } catch (error) {
+                console.error("Error applying SEO updates:", error);
+                alert('Failed to apply SEO updates: ' + error.message);
+            } finally {
+                applySeoBtn.disabled = false;
+                applySeoBtn.innerHTML = '<i class="fas fa-magic"></i> Apply SEO Updates';
+            }
+        });
+    }
 });

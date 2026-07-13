@@ -718,14 +718,15 @@ function initCategorySlider() {
             while (diff > halfTotal) diff -= totalCards;
             
             // 2D curved layout (sides bend downwards, tilt outwards)
-            let spacing = 195;
-            let bendFactor = 16;
-            let tiltAngle = 9;
+            let isMobile = window.innerWidth <= 768;
+            let spacing = isMobile ? 95 : 195;
+            let bendFactor = isMobile ? 6 : 16;
+            let tiltAngle = isMobile ? 5 : 9;
             
             let translateX = diff * spacing;
             let translateY = Math.pow(diff, 2) * bendFactor;
             let rotateZ = diff * tiltAngle;
-            let scale = 1 - Math.abs(diff) * 0.08;
+            let scale = 1 - Math.abs(diff) * (isMobile ? 0.12 : 0.08);
             
             // Instantly hide card when it goes off screen (beyond diff 2.2) to prevent slide-back visual wraps
             let opacity = 0;
@@ -824,7 +825,9 @@ function initCategorySlider() {
             hasDragged = true;
             updateCustomCursorClass('cursor-grabbing', 'cursor-grab');
         }
-        let deltaOffset = -deltaX / 160; // 160px drag = 1 item offset
+        let isMobile = window.innerWidth <= 768;
+        let dragDivisor = isMobile ? 80 : 160;
+        let deltaOffset = -deltaX / dragDivisor;
         currentOffset = startOffset + deltaOffset;
         updateSlider();
     };
