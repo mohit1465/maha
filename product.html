@@ -88,6 +88,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search-overlay.css">
     <link rel="stylesheet" href="css/search.css">
     <link rel="stylesheet" href="css/product.css">
     <link rel="stylesheet" href="css/cart.css">
@@ -170,25 +171,29 @@
 
         <main class="product-main">
         <div class="product-container">
-            <!-- Breadcrumb -->
-            <div class="breadcrumb" id="breadcrumb">
-                <span class="breadcrumb-item" data-section="home">Home</span>
-                <span class="breadcrumb-separator">&gt;</span>
-                <span class="breadcrumb-item current" id="breadcrumbProduct">Product Name</span>
-            </div>
-
             <div class="product-detail-grid skeleton-loading-active">
                 <!-- Left: Image Gallery (Sticky) -->
                 <div class="product-gallery-section">
-                    <div class="product-image-wrapper">
+                    <!-- Breadcrumb -->
+                    <div class="breadcrumb" id="breadcrumb" style="margin-bottom: 12px; margin-top: 0;">
+                        <span class="breadcrumb-item" data-section="home">Home</span>
+                        <span class="breadcrumb-separator">&gt;</span>
+                        <span class="breadcrumb-item current" id="breadcrumbProduct">Product Name</span>
+                    </div>
+                    <!-- Gallery Controls (Back & Action buttons) -->
+                    <div class="product-gallery-controls">
                         <button class="product-back-btn" onclick="window.history.length > 1 ? window.history.back() : window.location.href='index.html'" aria-label="Go back"><i class="fas fa-chevron-left"></i> Back</button>
-                        <img class="product-main-image" id="mainImage" src="" alt="Product">
-                        
                         <div class="product-image-actions">
                             <button class="product-icon-btn" id="imageShareBtn" aria-label="Share product"><i class="fas fa-share-nodes"></i></button>
                             <button class="product-icon-btn" id="imageWishlistBtn" aria-label="Add to wishlist"><i class="far fa-heart"></i></button>
                         </div>
                     </div>
+
+                    <!-- Main Image Wrapper -->
+                    <div class="product-image-wrapper">
+                        <img class="product-main-image" id="mainImage" src="" alt="Product">
+                    </div>
+
                     <div class="product-thumbnail-strip" id="thumbnailColumn">
                         <!-- Thumbnails injected here -->
                     </div>
@@ -501,6 +506,7 @@
     <script type="module" src="js/product.js"></script>
     <script type="module" src="js/product-ux.js"></script>
     <script src="js/cursor-effect.js"></script>
+    <script type="module" src="js/search-overlay.js"></script>
 </body>
 
 </html>

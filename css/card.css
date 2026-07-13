@@ -405,7 +405,7 @@
     align-items: center;
     gap: 8px;
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 30px;
     padding: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(0,0,0,0.01);
@@ -419,7 +419,7 @@
 .minimal-card-image-container {
     width: 100%;
     aspect-ratio: 1/1;
-    border-radius: 12px;
+    border-radius: 18px;
     overflow: hidden;
     background: #f8f9fa;
 }
@@ -437,7 +437,7 @@
 }
 
 .minimal-card-content {
-    text-align: left;
+    text-align: center;
     width: 100%;
     min-width: 0;
 }

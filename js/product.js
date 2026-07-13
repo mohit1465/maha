@@ -57,6 +57,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const product = docSnap.data();
                 console.log('Product loaded successfully:', product);
 
+                // Track this product as recently viewed (for search overlay)
+                try {
+                    const { addRecentlyViewed } = await import('./search-overlay.js');
+                    addRecentlyViewed({ id: productId, ...product });
+                } catch (e) { /* search-overlay not loaded on this page */ }
+
                 // Update page title and meta description for SEO
                 updatePageSeo(product);
 
@@ -459,9 +465,28 @@ document.addEventListener('DOMContentLoaded', async function () {
                     document.querySelectorAll('.thumbnail-image').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     mainImage.src = imgUrl;
+                    
+                    if (typeof window.updateThumbnailStack === 'function') {
+                        window.updateThumbnailStack();
+                    }
                 });
                 if (thumbnailsContainer) thumbnailsContainer.appendChild(thumb);
             });
+            
+            if (typeof window.updateThumbnailStack === 'function') {
+                window.updateThumbnailStack();
+            }
+
+            // Center if fits, left-align if it exceeds container width
+            if (thumbnailsContainer) {
+                setTimeout(() => {
+                    if (thumbnailsContainer.scrollWidth > thumbnailsContainer.clientWidth) {
+                        thumbnailsContainer.style.justifyContent = 'flex-start';
+                    } else {
+                        thumbnailsContainer.style.justifyContent = 'center';
+                    }
+                }, 100);
+            }
         }
         
         syncProductDetails(product);

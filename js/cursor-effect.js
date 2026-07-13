@@ -89,6 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ].join(';');
     document.body.appendChild(canvas);
 
+    // Prevent any element inside a hero slide from being dragged or showing native long-press menus
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.closest && e.target.closest('.hero-slide')) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.closest && e.target.closest('.hero-slide')) {
+            e.preventDefault();
+        }
+    });
+
     function resizeCanvas() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = Math.floor(window.innerWidth * dpr);

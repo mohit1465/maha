@@ -400,24 +400,18 @@ span {
     padding: 0 5%;
     position: relative;
     z-index: 9;
-    max-height: 80px;
     opacity: 1;
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                background-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                opacity 0.4s ease,
-                padding 0.4s ease;
+                opacity 0.4s ease;
 }
 
 .main-nav.nav-hidden {
+    /* Use absolute positioning so hiding does NOT shift page content or change scrollY */
+    position: absolute;
+    width: 100%;
     transform: translateY(-100%) !important;
-    max-height: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    overflow: hidden !important;
 }
 
 .nav-links {
@@ -682,9 +676,13 @@ span {
     width: 100%;
     height: 100%;
     text-decoration: none;
-    cursor: pointer;
+    color: inherit;
+    position: relative;
     overflow: hidden;
-    border-radius: 40px;
+    /* Prevent the link itself from being dragged */
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .hero-slide .slide-link picture {
@@ -700,6 +698,12 @@ span {
     display: block;
     border-radius: 40px;
     transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Prevent image from being selected or dragged on hold */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    pointer-events: none;
 }
 
 .hero-slide .slide-link:hover img {
@@ -1036,7 +1040,7 @@ span {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 0 auto;
     padding: 0;
     max-width: 1200px;
     box-sizing: border-box;
@@ -2262,6 +2266,7 @@ span {
     padding: 20px !important;
     margin: 20px auto !important;
     max-width: 1200px;
+    border-radius: 30px;
 }
 
 .explosive-deals.flipkart-container {
@@ -2825,4 +2830,43 @@ span {
     body[data-page="home"] .hero-slide .slide-link img {
         border-radius: 0 !important;
     }
+}
+
+/* ============================================================
+   GLOBAL CAPSULE BUTTON DESIGN UNIFICATION
+   ============================================================ */
+button,
+input[type="button"],
+input[type="submit"],
+.btn,
+.btn-primary,
+.btn-secondary,
+.product-add-btn,
+.product-buy-btn,
+.product-mobile-add-btn,
+.product-mobile-buy-btn,
+.product-qty-capsule,
+.product-mobile-qty-capsule,
+.card-footer,
+.card-add-btn,
+.card-qty-selector,
+.wishlist-add-btn,
+.wishlist-buy-btn,
+.see-more-btn,
+.loc-btn,
+.loc-detect-btn,
+.loc-manual-btn,
+.loc-skip-btn,
+.apply-filter-btn-large,
+.submit-btn,
+.checkout-btn,
+.filter-btn,
+.add-address-btn,
+.edit-address-btn,
+.product-write-btn,
+.product-clear-filter-btn,
+.category-control-btn,
+.hero-prev-btn,
+.hero-next-btn {
+    border-radius: 50px !important;
 }

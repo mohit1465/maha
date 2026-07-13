@@ -931,7 +931,6 @@ function initCategorySlider() {
 document.addEventListener('DOMContentLoaded', initCategorySlider);
 window.addEventListener('load', initCategorySlider);
 
-// Header scroll effect for home page & auto-hide navigation logic
 let navHideTimeout = null;
 let isNavHovered = false;
 
@@ -939,7 +938,7 @@ function handleHeaderScroll() {
     const header = document.querySelector('.header');
     const mainNav = document.querySelector('.main-nav');
     
-    if (header && document.body.getAttribute('data-page') === 'home') {
+    if (header) {
         if (window.scrollY > 30) {
             header.classList.add('scrolled');
             if (mainNav) {
@@ -947,7 +946,9 @@ function handleHeaderScroll() {
                 resetNavHideTimer();
             }
         } else {
-            header.classList.remove('scrolled');
+            if (document.body.getAttribute('data-page') === 'home') {
+                header.classList.remove('scrolled');
+            }
             if (mainNav) {
                 mainNav.classList.remove('nav-hidden');
             }

@@ -1,0 +1,350 @@
+/* ============================================================
+   GLOBAL SMART SEARCH OVERLAY
+   Maharaja Dry Fruits — search-overlay.css
+   ============================================================ */
+
+/* ── Overlay Backdrop ──────────────────────────────────── */
+.search-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+}
+.search-overlay-backdrop.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ── Floating Panel ─────────────────────────────────────── */
+.search-overlay-panel {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(-16px);
+    width: min(760px, 94vw);
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease, transform 0.3s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.search-overlay-panel.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Search Bar Inside Panel ────────────────────────────── */
+.search-overlay-bar {
+    margin: 22px 0 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.search-overlay-input {
+    width: 100%;
+    height: 56px;
+    padding: 0 104px 0 22px;
+    border-radius: 50px;
+    border: 2px solid #fc6e20;
+    background: #1a1a1a;
+    color: #ffffff;
+    font-size: 16px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    outline: none;
+    box-shadow: 0 0 0 5px rgba(252,110,32,0.18), 0 24px 60px rgba(0,0,0,0.65);
+    transition: box-shadow 0.2s ease;
+}
+.search-overlay-input::placeholder { color: #555; }
+.search-overlay-input:focus {
+    box-shadow: 0 0 0 7px rgba(252,110,32,0.24), 0 24px 60px rgba(0,0,0,0.65);
+}
+.search-overlay-clear {
+    position: absolute;
+    right: 56px;
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 13px;
+    transition: color 0.2s;
+}
+.search-overlay-clear:hover { color: #fff; }
+.search-overlay-clear.visible { display: flex; }
+.search-overlay-submit {
+    position: absolute;
+    right: 8px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fc6e20;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: background 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+.search-overlay-submit:hover { background: #e55b10; transform: scale(1.08); }
+
+/* ── Results Container ──────────────────────────────────── */
+.search-overlay-results {
+    background: #161616;
+    border: 1px solid #242424;
+    border-radius: 22px;
+    margin-top: 10px;
+    overflow: hidden;
+    box-shadow: 0 28px 80px rgba(0,0,0,0.75);
+    max-height: 66vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+.search-overlay-results::-webkit-scrollbar { width: 4px; }
+.search-overlay-results::-webkit-scrollbar-track { background: transparent; }
+.search-overlay-results::-webkit-scrollbar-thumb { background: #2e2e2e; border-radius: 4px; }
+
+/* ── Section ────────────────────────────────────────────── */
+.sor-section {
+    padding: 16px 18px 10px;
+    border-bottom: 1px solid #1f1f1f;
+}
+.sor-section:last-child { border-bottom: none; padding-bottom: 18px; }
+.sor-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.sor-section-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sor-section-title i { color: #fc6e20; font-size: 11px; }
+.sor-clear-all {
+    font-size: 11px;
+    color: #484848;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 20px;
+    transition: color 0.2s, background 0.2s;
+    font-family: inherit;
+}
+.sor-clear-all:hover { color: #fc6e20; background: rgba(252,110,32,0.08); }
+
+/* ── Recent Keywords (Pills) ────────────────────────────── */
+.sor-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.sor-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px 6px 9px;
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #bbb;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.sor-chip:hover { background: #252525; border-color: rgba(252,110,32,0.5); color: #fff; }
+.sor-chip > i { color: #484848; font-size: 11px; }
+.sor-chip-remove {
+    background: none;
+    border: none;
+    color: #3e3e3e;
+    cursor: pointer;
+    padding: 0;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    margin-left: 3px;
+    transition: color 0.18s;
+}
+.sor-chip-remove:hover { color: #fc6e20; }
+
+/* ── Recently Viewed Products ───────────────────────────── */
+.sor-products-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+.sor-products-scroll::-webkit-scrollbar { display: none; }
+.sor-product-card {
+    flex-shrink: 0;
+    width: 86px;
+    cursor: pointer;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #1e1e1e;
+    border: 1px solid #272727;
+    transition: transform 0.2s, border-color 0.2s;
+    text-decoration: none;
+}
+.sor-product-card:hover { transform: translateY(-3px); border-color: rgba(252,110,32,0.5); }
+.sor-product-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: #252525;
+    display: block;
+}
+.sor-product-info { padding: 6px 7px 8px; }
+.sor-product-name {
+    font-size: 10px;
+    color: #c8c8c8;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.sor-product-price { font-size: 10px; color: #fc6e20; font-weight: 700; margin-top: 2px; }
+
+/* ── Live Results List ──────────────────────────────────── */
+.sor-results-list { display: flex; flex-direction: column; gap: 1px; }
+.sor-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.14s;
+}
+.sor-result-item:hover { background: #1e1e1e; }
+.sor-result-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #232323;
+    flex-shrink: 0;
+}
+.sor-result-thumb.icon-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fc6e20;
+    font-size: 16px;
+    background: rgba(252,110,32,0.08);
+}
+.sor-result-text { flex: 1; min-width: 0; }
+.sor-result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e8e8e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sor-result-name mark { background: none; color: #fc6e20; font-weight: 800; }
+.sor-result-sub { font-size: 11px; color: #555; margin-top: 1px; }
+.sor-result-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: rgba(252,110,32,0.1);
+    color: #fc6e20;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.sor-result-badge.category { background: rgba(100,180,100,0.1); color: #6ab04c; }
+
+/* ── Most Searched Tags ─────────────────────────────────── */
+.sor-popular-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.sor-popular-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: #1c1c1c;
+    border: 1px solid #272727;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Bricolage Grotesque', sans-serif;
+}
+.sor-popular-tag i { font-size: 10px; color: #fc6e20; }
+.sor-popular-tag:hover {
+    background: rgba(252,110,32,0.09);
+    border-color: rgba(252,110,32,0.4);
+    color: #fc6e20;
+}
+
+/* ── Empty State ────────────────────────────────────────── */
+.sor-empty { text-align: center; padding: 28px 20px; color: #444; font-size: 14px; }
+.sor-empty i { font-size: 30px; color: #2a2a2a; display: block; margin-bottom: 10px; }
+
+/* ── Footer hint bar ────────────────────────────────────── */
+.sor-footer-hint {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 18px;
+    border-top: 1px solid #1c1c1c;
+    background: #0f0f0f;
+    font-size: 10.5px;
+    color: #3a3a3a;
+}
+.sor-footer-hint kbd {
+    background: #1c1c1c;
+    border: 1px solid #2e2e2e;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    color: #555;
+    font-family: inherit;
+}
+.sor-footer-hint span { display: flex; align-items: center; gap: 4px; }
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .search-overlay-panel {
+        width: 100%;
+        left: 0;
+        right: 0;
+        transform: translateY(-16px);
+        border-radius: 0;
+    }
+    .search-overlay-panel.active { transform: translateY(0); }
+    .search-overlay-bar { margin: 0; padding: 10px 10px 0; }
+    .search-overlay-input { height: 50px; font-size: 15px; padding: 0 96px 0 18px; }
+    .search-overlay-results {
+        border-radius: 0 0 20px 20px;
+        margin-top: 8px;
+        max-height: 70vh;
+    }
+    .sor-footer-hint { display: none; }
+}

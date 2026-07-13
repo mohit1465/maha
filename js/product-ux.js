@@ -561,4 +561,157 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initReviewDrawer();
 
+    /* ============================================================
+       17. MOBILE GALLERY SCROLL TOGGLER & STACKED SWIPER
+       ============================================================ */
+    function initMobileStickyGallery() {
+        const gallery = document.querySelector('.product-gallery-section');
+        const thumbnailColumn = document.getElementById('thumbnailColumn');
+        if (!gallery || !thumbnailColumn) return;
+        
+        // Update the visual fanned/stacked classes of thumbnails when scrolled
+        function updateThumbnailStack() {
+            const thumbs = thumbnailColumn.querySelectorAll('.thumbnail-image');
+            if (thumbs.length === 0) return;
+            
+            let activeIndex = 0;
+            thumbs.forEach((t, i) => {
+                if (t.classList.contains('active')) {
+                    activeIndex = i;
+                }
+                t.classList.remove('stack-top', 'stack-mid', 'stack-bot');
+            });
+            
+            const n = thumbs.length;
+            
+            // Top card is active
+            thumbs[activeIndex].classList.add('stack-top');
+            
+            // Mid card is next
+            if (n > 1) {
+                const midIndex = (activeIndex + 1) % n;
+                thumbs[midIndex].classList.add('stack-mid');
+            }
+            
+            // Bot card is after mid
+            if (n > 2) {
+                const botIndex = (activeIndex + 2) % n;
+                thumbs[botIndex].classList.add('stack-bot');
+            }
+        }
+        
+        const reviewsSection = document.querySelector('.reviews-section');
+        let isTransitioningOut = false;
+        
+        window.addEventListener('scroll', function() {
+            if (window.innerWidth <= 768) {
+                const reviewsTop = reviewsSection ? reviewsSection.getBoundingClientRect().top : 99999;
+                const isScrolled = gallery.classList.contains('scrolled');
+                
+                // Show stack if scrolled and before reviews
+                if (window.scrollY > 40 && reviewsTop > window.innerHeight) {
+                    if (isTransitioningOut) {
+                        gallery.classList.remove('fade-out');
+                        isTransitioningOut = false;
+                    }
+                    gallery.classList.add('scrolled');
+                    updateThumbnailStack();
+                } 
+                // Reached reviews section -> fade out stacked thumbnails smoothly
+                else if (window.scrollY > 40 && reviewsTop <= window.innerHeight) {
+                    if (isScrolled && !isTransitioningOut) {
+                        isTransitioningOut = true;
+                        gallery.classList.add('fade-out');
+                        
+                        setTimeout(() => {
+                            if (isTransitioningOut) {
+                                gallery.classList.remove('scrolled', 'fade-out');
+                                isTransitioningOut = false;
+                            }
+                        }, 300);
+                    }
+                }
+                // Scrolled back to top -> return to horizontal strip instantly with no delay
+                else {
+                    gallery.classList.remove('scrolled', 'fade-out');
+                    isTransitioningOut = false;
+                }
+            } else {
+                gallery.classList.remove('scrolled', 'fade-out');
+            }
+        }, { passive: true });
+
+        // Cycle stack on swipe & tap (touch drag gestures)
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        
+        thumbnailColumn.addEventListener('touchstart', function(e) {
+            if (window.innerWidth <= 768 && gallery.classList.contains('scrolled')) {
+                e.preventDefault();
+                e.stopPropagation(); // Stop particle effect from intercepting
+                
+                const touch = e.touches[0] || e.changedTouches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                touchStartTime = performance.now();
+            }
+        }, { passive: false });
+
+        thumbnailColumn.addEventListener('touchmove', function(e) {
+            if (window.innerWidth <= 768 && gallery.classList.contains('scrolled')) {
+                e.preventDefault();
+                e.stopPropagation(); // Stop particle effect from intercepting
+            }
+        }, { passive: false });
+        
+        thumbnailColumn.addEventListener('touchend', function(e) {
+            if (window.innerWidth <= 768 && gallery.classList.contains('scrolled')) {
+                e.preventDefault();
+                e.stopPropagation(); // Stop particle effect from intercepting
+                
+                const touch = e.changedTouches[0];
+                const touchEndX = touch.clientX;
+                const touchEndY = touch.clientY;
+                
+                const dx = touchEndX - touchStartX;
+                const dy = touchEndY - touchStartY;
+                const dt = performance.now() - touchStartTime;
+                
+                const thumbs = thumbnailColumn.querySelectorAll('.thumbnail-image');
+                if (thumbs.length <= 1) return;
+                
+                // Distinguish between a Tap and a Swipe gesture
+                const isTap = Math.hypot(dx, dy) < 15 && dt < 250;
+                const isSwipe = Math.hypot(dx, dy) >= 15;
+                
+                if (isTap) {
+                    // Tap -> immediately return to default horizontal strip so it scrolls down naturally with image
+                    gallery.classList.remove('scrolled', 'fade-out');
+                    isTransitioningOut = false;
+                    
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else if (isSwipe) {
+                    // Swipe -> cycle active image (move top card to back of deck)
+                    let activeIndex = 0;
+                    thumbs.forEach((t, i) => {
+                        if (t.classList.contains('active')) activeIndex = i;
+                    });
+                    
+                    const nextIndex = (activeIndex + 1) % thumbs.length;
+                    thumbs[nextIndex].click();
+                    updateThumbnailStack();
+                }
+            }
+        }, { passive: false });
+
+        // Expose to window so other scripts (like dynamic thumbnail populating) can call it
+        window.updateThumbnailStack = updateThumbnailStack;
+    }
+    
+    initMobileStickyGallery();
+
 });
