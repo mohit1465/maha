@@ -157,7 +157,6 @@
 
 .wishlist-add-btn:hover {
     background-color: #1b1b1b;
-    transform: translateY(-1px);
 }
 
 /* Buy Item Button */
@@ -177,8 +176,6 @@
 
 .wishlist-buy-btn:hover {
     background: #e55a10;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.2);
 }
 
 .wishlist-buy-btn:active {
@@ -216,7 +213,7 @@
 .remove-wishlist-item:hover {
     background-color: #1b1b1b;
     color: #fff;
-    transform: translateY(-1px);
+    border: 1px solid #1b1b1b;
 }
 
 .wishlist-item-price-stock-row{

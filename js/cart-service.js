@@ -1,6 +1,15 @@
 import { db, auth } from './firebase-config.js';
 import { doc, getDoc, setDoc, updateDoc, onSnapshot, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 class CartService {
     constructor() {
         this.cartItems = [];
@@ -111,7 +120,7 @@ class CartService {
             });
         }
 
-        await setDoc(cartRef, { cart: newCart }, { merge: true });
+        await withTimeout(setDoc(cartRef, { cart: newCart }, { merge: true }), 15000);
     }
 
     async removeFromCart(productId, size) {
@@ -121,7 +130,7 @@ class CartService {
         const normalizedSize = this.normalizeSize(size);
         const cartRef = doc(db, "users", user.uid);
         const newCart = this.cartItems.filter(item => !(item.id === productId && item.size === normalizedSize));
-        await updateDoc(cartRef, { cart: newCart });
+        await withTimeout(updateDoc(cartRef, { cart: newCart }), 15000);
     }
 
     async updateQuantity(productId, size, quantity) {
@@ -136,7 +145,7 @@ class CartService {
             }
             return item;
         });
-        await updateDoc(cartRef, { cart: newCart });
+        await withTimeout(updateDoc(cartRef, { cart: newCart }), 15000);
     }
 
     async updateSize(productId, oldSize, newSize) {
@@ -157,7 +166,7 @@ class CartService {
         let currentOriginalPrice = itemToUpdate.originalPrice || 0;
 
         try {
-            const prodSnap = await getDoc(doc(db, "products", productId));
+            const prodSnap = await withTimeout(getDoc(doc(db, "products", productId)));
             if (prodSnap.exists()) {
                 const product = prodSnap.data();
                 product.id = productId;
@@ -195,7 +204,7 @@ class CartService {
             });
         }
 
-        await setDoc(cartRef, { cart: newCart }, { merge: true });
+        await withTimeout(setDoc(cartRef, { cart: newCart }, { merge: true }), 15000);
     }
 
     async placeOrder(shippingDetails = null, itemsToOrder = null, paymentData = null) {
@@ -222,7 +231,7 @@ class CartService {
             };
 
             const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
+            const userSnap = await withTimeout(getDoc(userRef), 15000);
             let orders = [];
             let usedCoupons = {};
             if (userSnap.exists()) {
@@ -266,18 +275,18 @@ class CartService {
                 updates.usedCoupons = usedCoupons;
             }
 
-            await updateDoc(userRef, updates);
+            await withTimeout(updateDoc(userRef, updates), 15000);
 
             // Handle Global Coupon Usage increment via a direct fetch using standard firestore tools
             if (paymentData && paymentData.couponCode) {
                 try {
                     const { query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
                     const q = query(collection(db, "coupons"), where("code", "==", paymentData.couponCode));
-                    const querySnapshot = await getDocs(q);
+                    const querySnapshot = await withTimeout(getDocs(q), 15000);
                     if (!querySnapshot.empty) {
                         const couponDocRef = querySnapshot.docs[0].ref;
                         const timesUsed = (querySnapshot.docs[0].data().timesUsed || 0) + 1;
-                        await updateDoc(couponDocRef, { timesUsed });
+                        await withTimeout(updateDoc(couponDocRef, { timesUsed }), 15000);
                     }
                 } catch (e) { console.error("Error updating coupon document:", e); }
             }
@@ -320,10 +329,10 @@ class CartService {
                 formData.append(' Razorpay Payment ID', orderData.payment.paymentId);
             }
 
-            const response = await fetch('https://formsubmit.co/ajax/mohit8307521465@gmail.com', {
+            const response = await withTimeout(fetch('https://formsubmit.co/ajax/mohit8307521465@gmail.com', {
                 method: 'POST',
                 body: formData
-            });
+            }), 15000);
 
             if (response.ok) {
                 console.log("Order emails sent via FormSubmit.co successfully");

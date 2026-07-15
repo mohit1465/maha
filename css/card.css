@@ -133,7 +133,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
 }
 
 .card-title {
@@ -162,7 +162,7 @@
     color: #fc6e20;
     margin-bottom: 0;
     cursor: pointer;
-    margin-top: -8px;
+    margin-top: 0;
     margin-bottom: 10px;
 }
 
@@ -412,8 +412,8 @@
 }
 
 .minimal-product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(252, 110, 32, 0.06);
+    border-color: rgba(252, 110, 32, 0.25);
+    background: #fffaf5;
 }
 
 .minimal-card-image-container {

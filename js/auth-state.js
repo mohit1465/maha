@@ -2,6 +2,15 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const headerProfileIcon = document.querySelector('.header-icons [data-section="profile"]');
     const headerProfileLink = headerProfileIcon?.closest('a');
@@ -261,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- Desktop Header Location Feature ---
             try {
                 const userDocRef = doc(db, 'users', user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+                const userDocSnap = await withTimeout(getDoc(userDocRef));
                 const userData = userDocSnap.exists() ? userDocSnap.data() : {};
                 
                 let avatarType = 'default-initials';

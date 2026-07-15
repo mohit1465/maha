@@ -4,8 +4,18 @@ import { doc, getDoc, collection, query, where, getDocs, addDoc, serverTimestamp
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { createProductCard } from './card-renderer.js';
 import cartService from './cart-service.js';
+import wishlistService from './wishlist-service.js';
 import router from './router.js';
 import { getProductImageUrl, getAllProductImages } from './image-helper.js';
+
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
 
 document.addEventListener('DOMContentLoaded', async function () {
     const productSection = document.querySelector('.product-main, .product-section');
@@ -51,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             console.log('Fetching product from Firebase with ID:', productId);
             const docRef = doc(db, "products", productId);
-            const docSnap = await getDoc(docRef);
+            const docSnap = await withTimeout(getDoc(docRef));
 
             if (docSnap.exists()) {
                 const product = docSnap.data();
@@ -603,6 +613,32 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         }
         syncProductDetails(product);
+        updateGoToCartFloat(product);
+    }
+
+    function updateGoToCartFloat(product) {
+        const floatEl = document.getElementById('mobileGoToCartFloat');
+        if (!floatEl) return;
+
+        const cartItems = cartService.getCart();
+        const productCount = cartItems.length;
+
+        if (productCount > 0) {
+            floatEl.style.display = 'flex';
+            const countEl = document.getElementById('floatCartCount');
+            if (countEl) countEl.textContent = productCount;
+
+            // Set product image dynamically
+            const floatImg = document.getElementById('floatCartImg');
+            if (floatImg) {
+                const mainImage = document.getElementById('mainImage');
+                if (mainImage && mainImage.src) {
+                    floatImg.src = mainImage.src;
+                }
+            }
+        } else {
+            floatEl.style.display = 'none';
+        }
     }
 
     function syncProductDetails(product) {
@@ -742,21 +778,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         const size = document.querySelector('.product-variant-pill.active .var-weight')?.textContent || '250g';
         const qty = getProductQuantity();
         
-        try {
-            await cartService.addToCart(product, qty, size);
-            if (typeof cartService.notifyListeners === 'function') {
-                cartService.notifyListeners();
-            }
-            window.location.href = 'cart.html';
-        } catch (error) {
-            console.error("Error in Buy Now:", error);
-            alert("Could not process Buy Now. Please try again.");
-        }
+        const buyNowData = {
+            id: product.id,
+            name: product.name,
+            shortTitle: product.shortTitle,
+            price: product.price,
+            images: product.images,
+            category: product.category,
+            size: size,
+            qty: qty
+        };
+        
+        sessionStorage.setItem('buyNowData', JSON.stringify(buyNowData));
+        window.location.href = 'cart.html?buyNow=true';
     }
 
     function setupActionButtons(product) {
         const mainAddToCartBtn = document.getElementById('mainAddToCartBtn');
         const mobileAddToCartBtn = document.getElementById('mobileAddToCartBtn');
+        const wishlistBtn = document.getElementById('imageWishlistBtn');
 
         const handleAddToCart = async () => {
             const size = document.querySelector('.product-variant-pill.active .var-weight')?.textContent || '250g';
@@ -779,6 +819,32 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         document.getElementById('mainBuyNowBtn')?.addEventListener('click', () => handleBuyNow(product));
         document.getElementById('mobileBuyNowBtn')?.addEventListener('click', () => handleBuyNow(product));
+
+        // Wishlist toggle
+        if (wishlistBtn) {
+            const updateWishlistUI = () => {
+                const inWishlist = wishlistService.isInWishlist(product.id);
+                const icon = wishlistBtn.querySelector('i');
+                if (inWishlist) {
+                    icon.className = 'fas fa-heart';
+                    wishlistBtn.classList.add('active');
+                } else {
+                    icon.className = 'far fa-heart';
+                    wishlistBtn.classList.remove('active');
+                }
+            };
+
+            updateWishlistUI();
+
+            wishlistBtn.addEventListener('click', async () => {
+                try {
+                    await wishlistService.toggleWishlist(product.id);
+                    updateWishlistUI();
+                } catch (error) {
+                    console.error("Error toggling wishlist:", error);
+                }
+            });
+        }
     }
 
     function setupFixedActionBar(product) {
@@ -942,7 +1008,7 @@ async function loadReviewsList(productId, product) {
             collection(db, "reviews"),
             where("productId", "==", productId)
         );
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await withTimeout(getDocs(q));
 
         const reviews = [];
         let ratingSum = 0;
@@ -1289,7 +1355,7 @@ async function renderSimilarProducts(product, currentProductId) {
         const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
 
         // Fetch all products from Firestore
-        const querySnapshot = await getDocs(collection(db, "products"));
+        const querySnapshot = await withTimeout(getDocs(collection(db, "products")));
         const candidates = [];
         
         querySnapshot.forEach((doc) => {

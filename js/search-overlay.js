@@ -227,7 +227,7 @@ function renderRecentlyViewed(container) {
             <div class="sor-products-scroll">
                 ${products.map(p => `
                     <a href="${p.url}" class="sor-product-card" data-product-url="${p.url}">
-                        <img class="sor-product-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.background='#2a2a2a';this.style.display='none'">
+                        <img class="sor-product-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='assets/MAHARAJA logo.png';">
                         <div class="sor-product-info">
                             <div class="sor-product-name">${p.name}</div>
                             <div class="sor-product-price">₹${p.price}</div>
@@ -347,11 +347,11 @@ function renderMostSearched(container, allProducts) {
 }
 
 /* ── Main init ──────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const headerInput = document.querySelector('.header-search-input');
     if (!headerInput) return;
 
-    // Build overlay DOM
+    // Build overlay DOM immediately so search bar works even before data loads
     const { backdrop, panel } = buildOverlayDOM();
     const overlayInput  = document.getElementById('searchOverlayInput');
     const overlayResults = document.getElementById('searchOverlayResults');
@@ -361,20 +361,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     let allProducts = [];
     let isOpen      = false;
     let debounceTimer = null;
+    let productsLoaded = false;
 
-    // Fetch products once using cache
-    try {
-        allProducts = await getProductsFromCache();
-        console.log('[SearchOverlay] Products loaded from cache:', allProducts.length);
-    } catch (e) {
-        console.warn('[SearchOverlay] Product fetch failed, trying direct fetch', e);
-        // Fallback to direct fetch if cache fails
-        try {
-            const snap = await getDocs(collection(db, 'products'));
-            snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
-        } catch (fallbackError) {
-            console.error('[SearchOverlay] Direct fetch also failed:', fallbackError);
+    // Render panel with whatever products we have (may be empty initially)
+    function renderPanel(query) {
+        overlayResults.innerHTML = '';
+
+        if (query.length >= 2) {
+            renderLiveResults(overlayResults, allProducts, [], query);
+            if (productsLoaded) renderMostSearched(overlayResults, allProducts);
+        } else {
+            renderRecentSearches(overlayResults, query);
+            renderRecentlyViewed(overlayResults);
+            if (productsLoaded) renderMostSearched(overlayResults, allProducts);
         }
+
+        attachResultListeners();
+    }
+
+    function attachResultListeners() {
+        overlayResults.querySelectorAll('.sor-chip').forEach(chip => {
+            chip.addEventListener('click', e => {
+                if (e.target.closest('.sor-chip-remove')) return;
+                const term = chip.dataset.term;
+                overlayInput.value = term;
+                overlayClear.classList.add('visible');
+                renderPanel(term);
+            });
+        });
+
+        overlayResults.querySelectorAll('.sor-chip-remove').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                removeRecentSearch(btn.dataset.term);
+                renderPanel(overlayInput.value.trim());
+            });
+        });
+
+        const clearAllBtn = document.getElementById('sorClearAllSearches');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => {
+                clearAllRecentSearches();
+                renderPanel(overlayInput.value.trim());
+            });
+        }
+
+        overlayResults.querySelectorAll('.sor-popular-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const term = tag.dataset.term;
+                overlayInput.value = term;
+                overlayClear.classList.add('visible');
+                renderPanel(term);
+            });
+        });
+
+        overlayResults.querySelectorAll('[data-navigate]').forEach(el => {
+            el.addEventListener('click', e => {
+                e.preventDefault();
+                const url = el.dataset.navigate;
+                const productId = el.dataset.productId;
+
+                if (productId) {
+                    const product = allProducts.find(p => p.id === productId);
+                    if (product) addRecentlyViewed(product);
+                }
+
+                const currentQuery = overlayInput.value.trim();
+                if (currentQuery.length >= 2) addRecentSearch(currentQuery);
+
+                close();
+                window.location.href = url;
+            });
+        });
     }
 
     /* ── Open / Close ─────────────────────────────────── */
@@ -397,87 +455,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = '';
     }
 
-    /* ── Render Panel ─────────────────────────────────── */
-    function renderPanel(query) {
-        overlayResults.innerHTML = '';
+    // Attach open/close listeners immediately
+    headerInput.addEventListener('focus', e => {
+        e.preventDefault();
+        open();
+        headerInput.blur();
+    });
 
-        if (query.length >= 2) {
-            renderLiveResults(overlayResults, allProducts, [], query);
-            renderMostSearched(overlayResults, allProducts);
-        } else {
-            renderRecentSearches(overlayResults, query);
-            renderRecentlyViewed(overlayResults);
-            renderMostSearched(overlayResults, allProducts);
-        }
+    headerInput.addEventListener('click', e => {
+        if (!isOpen) open();
+    });
 
-        attachResultListeners();
-    }
+    backdrop.addEventListener('click', close);
 
-    /* ── Result Listeners (delegated) ──────────────────── */
-    function attachResultListeners() {
-        // Recent search chip click → fill input
-        overlayResults.querySelectorAll('.sor-chip').forEach(chip => {
-            chip.addEventListener('click', e => {
-                if (e.target.closest('.sor-chip-remove')) return;
-                const term = chip.dataset.term;
-                overlayInput.value = term;
-                overlayClear.classList.add('visible');
-                renderPanel(term);
-            });
-        });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && isOpen) close();
+    });
 
-        // Remove individual chip
-        overlayResults.querySelectorAll('.sor-chip-remove').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.stopPropagation();
-                removeRecentSearch(btn.dataset.term);
-                renderPanel(overlayInput.value.trim());
-            });
-        });
-
-        // Clear all searches
-        const clearAllBtn = document.getElementById('sorClearAllSearches');
-        if (clearAllBtn) {
-            clearAllBtn.addEventListener('click', () => {
-                clearAllRecentSearches();
-                renderPanel(overlayInput.value.trim());
-            });
-        }
-
-        // Most searched tags → fill input
-        overlayResults.querySelectorAll('.sor-popular-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const term = tag.dataset.term;
-                overlayInput.value = term;
-                overlayClear.classList.add('visible');
-                renderPanel(term);
-            });
-        });
-
-        // Navigate items (products & categories)
-        overlayResults.querySelectorAll('[data-navigate]').forEach(el => {
-            el.addEventListener('click', e => {
-                e.preventDefault();
-                const url = el.dataset.navigate;
-                const productId = el.dataset.productId;
-
-                // Save to recently viewed if it's a product
-                if (productId) {
-                    const product = allProducts.find(p => p.id === productId);
-                    if (product) addRecentlyViewed(product);
-                }
-
-                // Save search term
-                const currentQuery = overlayInput.value.trim();
-                if (currentQuery.length >= 2) addRecentSearch(currentQuery);
-
-                close();
-                window.location.href = url;
-            });
+    // Also allow opening from the search button (needed for home page collapsed search)
+    // But skip on search page to avoid conflict with live search
+    const isSearchPage = window.location.pathname.includes('search.html');
+    const searchBtn = document.querySelector('.header-search-btn');
+    if (searchBtn && !isSearchPage) {
+        searchBtn.addEventListener('click', e => {
+            e.preventDefault();
+            open();
         });
     }
 
-    /* ── Overlay Input Events ─────────────────────────── */
+    /* ── Overlay Input Events ───────────────────────── */
     overlayInput.addEventListener('input', () => {
         const q = overlayInput.value;
         overlayClear.classList.toggle('visible', q.length > 0);
@@ -507,23 +513,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = `search.html?q=${encodeURIComponent(q)}`;
     }
 
-    /* ── Header Input Intercept ───────────────────────── */
-    headerInput.addEventListener('focus', e => {
-        e.preventDefault();
-        open();
-        // Immediately blur the header input so focus goes to overlay
-        headerInput.blur();
-    });
+    // Render initial empty state
+    renderPanel('');
 
-    // Also intercept click (for cases where focus doesn't fire on re-click)
-    headerInput.addEventListener('click', e => {
-        if (!isOpen) open();
-    });
+    // Fetch products in background (non-blocking)
+    async function loadProducts() {
+        try {
+            allProducts = await getProductsFromCache();
+            productsLoaded = true;
+            console.log('[SearchOverlay] Products loaded:', allProducts.length);
+        } catch (e) {
+            console.warn('[SearchOverlay] Product fetch failed, trying direct fetch', e);
+            try {
+                const snap = await getDocs(collection(db, 'products'));
+                snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+                productsLoaded = true;
+            } catch (fallbackError) {
+                console.error('[SearchOverlay] Direct fetch also failed:', fallbackError);
+            }
+        }
 
-    /* ── Close triggers ───────────────────────────────── */
-    backdrop.addEventListener('click', close);
+        // Re-render if overlay is open so user sees results
+        if (isOpen) {
+            renderPanel(overlayInput.value.trim());
+        }
+    }
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && isOpen) close();
-    });
+    loadProducts();
 });

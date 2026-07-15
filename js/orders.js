@@ -1,6 +1,15 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const ordersContainer = document.getElementById('ordersContainer');
@@ -32,15 +41,34 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             showOrderSkeletons();
             const userRef = doc(db, "users", uid);
-            const userSnap = await getDoc(userRef);
+            const userSnap = await withTimeout(getDoc(userRef));
 
+            let orders = [];
             if (userSnap.exists()) {
                 const data = userSnap.data();
-                allOrders = data.orders || [];
-                renderOrders();
-            } else {
-                showEmptyOrders();
+                orders = data.orders || [];
             }
+
+            // Also fetch orders from dedicated subcollection (used by Buy Now flow)
+            try {
+                const ordersRef = collection(db, "users", uid, "orders");
+                const ordersSnap = await withTimeout(getDocs(ordersRef));
+                ordersSnap.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+            } catch (subError) {
+                console.warn("Could not fetch orders subcollection:", subError);
+            }
+
+            // Sort by timestamp descending
+            orders.sort((a, b) => {
+                const timeA = new Date(a.timestamp || 0).getTime();
+                const timeB = new Date(b.timestamp || 0).getTime();
+                return timeB - timeA;
+            });
+
+            allOrders = orders;
+            renderOrders();
         } catch (error) {
             console.error("Error fetching orders:", error);
             ordersContainer.innerHTML = '<p>Something went wrong. Please try refreshing.</p>';
@@ -75,22 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         `;
 
-        // Calculate Summary for filtered orders
-        const totalOrdersCount = filteredOrders.length;
-        const totalAmountSpent = filteredOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-
-        html += `
-        <div class="orders-summary-card" style="background: #fafafa; border-radius: 12px; padding: 25px; margin-bottom: 30px; border: 1.5px dashed #ddd; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div style="text-align: center; border-right: 1px solid #eee;">
-                <div style="font-size: 14px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Orders (${currentFilter})</div>
-                <div style="font-size: 24px; font-weight: 700; color: #323232;">${totalOrdersCount}</div>
-            </div>
-            <div style="text-align: center;">
-                <div style="font-size: 14px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;">Amount Spent</div>
-                <div style="font-size: 24px; font-weight: 700; color: #fc6e20;">₹${totalAmountSpent.toLocaleString('en-IN')}</div>
-            </div>
-        </div>
-        `;
+        // Calculate Summary for filtered orders - removed summary card rendering as requested
 
         if (filteredOrders.length === 0) {
             html += `

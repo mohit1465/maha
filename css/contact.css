@@ -62,9 +62,8 @@
 }
 
 .contact-info-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(252, 110, 32, 0.1);
-    border-color: rgba(252, 110, 32, 0.2);
+    border-color: rgba(252, 110, 32, 0.25);
+    background: #fffaf5;
 }
 
 .contact-icon {
@@ -191,8 +190,8 @@
 }
 
 .submit-btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 30px rgba(252, 110, 32, 0.25);
+    background: #e55a10;
+    border: 1px solid #e55a10;
 }
 
 .submit-btn:active {

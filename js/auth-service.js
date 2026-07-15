@@ -16,6 +16,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 export class AuthService {
     static async checkEmailExists(email) {
         console.log('AuthService: Checking email existence for:', email);
@@ -71,7 +80,7 @@ export class AuthService {
 
     static async getUserProfile(userId) {
         try {
-            const docSnap = await getDoc(doc(db, "users", userId));
+            const docSnap = await withTimeout(getDoc(doc(db, "users", userId)));
             if (docSnap.exists()) {
                 return { success: true, data: docSnap.data() };
             }

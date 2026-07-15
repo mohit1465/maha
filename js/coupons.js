@@ -2,6 +2,15 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const couponsList = document.getElementById('couponsList');
 
@@ -14,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             // Get user profile for eligibility checks
             const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
+            const userSnap = await withTimeout(getDoc(userRef));
             let userData = {};
             if (userSnap.exists()) {
                 userData = userSnap.data();
@@ -22,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Get all coupons
             const couponsRef = collection(db, "coupons");
-            const couponsSnap = await getDocs(couponsRef);
+            const couponsSnap = await withTimeout(getDocs(couponsRef));
             
             const validCoupons = [];
             
@@ -123,25 +132,30 @@ document.addEventListener('DOMContentLoaded', function () {
             let badgeHtml = '';
             if (coupon.eligibility) {
                 if (coupon.eligibility.type === "new_users") {
-                    badgeHtml = '<div style="margin-top:5px; font-size:11px; background:#e8f5e9; color:#2e7d32; display:inline-block; padding:3px 8px; border-radius:10px; font-weight:600;">New User Exclusive</div>';
+                    badgeHtml = '<div class="coupon-eligibility-badge type-new-user">New User Exclusive</div>';
                 } else if (coupon.eligibility.type === "first_order") {
-                    badgeHtml = '<div style="margin-top:5px; font-size:11px; background:#e3f2fd; color:#1565c0; display:inline-block; padding:3px 8px; border-radius:10px; font-weight:600;">First Order Special</div>';
+                    badgeHtml = '<div class="coupon-eligibility-badge type-first-order">First Order Special</div>';
                 } else if (coupon.eligibility.type === "profile_completion") {
-                    badgeHtml = '<div style="margin-top:5px; font-size:11px; background:#fff3cd; color:#856404; display:inline-block; padding:3px 8px; border-radius:10px; font-weight:600;">Profile Reward</div>';
+                    badgeHtml = '<div class="coupon-eligibility-badge type-profile">Profile Reward</div>';
                 } else if (coupon.eligibility.type === "total_spent") {
-                    badgeHtml = '<div style="margin-top:5px; font-size:11px; background:#f3e5f5; color:#7b1fa2; display:inline-block; padding:3px 8px; border-radius:10px; font-weight:600;">VIP Member</div>';
+                    badgeHtml = '<div class="coupon-eligibility-badge type-vip">VIP Member</div>';
                 }
             }
 
             html += `
-                <div style="background: white; border: 1px solid #eee; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <div>
-                        <div style="font-size: 24px; font-weight: 800; color: #fc6e20; margin-bottom: 5px;">${discountDisplay}</div>
-                        <div style="font-size: 14px; color: #333; font-weight: 600; margin-bottom: 5px;">Code: <span style="background: #FFF8F2; padding: 4px 8px; border-radius: 6px; letter-spacing: 1px; color: #fc6e20; border: 1px dashed #fc6e20;">${coupon.code}</span></div>
-                        <div style="font-size: 12px; color: #888;">Min Order: ₹${coupon.minOrder || 0} • ${expiryText}</div>
+                <div class="coupon-ticket">
+                    <div class="coupon-left">
+                        <div class="discount-value">${discountDisplay}</div>
                         ${badgeHtml}
                     </div>
-                    <button onclick="navigator.clipboard.writeText('${coupon.code}'); alert('Coupon code copied!');" style="background: #1b1b1b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Copy Code</button>
+                    <div class="coupon-divider"></div>
+                    <div class="coupon-right">
+                        <div class="coupon-details">
+                            <div class="coupon-code-row">Code: <span class="coupon-code-span">${coupon.code}</span></div>
+                            <div class="coupon-min-order">Min Order: ₹${coupon.minOrder || 0} • ${expiryText}</div>
+                        </div>
+                        <button class="coupon-copy-action-btn" onclick="navigator.clipboard.writeText('${coupon.code}'); alert('Coupon code copied!');">Copy Code</button>
+                    </div>
                 </div>
             `;
         });

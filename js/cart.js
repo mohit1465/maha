@@ -1,12 +1,20 @@
 import cartService from './cart-service.js';
 import { auth, db } from './firebase-config.js';
-import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getProductImageUrl } from './image-helper.js';
+
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     const cartList = document.querySelector('.cart-list');
-    const subtotalDisplay = document.querySelector('.total-value');
-    const summarySubtotal = document.querySelector('.summary-value');
+    const subtotalDisplay = document.querySelector('.summary-value');
     const buyAllButton = document.querySelector('.buy-all-btn');
     const checkoutSection = document.getElementById('checkoutSection');
     const cartSummaryBar = document.querySelector('.cart-summary-bar');
@@ -19,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let deliveryFee = 50; // Standard delivery fee
     let appliedCouponCode = null; // Track applied code
     const cartView = document.getElementById('cartView');
+    let checkoutVisible = false;
+    let isBuyNowMode = false;
 
     cartService.addListener((cartItems, isLoaded) => {
         if (!isLoaded) {
@@ -26,8 +36,96 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             renderCart(cartItems);
             updateTotals();
+            if (window.location.hash === '#checkout' || window.location.hash === '#shipping') {
+                checkoutItems = cartService.getCart();
+                setTimeout(() => showCheckout(), 300);
+            }
         }
     });
+
+    // Buy Now mode: bypass cart, go directly to checkout with passed product data
+    async function handleBuyNowMode() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.get('buyNow')) return;
+
+        isBuyNowMode = true;
+
+        try {
+            const stored = sessionStorage.getItem('buyNowData');
+            if (!stored) return;
+            
+            const buyNowData = JSON.parse(stored);
+            sessionStorage.removeItem('buyNowData');
+            
+            checkoutItems = [{
+                id: buyNowData.id,
+                name: buyNowData.name,
+                shortTitle: buyNowData.shortTitle,
+                price: buyNowData.price,
+                images: buyNowData.images,
+                category: buyNowData.category || 'Dry Fruits',
+                size: buyNowData.size,
+                quantity: buyNowData.qty
+            }];
+            
+            // Clean URL
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+            
+            // Wait for cart view to be in DOM, then show checkout
+            setTimeout(() => showCheckout(), 100);
+        } catch (error) {
+            console.error("Error in Buy Now mode:", error);
+            window.location.href = 'cart.html';
+        }
+    }
+
+    async function placeBuyNowOrder(shippingDetails, items, paymentData) {
+        const user = auth.currentUser;
+        if (!user || !items.length) return null;
+
+        try {
+            const orderId = 'ORD' + Date.now();
+            const orderTotal = paymentData && paymentData.total !== undefined 
+                ? paymentData.total 
+                : items.reduce((total, item) => total + (item.price * item.quantity), 0);
+                
+            const orderData = {
+                orderId,
+                userId: user.uid,
+                email: user.email,
+                items,
+                total: orderTotal,
+                shipping: shippingDetails,
+                payment: paymentData,
+                status: 'Processing',
+                timestamp: new Date().toISOString()
+            };
+
+            const ordersRef = collection(db, "users", user.uid, "orders");
+            await withTimeout(addDoc(ordersRef, orderData), 15000);
+
+            if (paymentData && paymentData.couponCode) {
+                try {
+                    const { query, where, getDocs, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const q = query(collection(db, "coupons"), where("code", "==", paymentData.couponCode));
+                    const querySnapshot = await withTimeout(getDocs(q), 15000);
+                    if (!querySnapshot.empty) {
+                        const couponDocRef = querySnapshot.docs[0].ref;
+                        const timesUsed = (querySnapshot.docs[0].data().timesUsed || 0) + 1;
+                        await withTimeout(updateDoc(couponDocRef, { timesUsed }), 15000);
+                    }
+                } catch (e) { console.error("Error updating coupon document:", e); }
+            }
+
+            return orderId;
+        } catch (error) {
+            console.error("Error placing Buy Now order:", error);
+            throw error;
+        }
+    }
+
+    handleBuyNowMode();
 
     function renderCart(items) {
         if (!cartList) return;
@@ -172,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 0);
 
         if (subtotalDisplay) subtotalDisplay.textContent = '₹' + subtotal.toLocaleString('en-IN');
-        if (summarySubtotal) summarySubtotal.textContent = '₹' + subtotal.toLocaleString('en-IN');
 
         const savingsDisplay = document.querySelector('.summary-savings');
         if (savingsDisplay) {
@@ -210,7 +307,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function showCheckout() {
-        if (!cartView || !checkoutSection) return;
+        if (!cartView || !checkoutSection || checkoutVisible) return;
+        checkoutVisible = true;
 
         // Push state for back button handling
         history.pushState({ view: 'shipping' }, 'Shipping Details', '#shipping');
@@ -240,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.hideCheckout = () => {
         if (!cartView || !checkoutSection) return;
+        checkoutVisible = false;
 
         // Toggle Views with Animation
         checkoutSection.classList.replace('view-active', 'view-hidden');
@@ -550,10 +649,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const radio = option.querySelector('input[type="radio"]');
                 radio.checked = true;
 
-                // Update button text
-                if (radio.value === 'online') {
-                    submitBtn.textContent = 'Pay & Place Order';
-                } else {
+                if (submitBtn) {
                     submitBtn.textContent = 'Place Order';
                 }
             };
@@ -655,6 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             const paymentMethod = this.querySelector('input[name="payment-method"]:checked').value;
+            let hasNavigated = false;
 
             try {
                 // Collect shipping details first
@@ -713,8 +810,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Order...';
 
                             try {
-                                const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
-                                if (orderId) {
+                                const placeOrderFn = isBuyNowMode ? placeBuyNowOrder : cartService.placeOrder.bind(cartService);
+                                const orderId = await placeOrderFn(shippingDetails, checkoutItems, paymentData);
+                                if (orderId && !hasNavigated) {
+                                    hasNavigated = true;
                                     window.location.href = `orders.html?success=true&orderId=${orderId}`;
                                 }
                             } catch (err) {
@@ -744,10 +843,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
 
-                    const orderId = await cartService.placeOrder(shippingDetails, checkoutItems, paymentData);
-                    if (orderId) {
-                        window.location.href = `orders.html?success=true&orderId=${orderId}`;
-                    }
+                    const checkoutPromise = (async () => {
+                        const placeOrderFn = isBuyNowMode ? placeBuyNowOrder : cartService.placeOrder.bind(cartService);
+                        const orderId = await placeOrderFn(shippingDetails, checkoutItems, paymentData);
+                        if (orderId && !hasNavigated) {
+                            hasNavigated = true;
+                            window.location.href = `orders.html?success=true&orderId=${orderId}`;
+                        }
+                    })();
+
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Order timed out. Please check your connection and try again.')), 60000)
+                    );
+
+                    await Promise.race([checkoutPromise, timeoutPromise]);
                 }
             } catch (error) {
                 console.error("Checkout process failed:", error);

@@ -1,6 +1,15 @@
 import { db, auth } from './firebase-config.js';
 import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 class WishlistService {
     constructor() {
         this.wishlist = new Set();
@@ -80,7 +89,7 @@ class WishlistService {
         const user = auth.currentUser;
         if (!user) return [];
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userDoc = await withTimeout(getDoc(doc(db, "users", user.uid)));
         if (userDoc.exists()) {
             return userDoc.data().wishlist || [];
         }

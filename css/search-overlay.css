@@ -83,7 +83,7 @@
 .search-overlay-clear.visible { display: flex; }
 .search-overlay-submit {
     position: absolute;
-    right: 8px;
+    right: 15px;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -104,13 +104,12 @@
 .search-overlay-results {
     background: #161616;
     border: 1px solid #242424;
-    border-radius: 22px;
-    margin-top: 10px;
+    margin: 10px;
     overflow: hidden;
-    box-shadow: 0 28px 80px rgba(0,0,0,0.75);
     max-height: 66vh;
     overflow-y: auto;
     scroll-behavior: smooth;
+    border-radius: 22px;
 }
 .search-overlay-results::-webkit-scrollbar { width: 4px; }
 .search-overlay-results::-webkit-scrollbar-track { background: transparent; }
@@ -176,7 +175,7 @@
     color: #3e3e3e;
     cursor: pointer;
     padding: 0;
-    font-size: 10px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     margin-left: 3px;
@@ -195,7 +194,7 @@
 .sor-products-scroll::-webkit-scrollbar { display: none; }
 .sor-product-card {
     flex-shrink: 0;
-    width: 86px;
+    width: 105px;
     cursor: pointer;
     border-radius: 14px;
     overflow: hidden;
@@ -204,7 +203,7 @@
     transition: transform 0.2s, border-color 0.2s;
     text-decoration: none;
 }
-.sor-product-card:hover { transform: translateY(-3px); border-color: rgba(252,110,32,0.5); }
+.sor-product-card:hover { border-color: rgba(252,110,32,0.5); }
 .sor-product-img {
     width: 100%;
     aspect-ratio: 1;
@@ -214,7 +213,7 @@
 }
 .sor-product-info { padding: 6px 7px 8px; }
 .sor-product-name {
-    font-size: 10px;
+    font-size: 12px;
     color: #c8c8c8;
     font-weight: 600;
     line-height: 1.3;
@@ -223,7 +222,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.sor-product-price { font-size: 10px; color: #fc6e20; font-weight: 700; margin-top: 2px; }
+.sor-product-price { font-size: 12px; color: #fc6e20; font-weight: 700; margin-top: 2px; }
 
 /* ── Live Results List ──────────────────────────────────── */
 .sor-results-list { display: flex; flex-direction: column; gap: 1px; }
@@ -267,7 +266,7 @@
 .sor-result-name mark { background: none; color: #fc6e20; font-weight: 800; }
 .sor-result-sub { font-size: 11px; color: #555; margin-top: 1px; }
 .sor-result-badge {
-    font-size: 10px;
+    font-size: 11px;
     padding: 3px 8px;
     border-radius: 20px;
     background: rgba(252,110,32,0.1);
@@ -342,8 +341,7 @@
     .search-overlay-bar { margin: 0; padding: 10px 10px 0; }
     .search-overlay-input { height: 50px; font-size: 15px; padding: 0 96px 0 18px; }
     .search-overlay-results {
-        border-radius: 0 0 20px 20px;
-        margin-top: 8px;
+        margin: 10px;
         max-height: 70vh;
     }
     .sor-footer-hint { display: none; }

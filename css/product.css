@@ -2884,7 +2884,7 @@
 
 /* Quick Commerce Product Page Styling */
 :root {
-    --product-bg: #f4f6f8;
+    --product-bg: #ffffff;
     --product-card-bg: #ffffff;
     --product-text-main: #111111;
     --product-text-muted: #666666;
@@ -3176,12 +3176,21 @@ body[data-page="product"] {
 }
 
 .product-detail-rating {
-    font-size: 13px;
-    background: #e6f4ea;
-    color: var(--product-success);
+    font-size: 12px;
+    background: #fff;
+    color: #111;
     padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: 600;
+    border-radius: 16px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.product-detail-rating i {
+    color: #ffc107 !important;
 }
 
 .product-price-block {
@@ -3505,7 +3514,7 @@ body[data-page="product"] {
     }
 
     .product-detail-card {
-        padding: 16px;
+        padding: 10px 16px;
         border-radius: 12px;
         background: transparent !important;
         border: none !important;
@@ -4331,4 +4340,71 @@ body[data-page="product"] {
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s linear infinite;
     border-radius: 8px;
+}
+
+/* Mobile Floating "Go to Cart" Bubble */
+.mobile-go-to-cart-float {
+    position: absolute;
+    bottom: 63px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    z-index: 1;
+    cursor: pointer;
+    background: green;
+    border: 3px solid #2e7d32;
+    border-bottom: 0;
+    padding: 5px;
+    gap: 10px;
+    border-radius: 40px 40px 0 0;
+}
+
+.float-cart-image-wrapper {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #fff;
+    overflow: hidden;
+    margin-bottom: -6px;
+    z-index: 2;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.float-cart-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.float-cart-badge-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+.float-cart-btn {
+    color: #fff;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    text-transform: none;
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    letter-spacing: 0.3px;
 }

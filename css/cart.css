@@ -92,7 +92,7 @@
 }
 
 .cart-item-category {
-    font-size: var(--text-tiny);
+    font-size: var(--text-small);
     color: #999;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .unit-price {
-    font-size: var(--text-tiny);
+    font-size: var(--text-small);
     color: #888;
     text-align: center;
 }
@@ -219,7 +219,7 @@
 .remove-item:hover {
     background-color: #1b1b1b;
     color: #fff;
-    transform: translateY(-1px);
+    border: 1px solid #1b1b1b;
 }
 
 /* Buy Item Button */
@@ -238,8 +238,7 @@
 
 .buy-item-btn:hover {
     background: #e55a10;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(252, 110, 32, 0.2);
+    border: 1px solid #e55a10;
 }
 
 .buy-item-btn:active {
@@ -290,6 +289,16 @@
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
 }
 
+@media (min-width: 769px) {
+    .cart-summary-bar {
+        display: none;
+    }
+
+    .cart-bottom-padding {
+        height: 0;
+    }
+}
+
 .summary-left {
     display: flex;
     align-items: center;
@@ -322,7 +331,6 @@
 
 .buy-all-btn:hover {
     background-color: #e55a10;
-    transform: translateY(-1px);
 }
 
 .buy-all-btn:active {
@@ -518,7 +526,7 @@
     }
 
     .cart-item-category {
-        font-size: var(--text-tiny);
+        font-size: var(--text-small);
     }
 
     .quantity-btn {
@@ -533,7 +541,7 @@
 
     .size-select {
         padding: 5px 8px;
-        font-size: var(--text-tiny);
+        font-size: var(--text-small);
     }
 
     .cart-item-price {

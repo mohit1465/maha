@@ -2,12 +2,20 @@ import wishlistService from './wishlist-service.js';
 import cartService from './cart-service.js';
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getProducts as getProductsFromCache } from './data-cache.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const wishlistList = document.querySelector('.wishlist-list');
     const emptyMsg = document.getElementById('emptyWishlist');
 
     if (!wishlistList || !emptyMsg) return;
+
+    let allProducts = [];
+
+    // Preload products in background for faster rendering
+    getProductsFromCache().then(products => {
+        allProducts = products;
+    }).catch(() => {});
 
     wishlistService.addListener(async (wishlistIds, isLoaded) => {
         if (!isLoaded) {
@@ -27,24 +35,35 @@ document.addEventListener('DOMContentLoaded', () => {
         emptyMsg.style.display = 'none';
         wishlistList.style.display = 'block';
 
-        const products = [];
-        const productPromises = wishlistIds.map(async (id) => {
-            try {
-                const docRef = doc(db, "products", id);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    return { id: docSnap.id, ...docSnap.data() };
-                }
-            } catch (err) {
-                console.error("Error fetching product:", id, err);
-            }
-            return null;
-        });
+        // Use cached products if available, otherwise fetch individually with fallback
+        let products = [];
+        if (allProducts.length > 0) {
+            products = wishlistIds
+                .map(id => allProducts.find(p => p.id === id))
+                .filter(Boolean);
+        }
 
-        const results = await Promise.all(productPromises);
-        results.forEach(p => {
-            if (p) products.push(p);
-        });
+        // Fallback to individual fetches for any missing products
+        if (products.length < wishlistIds.length) {
+            const missingIds = wishlistIds.filter(id => !products.find(p => p.id === id));
+            const productPromises = missingIds.map(async (id) => {
+                try {
+                    const docRef = doc(db, "products", id);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        return { id: docSnap.id, ...docSnap.data() };
+                    }
+                } catch (err) {
+                    console.error("Error fetching product:", id, err);
+                }
+                return null;
+            });
+
+            const results = await Promise.all(productPromises);
+            results.forEach(p => {
+                if (p) products.push(p);
+            });
+        }
 
         renderWishlist(products);
     });

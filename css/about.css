@@ -70,9 +70,8 @@
 
 .mission-card:hover,
 .vision-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 60px rgba(252, 110, 32, 0.12);
-    border-color: rgba(252, 110, 32, 0.25);
+    border-color: rgba(252, 110, 32, 0.4);
+    background: #fffaf5;
 }
 
 .mission-card h3,
@@ -121,9 +120,8 @@
 }
 
 .value-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(252, 110, 32, 0.08);
-    border-color: rgba(252, 110, 32, 0.2);
+    border-color: rgba(252, 110, 32, 0.3);
+    background: #fffdfb;
 }
 
 .value-icon {
@@ -189,9 +187,8 @@
 }
 
 .stats-section .stat-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(252, 110, 32, 0.1);
-    border-color: rgba(252, 110, 32, 0.2);
+    border-color: rgba(252, 110, 32, 0.25);
+    background: #fffaf5;
 }
 
 .stat-number {
@@ -241,9 +238,8 @@
 }
 
 .team-member:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(252, 110, 32, 0.08);
-    border-color: rgba(252, 110, 32, 0.2);
+    border-color: rgba(252, 110, 32, 0.25);
+    background: #fffaf5;
 }
 
 .team-avatar {

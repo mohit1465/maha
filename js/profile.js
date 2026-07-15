@@ -2,6 +2,15 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+function withTimeout(promise, timeoutMs = 4000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timed out')), timeoutMs)
+        )
+    ]);
+}
+
 // Preset Avatars SVGs
 const MALE_1_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <circle cx="50" cy="50" r="50" fill="#2E86AB"/>
@@ -216,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Fetch extra info from Firestore (like Age, Preferences from Step-based flow)
             try {
                 const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
+                const docSnap = await withTimeout(getDoc(docRef));
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -475,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadAndDisplayProfileCoupons(user, userData) {
         try {
             const couponsRef = collection(db, "coupons");
-            const couponsSnap = await getDocs(couponsRef);
+            const couponsSnap = await withTimeout(getDocs(couponsRef));
             const validCoupons = [];
             
             couponsSnap.forEach(docSnap => {

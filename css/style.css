@@ -1,4 +1,21 @@
 
+/* Mobile page title */
+.mobile-page-title {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-page-title {
+        display: block;
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: var(--text-h2);
+        font-weight: 700;
+        color: #1b1b1b;
+        margin-bottom: 20px;
+        padding: 0 5px;
+    }
+}
+
 /* ============================================
    CSS CUSTOM PROPERTIES (COLOR VARIABLES)
    ============================================ */
@@ -39,22 +56,22 @@
     --text-small: 13px;
     --text-body: 15px;
     --text-body-lg: 17px;
-    --text-h4: 20px;
-    --text-h3: 24px;
-    --text-h2: 32px;
-    --text-h1: 44px;
+    --text-h4: 19px;
+    --text-h3: 22px;
+    --text-h2: 26px;
+    --text-h1: 32px;
 }
 
 @media (max-width: 768px) {
     :root {
-        --text-tiny: 10px;
-        --text-small: 12px;
-        --text-body: 14px;
-        --text-body-lg: 15px;
+        --text-tiny: 11px;
+        --text-small: 13px;
+        --text-body: 15px;
+        --text-body-lg: 16px;
         --text-h4: 18px;
-        --text-h3: 21px;
-        --text-h2: 26px;
-        --text-h1: 34px;
+        --text-h3: 20px;
+        --text-h2: 23px;
+        --text-h1: 28px;
     }
 }
 
@@ -67,11 +84,11 @@
 }
 
 html {
-    font-family: "Bricolage Grotesque", sans-serif !important;
+    font-family: "Inter", sans-serif !important;
 }
 
 body {
-    font-family: "Bricolage Grotesque", sans-serif !important;
+    font-family: "Inter", sans-serif !important;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -123,13 +140,21 @@ h2,
 h3,
 h4,
 h5,
-h6,
+h6 {
+    font-family: "Bricolage Grotesque", sans-serif !important;
+    font-weight: 700 !important;
+    color: var(--color-text-primary);
+}
+
 p,
 a,
 button,
 li,
-span {
-    font-family: "Bricolage Grotesque", sans-serif !important;
+span,
+input,
+select,
+textarea {
+    font-family: "Inter", sans-serif !important;
 }
 
 /* Section Styles */
@@ -492,6 +517,13 @@ span {
     transition: color 0.3s ease;
 }
 
+.dropdown-category-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
 .dropdown-item:hover {
     background-color: #323232;
     color: #fc6e20;
@@ -499,6 +531,10 @@ span {
 
 .dropdown-item:hover i {
     color: #fc6e20;
+}
+
+.dropdown-item:hover .dropdown-category-icon {
+    opacity: 0.8;
 }
 
 .dropdown:hover .dropdown-content {
@@ -1321,10 +1357,10 @@ span {
 .why-choose-us h2,
 .our-features h2 {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-size: var(--text-h2);
     font-weight: 800;
     color: #1b1b1b;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
     margin-bottom: 12px;
 }
 
@@ -1341,7 +1377,7 @@ span {
 
 .section-subtitle {
     font-family: 'Inter', sans-serif;
-    font-size: 1.05rem;
+    font-size: var(--text-body);
     color: #666;
     margin-bottom: 60px;
     font-weight: 400;
@@ -1407,7 +1443,7 @@ span {
 
 .stat-number {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 52px;
+    font-size: 38px;
     font-weight: 800;
     background: linear-gradient(135deg, #1b1b1b 0%, #444 100%);
     -webkit-background-clip: text;
@@ -1485,7 +1521,7 @@ span {
 
 .feature-item h3 {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 1.35rem;
+    font-size: var(--text-h4);
     font-weight: 700;
     color: #1b1b1b;
     margin-bottom: 14px;
@@ -1494,7 +1530,7 @@ span {
 
 .feature-item p {
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
+    font-size: var(--text-small);
     color: #555;
     line-height: 1.7;
     margin-top: 0;
@@ -2077,42 +2113,27 @@ span {
 
     /* 3D Category Coverflow Responsive Overrides */
     .category-slider-container {
-        padding: 30px 0 !important;
+        padding: 30px 0;
     }
     .category-track {
-        height: 160px !important;
+        height: 160px;
     }
     .category-card {
-        width: 100px !important;
+        width: 100px;
     }
     .category-card-inner {
-        width: 85px !important;
-        height: 85px !important;
-        border-radius: 20px !important;
+        width: 85px;
+        height: 85px;
+        border-radius: 20px;
     }
     .category-card-name {
-        font-size: 0.82rem !important;
-        margin-top: 8px !important;
-    }
-    .category-card.left-1 {
-        transform: translateX(-85px) translateZ(10px) rotateY(20deg) scale(0.85) !important;
-    }
-    .category-card.right-1 {
-        transform: translateX(85px) translateZ(10px) rotateY(-20deg) scale(0.85) !important;
-    }
-    .category-card.left-2 {
-        transform: translateX(-150px) translateZ(-30px) rotateY(35deg) scale(0.7) !important;
-    }
-    .category-card.right-2 {
-        transform: translateX(150px) translateZ(-30px) rotateY(-35deg) scale(0.7) !important;
-    }
-    .category-card.active {
-        transform: translateX(0) translateZ(50px) rotateY(0deg) scale(1.1) !important;
+        font-size: 0.82rem;
+        margin-top: 8px;
     }
     .category-slider-container .bg-blob {
-        width: 150px !important;
-        height: 150px !important;
-        filter: blur(50px) !important;
+        width: 150px;
+        height: 150px;
+        filter: blur(50px);
     }
 
     .popular-products h2,
