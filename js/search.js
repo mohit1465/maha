@@ -2,11 +2,13 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createProductCard } from './card-renderer.js';
+import { populateSearchCategoryChips } from './category-loader.js';
+import { getProducts as getProductsFromCache } from './data-cache.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
     const searchInput = document.querySelector('.header-search-input');
     const productGrid = document.querySelector('.search-results .product-grid');
-    const categoryChips = document.querySelectorAll('#categoryFilters input');
+    const categoryFiltersContainer = document.getElementById('categoryFilters');
 
     // Prevent form submission on search page for live filtering
     const searchForm = document.querySelector('.header-search-bar form');
@@ -18,18 +20,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     let allProducts = [];
+    let categoryChips = [];
 
-    // Fetch products from Firebase
+    // Fetch products from cache
     async function fetchProducts() {
         if (!productGrid) return;
         showSearchSkeletons();
 
         try {
-            const querySnapshot = await getDocs(collection(db, "products"));
-            allProducts = [];
-            querySnapshot.forEach((doc) => {
-                allProducts.push(doc.data());
-            });
+            allProducts = await getProductsFromCache();
+            console.log('[Search] Products loaded from cache:', allProducts.length);
+
+            // Populate category filters dynamically using the shared module
+            categoryChips = await populateSearchCategoryChips(applyFilters);
 
             // Check URL for category and query filters
             const urlParams = new URLSearchParams(window.location.search);

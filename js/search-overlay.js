@@ -10,6 +10,7 @@ import { db } from './firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getProductImageUrl } from './image-helper.js';
 import router from './router.js';
+import { getProducts as getProductsFromCache } from './data-cache.js';
 
 /* ── Constants ──────────────────────────────────────────── */
 const LS_RECENT_SEARCHES  = 'maha_recent_searches';   // string[]
@@ -19,18 +20,7 @@ const MAX_RECENT_SEARCHES = 8;
 const MAX_RECENT_VIEWED   = 12;
 const MAX_LIVE_RESULTS    = 8;
 
-const MOST_SEARCHED_SEED = [
-    { term: 'Almonds',      icon: 'fas fa-seedling' },
-    { term: 'Cashews',      icon: 'fas fa-leaf' },
-    { term: 'Walnuts',      icon: 'fas fa-circle' },
-    { term: 'Pistachios',   icon: 'fas fa-spa' },
-    { term: 'Raisins',      icon: 'fas fa-grape' },
-    { term: 'Anjeer',       icon: 'fas fa-apple-alt' },
-    { term: 'Saffron',      icon: 'fas fa-sun' },
-    { term: 'Dry Fruits Mix', icon: 'fas fa-layer-group' },
-    { term: 'Gift Box',     icon: 'fas fa-gift' },
-    { term: 'Organic',      icon: 'fas fa-leaf' },
-];
+const MOST_SEARCHED_SEED = [];
 
 const CATEGORY_ICONS = {
     'Almonds':          'fas fa-seedling',
@@ -87,18 +77,74 @@ export function addRecentlyViewed(product) {
     lsSet(LS_RECENTLY_VIEWED, list.slice(0, MAX_RECENT_VIEWED));
 }
 
-/* ── Most Searched Builder (merge seed + real counts) ────── */
-function getMostSearched() {
+/* ── Most Searched Builder (from product tags + names + search counts) ────── */
+function getMostSearched(allProducts) {
     const counts = lsGet(LS_SEARCH_COUNTS, {});
-    // Build a unified list: seed terms + any extra user-searched terms
-    const seedTerms = MOST_SEARCHED_SEED.map(s => s.term.toLowerCase());
+    
+    // Build list from product categories, tags, and names
+    const productTerms = new Set();
+    
+    allProducts.forEach(p => {
+        // Add category
+        if (p.category) productTerms.add(p.category);
+        
+        // Add tags
+        if (p.tags && Array.isArray(p.tags)) {
+            p.tags.forEach(tag => productTerms.add(tag));
+        }
+        
+        // Add keywords
+        if (p.keywords && Array.isArray(p.keywords)) {
+            p.keywords.forEach(keyword => productTerms.add(keyword));
+        }
+        
+        // Add short title (often contains product type)
+        if (p.shortTitle) productTerms.add(p.shortTitle);
+    });
+    
+    // Convert to array with icons
+    const categoryIcons = {
+        'Almonds': 'fas fa-seedling',
+        'Walnuts': 'fas fa-circle',
+        'Cashews': 'fas fa-leaf',
+        'Pistachios': 'fas fa-spa',
+        'Raisins': 'fas fa-grape',
+        'Dates': 'fas fa-calendar',
+        'Figs': 'fas fa-apple-alt',
+        'Apricots': 'fas fa-lemon',
+        'MAKHANA': 'fas fa-water',
+        'Other Dry Fruits': 'fas fa-basket-shopping'
+    };
+    
+    const productTermsArray = Array.from(productTerms).map(term => ({
+        term: term,
+        icon: categoryIcons[term] || 'fas fa-fire'
+    }));
+    
+    // Add user-searched terms with high counts
     const extra = Object.entries(counts)
-        .filter(([t]) => !seedTerms.includes(t) && counts[t] >= 2)
+        .filter(([t]) => counts[t] >= 2)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 4)
-        .map(([term]) => ({ term: term.charAt(0).toUpperCase() + term.slice(1), icon: 'fas fa-fire' }));
+        .map(([term]) => ({ 
+            term: term.charAt(0).toUpperCase() + term.slice(1), 
+            icon: 'fas fa-fire' 
+        }));
 
-    return [...MOST_SEARCHED_SEED, ...extra].slice(0, 14);
+    // Combine and limit to 14 items
+    const combined = [...productTermsArray, ...extra];
+    const unique = [];
+    const seen = new Set();
+    
+    for (const item of combined) {
+        const key = item.term.toLowerCase();
+        if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(item);
+        }
+    }
+    
+    return unique.slice(0, 14);
 }
 
 /* ── Highlight match ────────────────────────────────────── */
@@ -278,8 +324,8 @@ function renderLiveResults(container, products, categories, query) {
     container.insertAdjacentHTML('beforeend', html);
 }
 
-function renderMostSearched(container) {
-    const tags = getMostSearched();
+function renderMostSearched(container, allProducts) {
+    const tags = getMostSearched(allProducts);
     container.insertAdjacentHTML('beforeend', `
         <div class="sor-section">
             <div class="sor-section-header">
@@ -316,12 +362,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isOpen      = false;
     let debounceTimer = null;
 
-    // Fetch products once (shared with rest of page via module cache)
+    // Fetch products once using cache
     try {
-        const snap = await getDocs(collection(db, 'products'));
-        snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+        allProducts = await getProductsFromCache();
+        console.log('[SearchOverlay] Products loaded from cache:', allProducts.length);
     } catch (e) {
-        console.warn('[SearchOverlay] Product fetch failed', e);
+        console.warn('[SearchOverlay] Product fetch failed, trying direct fetch', e);
+        // Fallback to direct fetch if cache fails
+        try {
+            const snap = await getDocs(collection(db, 'products'));
+            snap.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+        } catch (fallbackError) {
+            console.error('[SearchOverlay] Direct fetch also failed:', fallbackError);
+        }
     }
 
     /* ── Open / Close ─────────────────────────────────── */
@@ -350,11 +403,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (query.length >= 2) {
             renderLiveResults(overlayResults, allProducts, [], query);
-            renderMostSearched(overlayResults);
+            renderMostSearched(overlayResults, allProducts);
         } else {
             renderRecentSearches(overlayResults, query);
             renderRecentlyViewed(overlayResults);
-            renderMostSearched(overlayResults);
+            renderMostSearched(overlayResults, allProducts);
         }
 
         attachResultListeners();

@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 setupQuantitySelector(product);
                 setupActionButtons(product);
                 setupFixedActionBar(product);
+
+                // Add reactive cart updates for product detail page quantity & add to cart button
+                cartService.addListener(() => {
+                    updateQtyAndCartUI(product);
+                });
+                updateQtyAndCartUI(product);
+
                 setupImageZoom();
                 setupAdditionalInteractions();
 
@@ -151,6 +158,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             APRICOTS: "Excellent source of Vitamin A, Vitamin C, and dietary fiber.",
             BLUEBERRIES: "A true superfood packed with powerful antioxidants and vitamins.",
             CASHEWS: "Rich in heart-healthy monounsaturated fats, zinc, and copper.",
+            MAKHANA: "Low in calories, high in protein, calcium, and essential antioxidants for clean snacking.",
             MIXED: "A perfectly balanced blend of essential vitamins, minerals, and natural energy."
         }
     };
@@ -324,6 +332,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         APRICOTS: { Protein: "3.4g", Fats: "0.5g", Carbs: "63g", Fiber: "7g", Calories: "241 kcal" },
         BLUEBERRIES: { Protein: "3g", Fats: "1g", Carbs: "80g", Fiber: "6g", Calories: "330 kcal" },
         CASHEWS: { Protein: "18g", Fats: "44g", Carbs: "30g", Fiber: "3.3g", Calories: "553 kcal" },
+        MAKHANA: { Protein: "9.7g", Fats: "1.2g", Carbs: "77g", Fiber: "14.5g", Calories: "347 kcal" },
         MIXED: { Protein: "15g", Fats: "48g", Carbs: "25g", Fiber: "8g", Calories: "560 kcal" }
     };
 
@@ -535,8 +544,65 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function getProductQuantity() {
-        const qtyValEl = document.querySelector('#productQtyCapsule .product-qty-val') || document.querySelector('#productQtyCapsuleMobile .product-qty-val');
-        return qtyValEl ? (parseInt(qtyValEl.textContent) || 1) : 1;
+        const activeVariant = document.querySelector('.product-variant-pill.active .var-weight');
+        const selectedSize = activeVariant ? activeVariant.textContent : '250g';
+        const normalizedSize = cartService.normalizeSize(selectedSize);
+
+        const cartItems = cartService.getCart();
+        const existingItem = cartItems.find(item => item.id === productId && item.size === normalizedSize);
+        return existingItem ? existingItem.quantity : 1;
+    }
+
+    function updateQtyAndCartUI(product) {
+        const desktopCapsule = document.getElementById('productQtyCapsule');
+        const mobileCapsule = document.getElementById('productQtyCapsuleMobile');
+        const desktopAddToCartBtn = document.getElementById('mainAddToCartBtn');
+        const mobileAddToCartWrapper = document.querySelector('.product-mobile-cart-btn-wrapper');
+
+        const activeVariant = document.querySelector('.product-variant-pill.active .var-weight');
+        const selectedSize = activeVariant ? activeVariant.textContent : '250g';
+        const normalizedSize = cartService.normalizeSize(selectedSize);
+
+        const cartItems = cartService.getCart();
+        const existingItem = cartItems.find(item => item.id === product.id && item.size === normalizedSize);
+        const qtyInCart = existingItem ? existingItem.quantity : 0;
+
+        if (qtyInCart > 0) {
+            if (desktopCapsule) {
+                desktopCapsule.style.display = 'flex';
+                const valEl = desktopCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = qtyInCart;
+            }
+            if (mobileCapsule) {
+                mobileCapsule.style.display = 'flex';
+                const valEl = mobileCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = qtyInCart;
+            }
+            if (desktopAddToCartBtn) {
+                desktopAddToCartBtn.style.display = 'none';
+            }
+            if (mobileAddToCartWrapper) {
+                mobileAddToCartWrapper.style.display = 'none';
+            }
+        } else {
+            if (desktopCapsule) {
+                desktopCapsule.style.display = 'none';
+                const valEl = desktopCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = 1;
+            }
+            if (mobileCapsule) {
+                mobileCapsule.style.display = 'none';
+                const valEl = mobileCapsule.querySelector('.product-qty-val');
+                if (valEl) valEl.textContent = 1;
+            }
+            if (desktopAddToCartBtn) {
+                desktopAddToCartBtn.style.display = '';
+            }
+            if (mobileAddToCartWrapper) {
+                mobileAddToCartWrapper.style.display = '';
+            }
+        }
+        syncProductDetails(product);
     }
 
     function syncProductDetails(product) {
@@ -617,50 +683,54 @@ document.addEventListener('DOMContentLoaded', async function () {
             btn.addEventListener('click', function () {
                 optionsContainer.querySelectorAll('.product-variant-pill').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                syncProductDetails(product);
+                updateQtyAndCartUI(product);
             });
             optionsContainer.appendChild(btn);
         });
         
         // Initial sync to set price for the first active variant
-        syncProductDetails(product);
+        updateQtyAndCartUI(product);
     }
 
     function setupQuantitySelector(product) {
         const desktopCapsule = document.getElementById('productQtyCapsule');
         const mobileCapsule = document.getElementById('productQtyCapsuleMobile');
 
-        const updateBoth = (newVal) => {
-            if (newVal < 1 || newVal > 10) return;
+        const updateCartQty = async (change) => {
+            const activeVariant = document.querySelector('.product-variant-pill.active .var-weight');
+            const selectedSize = activeVariant ? activeVariant.textContent : '250g';
+            const normalizedSize = cartService.normalizeSize(selectedSize);
+
+            const cartItems = cartService.getCart();
+            const existingItem = cartItems.find(item => item.id === product.id && item.size === normalizedSize);
             
-            if (desktopCapsule) {
-                const valEl = desktopCapsule.querySelector('.product-qty-val');
-                if (valEl) valEl.textContent = newVal;
+            if (existingItem) {
+                const newQty = existingItem.quantity + change;
+                if (newQty <= 0) {
+                    await cartService.removeFromCart(product.id, selectedSize);
+                } else {
+                    if (newQty > 10) return;
+                    await cartService.updateQuantity(product.id, selectedSize, newQty);
+                }
+                if (typeof cartService.notifyListeners === 'function') {
+                    cartService.notifyListeners();
+                }
             }
-            if (mobileCapsule) {
-                const valEl = mobileCapsule.querySelector('.product-qty-val');
-                if (valEl) valEl.textContent = newVal;
-            }
-            
-            syncProductDetails(product);
         };
 
         const setupCapsuleEvents = (capsule) => {
             if (!capsule) return;
             const minusBtn = capsule.querySelector('.minus');
             const plusBtn = capsule.querySelector('.plus');
-            const valEl = capsule.querySelector('.product-qty-val');
 
-            if (!minusBtn || !plusBtn || !valEl) return;
+            if (!minusBtn || !plusBtn) return;
 
             minusBtn.addEventListener('click', () => {
-                let current = parseInt(valEl.textContent) || 1;
-                updateBoth(current - 1);
+                updateCartQty(-1);
             });
 
             plusBtn.addEventListener('click', () => {
-                let current = parseInt(valEl.textContent) || 1;
-                updateBoth(current + 1);
+                updateCartQty(1);
             });
         };
 
@@ -690,9 +760,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const handleAddToCart = async () => {
             const size = document.querySelector('.product-variant-pill.active .var-weight')?.textContent || '250g';
-            const qty = getProductQuantity();
             try {
-                await cartService.addToCart(product, qty, size);
+                await cartService.addToCart(product, 1, size);
                 if (typeof cartService.notifyListeners === 'function') {
                     cartService.notifyListeners();
                 }
@@ -935,14 +1004,9 @@ async function loadReviewsList(productId, product) {
 
         // Render Reviews Grid
         if (count === 0) {
-            reviewsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 60px 20px; color: #aaa; grid-column: 1 / -1; width: 100%;">
-                        <i class="far fa-comments" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.4;"></i>
-                        <p style="font-size:15px; font-weight:600; color:#888;">No reviews yet</p>
-                        <p style="font-size:13px; color:#bbb; margin-top:6px;">Be the first to share your experience!</p>
-                    </div>
-                `;
+            reviewsContainer.style.display = 'none';
         } else {
+            reviewsContainer.style.display = 'grid';
             reviewsContainer.innerHTML = reviews.map((review, idx) => {
                 let formattedDate = 'Just now';
                 if (review.timestamp) {

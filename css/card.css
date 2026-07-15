@@ -342,7 +342,7 @@
 /* Mobile Adjustments */
 @media (max-width: 480px) {
     .product-card {
-        border-radius: 20px;
+        border-radius: 16px;
     }
 
     .card-badge {

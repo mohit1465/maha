@@ -2,6 +2,8 @@ import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { createProductCard, createMinimalProductCard } from './card-renderer.js';
 import router from './router.js';
+import { populateHomeCategoryCards } from './category-loader.js';
+import { getProducts as getProductsFromCache } from './data-cache.js';
 
 // Global navigation function for home page minimal cards
 window.navigateToProduct = function(productName, productId) {
@@ -19,6 +21,7 @@ async function initHome() {
     const updatedRow = document.querySelector('.newly-updated .card-row');
     const highQualityRow = document.querySelector('.high-quality-dry-fruits .card-row');
     const dealsRow = document.getElementById('dealsRow');
+    const categoryTrack = document.getElementById('categoryTrack');
 
     if (!popularRow || !updatedRow || !highQualityRow) {
         console.error("Row containers not found!");
@@ -48,15 +51,16 @@ async function initHome() {
     showHighQualitySkeletons(highQualityRow);
 
     try {
-        console.log("Fetching real products...");
-        const querySnapshot = await getDocs(collection(db, "products"));
-        const allProducts = [];
-        querySnapshot.forEach((doc) => {
-            allProducts.push({ id: doc.id, ...doc.data() });
-        });
+        console.log("Fetching real products from cache...");
+        const allProducts = await getProductsFromCache();
+        console.log("Products loaded:", allProducts.length);
 
         if (allProducts.length > 0) {
             console.log("Populating with", allProducts.length, "real products");
+            
+            // Dynamically populate category cards using the shared module
+            await populateHomeCategoryCards();
+            
             // Popular: Highest Price
             const popular = [...allProducts]
                 .sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))

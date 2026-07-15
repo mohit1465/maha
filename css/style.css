@@ -515,6 +515,15 @@ span {
 .dropdown:hover .dropdown-content .dropdown-item:nth-child(4) { animation-delay: 0.15s; }
 .dropdown:hover .dropdown-content .dropdown-item:nth-child(5) { animation-delay: 0.2s; }
 .dropdown:hover .dropdown-content .dropdown-item:nth-child(6) { animation-delay: 0.25s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(7) { animation-delay: 0.3s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(8) { animation-delay: 0.35s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(9) { animation-delay: 0.4s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(10) { animation-delay: 0.45s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(11) { animation-delay: 0.5s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(12) { animation-delay: 0.55s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(13) { animation-delay: 0.6s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(14) { animation-delay: 0.65s; }
+.dropdown:hover .dropdown-content .dropdown-item:nth-child(15) { animation-delay: 0.7s; }
 
 @keyframes slideInRight {
     0% {

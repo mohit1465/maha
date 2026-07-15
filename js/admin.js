@@ -1354,7 +1354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applySeoBtn = document.getElementById('applySeoBtn');
     if (applySeoBtn) {
         applySeoBtn.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to apply the SEO updates to all 4 products?')) return;
+            if (!confirm('Are you sure you want to apply the SEO updates to all 8 products?')) return;
             applySeoBtn.disabled = true;
             applySeoBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
             try {
@@ -1364,6 +1364,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         "shortTitle": "Sanora Almonds",
                         "hindiName": "बादाम",
                         "shortDescription": "Premium quality California and Sanora almonds. Handpicked, crunchy, and packed with nutrition for a healthy lifestyle.",
+                        "category": "Almonds",
+                        "keywords": ["almonds", "badam", "giri", "sanora badam", "premium almonds", "california badam"],
+                        "tags": ["Premium Quality", "100% Natural", "Best Seller"],
+                        "groups": ["Daily", "Family", "Kids"],
                         "longDescription": {
                             "nutritionKey": "ALMONDS",
                             "storageKey": "DEFAULT",
@@ -1375,6 +1379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         "shortTitle": "Kasmiri Badam",
                         "hindiName": "कश्मीरी बादाम",
                         "shortDescription": "Authentic Kashmiri almonds known for their rich oil content, sweet taste, and high nutritional value.",
+                        "category": "Almonds",
+                        "keywords": ["mamra", "kashmiri badam", "mamra giri", "kashmiri mamra", "single tree badam", "oil rich badam"],
+                        "tags": ["Kashmiri Special", "Organic Choice", "Superfood"],
+                        "groups": ["Students", "Gym", "Elderly"],
                         "longDescription": {
                             "nutritionKey": "ALMONDS",
                             "storageKey": "DEFAULT",
@@ -1386,6 +1394,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         "shortTitle": "Kismis",
                         "hindiName": "किशमिश",
                         "shortDescription": "Sweet, juicy, and premium seedless green raisins. A delicious natural source of iron, potassium, and instant energy.",
+                        "category": "Raisins",
+                        "keywords": ["kismis", "raisins", "green kismis", "seedless raisins", "kishmish", "sweet dry fruit"],
+                        "tags": ["Juicy & Sweet", "Sun Dried", "Hygienically Packed"],
+                        "groups": ["Daily", "Snacks", "Baking"],
                         "longDescription": {
                             "nutritionKey": "RAISINS",
                             "storageKey": "DEFAULT",
@@ -1397,10 +1409,74 @@ document.addEventListener('DOMContentLoaded', () => {
                         "shortTitle": "Pista",
                         "hindiName": "पिस्ता",
                         "shortDescription": "Premium roasted and lightly salted pistachios in shells. A crunchy, protein-rich, and healthy snack.",
+                        "category": "Pistachios",
+                        "keywords": ["pista", "pistachios", "salted pista", "roasted pistachios", "jumbo pista", "crunchy pista"],
+                        "tags": ["Perfectly Roasted", "Lightly Salted", "High Protein"],
+                        "groups": ["Gym", "Snacks", "Travel"],
                         "longDescription": {
                             "nutritionKey": "PISTACHIOS",
                             "storageKey": "DEFAULT",
                             "details": "Enjoy the crunch and rich, buttery flavor of Maharaja's Premium Roasted & Salted Pistachios. These pistachios are lightly salted and roasted to perfection, highlighting their natural flavor while maintaining a delightful crunch. Encased in easy-to-open shells, they make a fun and highly nutritious snack.\n📦 Premium Jumbo Size Shells\n💰 Perfectly Roasted and Lightly Salted\n👉 Premium Dry Fruit Snack\n✔ Lightly dry-roasted to preserve natural nutritional value\n✔ Rich in protein, dietary fiber, and healthy unsaturated fats\n✔ Excellent source of Vitamin B6, potassium, and antioxidants\n✔ Supports weight management, heart health, and muscle recovery\nPistachios are the perfect guilt-free snack for office, travel, or parties. Crack open a shell and savor the premium taste!"
+                        }
+                    },
+                    "prod-1784045962433": {
+                        "name": "Premium Cashew Nuts W320 – Rich, Buttery & Crisp Kaju",
+                        "shortTitle": "Cashew W320",
+                        "hindiName": "काजू",
+                        "shortDescription": "Jumbo-sized, premium grade W320 white whole cashews. Creamy, crispy, and packed with energy and healthy fats.",
+                        "category": "Cashew",
+                        "keywords": ["cashew", "kaju", "w320 cashew", "whole cashew", "white kaju", "creamy kaju"],
+                        "tags": ["Jumbo Size", "Grade W320", "White Wholes"],
+                        "groups": ["Daily", "Cooking", "Festive"],
+                        "longDescription": {
+                            "nutritionKey": "CASHEWS",
+                            "storageKey": "DEFAULT",
+                            "details": "Discover the rich, buttery flavor of Maharaja's Premium Cashew Nuts W320. Sourced from the finest farms, our W320 grade cashews are whole, large, and naturally creamy. Perfect for cooking, garnishing desserts, or snacking directly from the pack to boost your daily nutrition.\n📦 Grade W320 Jumbo Size\n💰 Crispy and Creamy Whole Nuts\n👉 Quality Sorted and Hygienically Packed\n✔ 100% natural white wholes, raw and unsalted\n✔ Rich in plant-based protein, magnesium, and copper\n✔ Good source of heart-healthy monounsaturated fatty acids\n✔ Ideal for vegan milk, gravies, baking, and healthy daily snacking\nAdd a handful of premium cashews to your diet for instant energy and a delicious crunch."
+                        }
+                    },
+                    "prod-1784046100587": {
+                        "name": "Premium Phool Makhana – Organic Fox Nuts (Lotus Seeds)",
+                        "shortTitle": "Phool Makhana",
+                        "hindiName": "मखाना",
+                        "shortDescription": "Handpicked, organic puffed lotus seeds (makhana). A low-calorie, gluten-free superfood snack rich in calcium and protein.",
+                        "category": "Makhana",
+                        "keywords": ["makhana", "fox nuts", "lotus seeds", "phool makhana", "roasted makhana", "diet snack"],
+                        "tags": ["Organic Superfood", "Gluten Free", "Low Calorie"],
+                        "groups": ["Gym", "Weight Loss", "Fasting"],
+                        "longDescription": {
+                            "nutritionKey": "MIXED",
+                            "storageKey": "DEFAULT",
+                            "details": "Enjoy the light, crunchy, and highly nutritious Maharaja's Premium Phool Makhana. Also known as Fox Nuts or Lotus Seeds, our makhana is sourced from traditional wetland farms, hand-cleaned, and dried to perfection. A perfect guilt-free snack that is low in calories but exceptionally high in health benefits.\n📦 Handpicked Extra Bold Size\n💰 Organic and Natural Superfood\n👉 Low-Calorie Crispy Snacking\n✔ 100% natural, gluten-free, and rich in calcium\n✔ High in protein and fiber to support muscle strength and digestion\n✔ Low glycemic index, making it ideal for blood sugar management\n✔ Roast with a pinch of salt or ghee for a delicious healthy snack\nMake Phool Makhana your go-to snacking partner for weight management and daily wellness."
+                        }
+                    },
+                    "prod-1784046285252": {
+                        "name": "Kashmiri Akhrot Giri – Premium Half-Kernel Walnut Wholes",
+                        "shortTitle": "Akhrot Giri",
+                        "hindiName": "अखरोट",
+                        "shortDescription": "Premium light-colored Kashmiri walnut halves. Fresh, crunchy, and exceptionally rich in Omega-3 fatty acids for brain health.",
+                        "category": "Walnuts",
+                        "keywords": ["akhrot", "walnuts", "akhrot giri", "walnut kernels", "brain food", "kashmiri walnut"],
+                        "tags": ["Kashmiri Grade", "Omega-3 Rich", "Premium Halves"],
+                        "groups": ["Students", "Daily", "Elderly"],
+                        "longDescription": {
+                            "nutritionKey": "WALNUTS",
+                            "storageKey": "REFRIGERATE",
+                            "details": "Fuel your mind with Maharaja's Premium Kashmiri Akhrot Giri. Sourced directly from the orchards of Kashmir, these walnut kernels are raw, untreated, and sorted as light-colored halves. Packed with brain-boosting nutrients and natural oils, they are a wholesome addition to your daily routine.\n📦 Premium Light Halves (Kashmiri Grade)\n💰 Rich in Omega-3 and Heart-Healthy Oils\n👉 Direct from Kashmiri Orchards\n✔ 100% natural, chemical-free raw walnut kernels\n✔ Excellent source of alpha-linolenic acid (ALA) and Omega-3\n✔ Rich in antioxidants, vitamin E, and essential minerals\n✔ Supports brain development, memory power, and cardiovascular health\nEat 2-3 walnut halves daily to nourish your brain and protect your heart."
+                        }
+                    },
+                    "prod-1784046366280": {
+                        "name": "Premium Turkish Anjeer – Soft, Sweet & Juicy Dried Figs",
+                        "shortTitle": "Anjeer",
+                        "hindiName": "अंजीर",
+                        "shortDescription": "Premium quality dried figs (anjeer). Sweet, soft, juicy, and naturally rich in dietary fiber, iron, and calcium.",
+                        "category": "Anjeer",
+                        "keywords": ["anjeer", "figs", "dried figs", "turkish anjeer", "soft figs", "sweet anjeer"],
+                        "tags": ["Jumbo Size", "Naturally Sweet", "Rich in Iron"],
+                        "groups": ["Daily", "Women Health", "Digestion"],
+                        "longDescription": {
+                            "nutritionKey": "FIGS",
+                            "storageKey": "DEFAULT",
+                            "details": "Savor the natural sweetness and soft texture of Maharaja's Premium Anjeer. These dried figs are hand-selected for their size, moisture level, and flavor profile. Natural, sun-dried, and free from added sugars, they are one of the healthiest traditional sweet treats available.\n📦 Selected Jumbo Size Dried Figs\n💰 Soft and Naturally Sweet\n👉 Rich Source of Fiber and Iron\n✔ 100% natural, preservative-free, and sun-dried\n✔ Exceptionally high in dietary fiber to promote digestive health\n✔ Good source of iron, calcium, and potassium for bone strength\n✔ Helps naturally boost energy levels and maintain healthy hemoglobin\nSoak 2-3 figs in water overnight for maximum health benefits and enhanced digestion."
                         }
                     }
                 };
