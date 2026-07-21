@@ -629,6 +629,7 @@ textarea {
     opacity: 0;
     z-index: 1;
     pointer-events: none;
+    transition: clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1), -webkit-clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .hero-slide.prev-active {
@@ -641,11 +642,6 @@ textarea {
     opacity: 1;
     z-index: 3;
     pointer-events: auto;
-}
-
-.hero-slide.transitioning {
-    transition: clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1);
-    -webkit-transition: -webkit-clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .hero-slide .slide-link {

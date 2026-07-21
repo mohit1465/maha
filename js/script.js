@@ -4,9 +4,21 @@ if (track) {
     let slides = Array.from(track.children);
     const TOTAL_SLIDES = slides.length; // No clones needed for overlapping slide transition
 
+    // Eagerly preload and decode all banner images to prevent decoding stalls during transitions
+    slides.forEach(slide => {
+        const img = slide.querySelector('img');
+        if (img) {
+            img.loading = "eager";
+            img.decoding = "sync";
+            if (typeof img.decode === 'function') {
+                img.decode().catch(() => {});
+            }
+        }
+    });
+
     let index = 0;
     let autoplayTimer = null;
-    let transitionTimeout = null;
+    
 
     // Create indicators dynamically depending on slide count
     const indicatorsContainer = document.getElementById("heroIndicators");
@@ -42,11 +54,6 @@ if (track) {
     }
 
     function updateSliderState(isInitial = false) {
-        if (transitionTimeout) {
-            clearTimeout(transitionTimeout);
-            transitionTimeout = null;
-        }
-
         slides.forEach((slide, i) => {
             if (i === index) {
                 slide.classList.add("active");
@@ -59,22 +66,24 @@ if (track) {
                     const startInset = `inset(${pos.top}% ${pos.right}% ${pos.bottom}% ${pos.left}% round 200px)`;
                     const endInset = `inset(0% 0% 0% 0% round 0px)`;
 
-                    // 1. Instantly set start state (rounded rectangle at random position) without transition
-                    slide.classList.remove("transitioning");
+                    // Disable transition instantly to set starting shape
+                    slide.style.transition = "none";
+                    slide.style.webkitTransition = "none";
                     slide.style.webkitClipPath = startInset;
                     slide.style.clipPath = startInset;
 
-                    // Force browser engine to calculate layout and apply starting styles immediately
-                    void slide.offsetHeight;
-
-                    // 2. Trigger standard CSS transition to full screen
-                    transitionTimeout = setTimeout(() => {
-                        slide.classList.add("transitioning");
-                        slide.style.webkitClipPath = endInset;
-                        slide.style.clipPath = endInset;
-                    }, 50);
+                    // Trigger transition to full screen on the next frame
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            slide.style.transition = "";
+                            slide.style.webkitTransition = "";
+                            slide.style.webkitClipPath = endInset;
+                            slide.style.clipPath = endInset;
+                        });
+                    });
                 } else {
-                    slide.classList.remove("transitioning");
+                    slide.style.transition = "none";
+                    slide.style.webkitTransition = "none";
                     slide.style.webkitClipPath = "inset(0% 0% 0% 0% round 0px)";
                     slide.style.clipPath = "inset(0% 0% 0% 0% round 0px)";
                 }
@@ -83,15 +92,17 @@ if (track) {
                 slide.classList.add("prev-active");
                 slide.style.zIndex = "2";
                 slide.style.opacity = "1";
-                slide.classList.remove("transitioning");
+                slide.style.transition = "none";
+                slide.style.webkitTransition = "none";
                 slide.style.webkitClipPath = "inset(0% 0% 0% 0% round 0px)";
                 slide.style.clipPath = "inset(0% 0% 0% 0% round 0px)";
             } else {
                 slide.classList.remove("active");
                 slide.classList.remove("prev-active");
-                slide.classList.remove("transitioning");
                 slide.style.zIndex = "1";
                 slide.style.opacity = "0";
+                slide.style.transition = "none";
+                slide.style.webkitTransition = "none";
                 slide.style.webkitClipPath = "none";
                 slide.style.clipPath = "none";
             }
