@@ -53,10 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const stored = sessionStorage.getItem('buyNowData');
             if (!stored) return;
-            
+
             const buyNowData = JSON.parse(stored);
             sessionStorage.removeItem('buyNowData');
-            
+
             checkoutItems = [{
                 id: buyNowData.id,
                 name: buyNowData.name,
@@ -67,11 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 size: buyNowData.size,
                 quantity: buyNowData.qty
             }];
-            
+
             // Clean URL
             const cleanUrl = window.location.pathname;
             window.history.replaceState({}, '', cleanUrl);
-            
+
             // Wait for cart view to be in DOM, then show checkout
             setTimeout(() => showCheckout(), 100);
         } catch (error) {
@@ -86,10 +86,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const orderId = 'ORD' + Date.now();
-            const orderTotal = paymentData && paymentData.total !== undefined 
-                ? paymentData.total 
+            const orderTotal = paymentData && paymentData.total !== undefined
+                ? paymentData.total
                 : items.reduce((total, item) => total + (item.price * item.quantity), 0);
-                
+
             const orderData = {
                 orderId,
                 userId: user.uid,
@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         createdAtDate = new Date(userData.createdAt || Date.now());
                     }
                     const diffTime = Math.abs(new Date() - createdAtDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     if (diffDays > thresholdDays) return returnInvalid('This coupon is only valid for new users');
                 } else if (eligibility.type === "first_order") {
                     const orders = userData.orders || [];
@@ -872,7 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const scriptURL = 'https://script.google.com/macros/s/AKfycbygbg52K2tJ_vI50Rvasq4KD_3LawEUNKqRHHWzgFa2rHQp6GWYY8hVffm-k2L3_34u2g/exec';
         const apiKey = 'your-secret-api-key-here'; // Optional: Add if you enabled API key protection in the script
         try {
-            const url = apiKey 
+            const url = apiKey
                 ? `${scriptURL}?action=getKey&apiKey=${apiKey}`
                 : `${scriptURL}?action=getKey`;
             const response = await fetch(url);
@@ -881,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error('Failed to fetch Razorpay key:', error);
             // Fallback to test key if script fails (remove in production)
-            return 'rzp_test_TGDabRgDerFP7c';
+            return 'rzp_live_TGCzapQjJsViyu';
         }
     }
 

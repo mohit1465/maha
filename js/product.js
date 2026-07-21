@@ -311,6 +311,54 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         const canonicalUrl = router.generateCanonicalUrl(product.name, product.id);
         canonicalLink.href = canonicalUrl;
+
+        // Update Structured Data - Product Schema dynamically
+        let schemaScript = document.getElementById('dynamicProductSchema');
+        if (!schemaScript) {
+            schemaScript = document.createElement('script');
+            schemaScript.id = 'dynamicProductSchema';
+            schemaScript.type = 'application/ld+json';
+            document.head.appendChild(schemaScript);
+        }
+        
+        // Remove static product schema to avoid double declaration if it exists
+        const staticSchema = document.querySelector('script[type="application/ld+json"]:not(#dynamicProductSchema)');
+        if (staticSchema) {
+            staticSchema.remove();
+        }
+
+        const productSchema = {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": product.name,
+            "image": [
+                product.imageUrl || `https://maharajadryfruit.com/assets/${product.id}.webp`
+            ],
+            "description": generateSeoDescription(product),
+            "brand": {
+                "@type": "Brand",
+                "name": "Maharaja Dry Fruits"
+            },
+            "category": `Dry Fruits > ${product.category || 'Nuts'}`,
+            "offers": {
+                "@type": "Offer",
+                "url": window.location.href,
+                "priceCurrency": "INR",
+                "price": product.price || "299",
+                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            }
+        };
+
+        // If there are ratings, add them
+        if (product.ratingValue) {
+            productSchema.aggregateRating = {
+                "@type": "AggregateRating",
+                "ratingValue": product.ratingValue.toString(),
+                "reviewCount": (product.reviewCount || 10).toString()
+            };
+        }
+
+        schemaScript.textContent = JSON.stringify(productSchema, null, 2);
     }
 
     /**

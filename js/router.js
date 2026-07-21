@@ -95,7 +95,7 @@ class Router {
      */
     generateCanonicalUrl(productName, productId) {
         const slug = this.createSlug(productName);
-        return `https://mohit1465.github.io/maha/product.html/${slug}?id=${productId}`;
+        return `https://maharajadryfruit.com/product.html/${slug}?id=${productId}`;
     }
 
     /**
