@@ -6,6 +6,7 @@ if (track) {
 
     let index = 0;
     let autoplayTimer = null;
+    let transitionTimeout = null;
 
     // Create indicators dynamically depending on slide count
     const indicatorsContainer = document.getElementById("heroIndicators");
@@ -23,18 +24,76 @@ if (track) {
         }
     }
 
-    /* Function to update active states (slides & indicators) */
-    function updateSliderState() {
-        // Update slides classes (including prev-active for overlapping z-index clip-path mask)
+    function getRandomRevealPosition() {
+        // Random width between 20% and 35% of banner
+        const rectWidth = Math.floor(Math.random() * 15) + 20; // 20-35%
+        // Random height between 20% and 35% of banner
+        const rectHeight = Math.floor(Math.random() * 15) + 25; // 25-40%
+
+        // Random top position (10% to 50%)
+        const top = Math.floor(Math.random() * (100 - rectHeight - 20)) + 10;
+        // Random left position (10% to 50%)
+        const left = Math.floor(Math.random() * (100 - rectWidth - 20)) + 10;
+
+        const bottom = 100 - top - rectHeight;
+        const right = 100 - left - rectWidth;
+
+        return { top, right, bottom, left };
+    }
+
+    function updateSliderState(isInitial = false) {
+        if (transitionTimeout) {
+            clearTimeout(transitionTimeout);
+            transitionTimeout = null;
+        }
+
         slides.forEach((slide, i) => {
             if (i === index) {
                 slide.classList.add("active");
                 slide.classList.remove("prev-active");
+                slide.style.zIndex = "3";
+                slide.style.opacity = "1";
+
+                if (!isInitial) {
+                    const pos = getRandomRevealPosition();
+                    const startInset = `inset(${pos.top}% ${pos.right}% ${pos.bottom}% ${pos.left}% round 200px)`;
+                    const endInset = `inset(0% 0% 0% 0% round 0px)`;
+
+                    // 1. Instantly set start state (rounded rectangle at random position) without transition
+                    slide.classList.remove("transitioning");
+                    slide.style.webkitClipPath = startInset;
+                    slide.style.clipPath = startInset;
+
+                    // Force browser engine to calculate layout and apply starting styles immediately
+                    void slide.offsetHeight;
+
+                    // 2. Trigger standard CSS transition to full screen
+                    transitionTimeout = setTimeout(() => {
+                        slide.classList.add("transitioning");
+                        slide.style.webkitClipPath = endInset;
+                        slide.style.clipPath = endInset;
+                    }, 50);
+                } else {
+                    slide.classList.remove("transitioning");
+                    slide.style.webkitClipPath = "inset(0% 0% 0% 0% round 0px)";
+                    slide.style.clipPath = "inset(0% 0% 0% 0% round 0px)";
+                }
             } else if (slide.classList.contains("active")) {
                 slide.classList.remove("active");
                 slide.classList.add("prev-active");
+                slide.style.zIndex = "2";
+                slide.style.opacity = "1";
+                slide.classList.remove("transitioning");
+                slide.style.webkitClipPath = "inset(0% 0% 0% 0% round 0px)";
+                slide.style.clipPath = "inset(0% 0% 0% 0% round 0px)";
             } else {
+                slide.classList.remove("active");
                 slide.classList.remove("prev-active");
+                slide.classList.remove("transitioning");
+                slide.style.zIndex = "1";
+                slide.style.opacity = "0";
+                slide.style.webkitClipPath = "none";
+                slide.style.clipPath = "none";
             }
         });
 
@@ -52,8 +111,9 @@ if (track) {
     }
 
     function goToSlide(newIndex) {
+        if (newIndex === index) return;
         index = (newIndex + TOTAL_SLIDES) % TOTAL_SLIDES;
-        updateSliderState();
+        updateSliderState(false);
     }
 
     function nextSlide() {
@@ -95,7 +155,7 @@ if (track) {
 
     // Start on load
     startAutoplay();
-    updateSliderState();
+    updateSliderState(true);
 }
 
 

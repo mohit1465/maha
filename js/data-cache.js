@@ -2,7 +2,9 @@ import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-const FIRESTORE_TIMEOUT = 4000; // 4 seconds timeout for Firestore calls
+const FIRESTORE_TIMEOUT = 10000; // 10 seconds timeout for Firestore calls (increased from 4s)
+const MAX_RETRIES = 3; // Maximum number of retry attempts
+const RETRY_DELAY = 1000; // Initial retry delay in milliseconds
 let productsCache = null;
 let categoriesCache = null;
 let cacheTimestamp = null;
@@ -14,6 +16,29 @@ function withTimeout(promise, timeoutMs = FIRESTORE_TIMEOUT) {
             setTimeout(() => reject(new Error('Firestore request timed out')), timeoutMs)
         )
     ]);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function withRetry(fn, maxRetries = MAX_RETRIES, delay = RETRY_DELAY) {
+    let lastError;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+            console.warn(`[DataCache] Attempt ${attempt + 1}/${maxRetries + 1} failed:`, error.message);
+            
+            if (attempt < maxRetries) {
+                const backoffDelay = delay * Math.pow(2, attempt); // Exponential backoff
+                console.log(`[DataCache] Retrying in ${backoffDelay}ms...`);
+                await sleep(backoffDelay);
+            }
+        }
+    }
+    throw lastError;
 }
 
 /**
@@ -29,7 +54,9 @@ export async function getProducts(forceRefresh = false) {
 
     try {
         console.log('[DataCache] Fetching products from Firebase...');
-        const querySnapshot = await withTimeout(getDocs(collection(db, "products")));
+        const querySnapshot = await withRetry(() => 
+            withTimeout(getDocs(collection(db, "products")))
+        );
         const products = [];
         querySnapshot.forEach((doc) => {
             products.push({ id: doc.id, ...doc.data() });
@@ -42,7 +69,7 @@ export async function getProducts(forceRefresh = false) {
         console.log('[DataCache] Products fetched and cached:', products.length);
         return products;
     } catch (error) {
-        console.error('[DataCache] Error fetching products:', error);
+        console.error('[DataCache] Error fetching products after retries:', error);
 
         if (productsCache) {
             console.log('[DataCache] Using expired cached products due to error');

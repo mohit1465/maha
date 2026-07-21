@@ -190,6 +190,7 @@ textarea {
     top: 0;
     left: 0;
     z-index: 2000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
 }
 
 /* Top header section */
@@ -202,6 +203,7 @@ textarea {
     padding: 10px 5%;
     border-bottom: 1px solid #323232;
     position: relative;
+    transition: background-color 0.3s ease, border-bottom 0.3s ease, padding 0.3s ease;
 }
 
 .header-left {
@@ -423,11 +425,15 @@ textarea {
     background-color: #1b1b1b;
     backdrop-filter: blur(5px);
     padding: 0 5%;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.4s ease,
+                background-color 0.3s ease,
+                backdrop-filter 0.3s ease,
+                border 0.3s ease,
+                box-shadow 0.3s ease;
     position: relative;
     z-index: 9;
     opacity: 1;
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-                opacity 0.4s ease;
 }
 
 .main-nav.nav-hidden {
@@ -618,7 +624,7 @@ textarea {
     height: 100%;
     display: block;
     position: relative;
-    border-radius: 40px;
+    border-radius: 0;
     overflow: hidden;
     opacity: 0;
     z-index: 1;
@@ -637,83 +643,9 @@ textarea {
     pointer-events: auto;
 }
 
-.hero-slide.slide-1.active {
-    animation: ctaMorphPos1 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.hero-slide.slide-2.active {
-    animation: ctaMorphPos2 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.hero-slide.slide-3.active {
-    animation: ctaMorphPos3 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.hero-slide.slide-4.active {
-    animation: ctaMorphPos4 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.hero-slide.slide-5.active {
-    animation: ctaMorphPos5 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.hero-slide.slide-6.active {
-    animation: ctaMorphPos6 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-/* Keyframes - Slide 1 (Bottom Center Origin) */
-@keyframes ctaMorphPos1 {
-    0% {
-        clip-path: inset(calc(100% - 102px) calc(50% - 90px) 50px calc(50% - 90px) round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
-}
-
-/* Keyframes - Slide 2 (Center Left Origin) */
-@keyframes ctaMorphPos2 {
-    0% {
-        clip-path: inset(calc(50% - 26px) calc(100% - 230px) calc(50% - 26px) 50px round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
-}
-
-/* Keyframes - Slide 3 (Top Right Origin) */
-@keyframes ctaMorphPos3 {
-    0% {
-        clip-path: inset(50px 50px calc(100% - 102px) calc(100% - 230px) round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
-}
-
-/* Keyframes - Slide 4 (Center Right Origin) */
-@keyframes ctaMorphPos4 {
-    0% {
-        clip-path: inset(calc(50% - 26px) 50px calc(50% - 26px) calc(100% - 230px) round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
-}
-
-/* Keyframes - Slide 5 (Top Left Origin) */
-@keyframes ctaMorphPos5 {
-    0% {
-        clip-path: inset(50px calc(100% - 230px) calc(100% - 102px) 50px round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
-}
-
-/* Keyframes - Slide 6 (Top Center Origin) */
-@keyframes ctaMorphPos6 {
-    0% {
-        clip-path: inset(50px calc(50% - 90px) calc(100% - 102px) calc(50% - 90px) round 350px);
-    }
-    100% {
-        clip-path: inset(0% 0% 0% 0% round 0px);
-    }
+.hero-slide.transitioning {
+    transition: clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1);
+    -webkit-transition: -webkit-clip-path 1.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .hero-slide .slide-link {
@@ -1541,8 +1473,34 @@ textarea {
     background-color: #1a1a1a;
     color: #fff;
     padding: 60px 20px 30px;
-    overflow: hidden;
-    margin-top: auto;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #2b2b2b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background-color: #fc6e20;
+    transform: translateY(-3px);
+}
+
+.social-icon i {
+    font-size: 18px;
 }
 
 .footer-content {
@@ -1946,84 +1904,7 @@ textarea {
         border-radius: 30px !important;
     }
 
-    .hero-slide.slide-1.active {
-        animation: ctaMorphPos1Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
-    .hero-slide.slide-2.active {
-        animation: ctaMorphPos2Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
-    .hero-slide.slide-3.active {
-        animation: ctaMorphPos3Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
-    .hero-slide.slide-4.active {
-        animation: ctaMorphPos4Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
-    .hero-slide.slide-5.active {
-        animation: ctaMorphPos5Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
-    .hero-slide.slide-6.active {
-        animation: ctaMorphPos6Mobile 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    }
 
-    /* Keyframes - Slide 1 (Bottom Center Mobile) */
-    @keyframes ctaMorphPos1Mobile {
-        0% {
-            clip-path: inset(calc(100% - 73px) calc(50% - 65px) 35px calc(50% - 65px) round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
-
-    /* Keyframes - Slide 2 (Center Left Mobile) */
-    @keyframes ctaMorphPos2Mobile {
-        0% {
-            clip-path: inset(calc(50% - 19px) calc(100% - 165px) calc(50% - 19px) 35px round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
-
-    /* Keyframes - Slide 3 (Top Right Mobile) */
-    @keyframes ctaMorphPos3Mobile {
-        0% {
-            clip-path: inset(35px 35px calc(100% - 73px) calc(100% - 165px) round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
-
-    /* Keyframes - Slide 4 (Center Right Mobile) */
-    @keyframes ctaMorphPos4Mobile {
-        0% {
-            clip-path: inset(calc(50% - 19px) 35px calc(50% - 19px) calc(100% - 165px) round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
-
-    /* Keyframes - Slide 5 (Top Left Mobile) */
-    @keyframes ctaMorphPos5Mobile {
-        0% {
-            clip-path: inset(35px calc(100% - 165px) calc(100% - 73px) 35px round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
-
-    /* Keyframes - Slide 6 (Top Center Mobile) */
-    @keyframes ctaMorphPos6Mobile {
-        0% {
-            clip-path: inset(35px calc(50% - 65px) calc(100% - 73px) calc(50% - 65px) round 250px);
-        }
-        100% {
-            clip-path: inset(0% 0% 0% 0% round 0px);
-        }
-    }
 
     /* Slider controls for mobile: hide arrows, center indicators at bottom */
     .hero-controls {
@@ -2391,6 +2272,48 @@ textarea {
 }
 
 
+
+/* Floating WhatsApp Icon */
+.floating-whatsapp {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    z-index: 9999;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.floating-whatsapp:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.6);
+}
+
+.floating-whatsapp i {
+    color: white;
+    font-size: 28px;
+}
+
+@media (max-width: 768px) {
+    .floating-whatsapp {
+        bottom: 100px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .floating-whatsapp i {
+        font-size: 24px;
+    }
+}
 
 /* Header User Location feature (Desktop only) */
 .header-user-info {
@@ -2790,28 +2713,13 @@ textarea {
         align-items: center !important;
     }
 
-    /* 2. Slide main-nav up into top-header */
+    /* 2. Hide main-nav completely when at top on home page */
     body[data-page="home"] .header:not(.scrolled) .main-nav {
-        transform: translateY(-56px) !important;
-        background-color: transparent !important;
-        backdrop-filter: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        z-index: 20 !important;
-        pointer-events: none !important;
+        display: none !important;
     }
 
-    body[data-page="home"] .header:not(.scrolled) .nav-links {
-        padding: 0 !important;
-        pointer-events: auto !important;
-    }
-
-    body[data-page="home"] .header:not(.scrolled) .nav-links li {
-        margin: 0 10px !important;
-    }
-
-    body[data-page="home"] .header:not(.scrolled) .nav-links li a {
-        padding: 10px 15px !important;
+    body[data-page="home"] .header.scrolled .main-nav {
+        display: block !important;
     }
 
     /* 3. Collapse search input and translate search button to the right */

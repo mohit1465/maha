@@ -225,7 +225,23 @@
                         </div>
                     </div>
 
-                    <!-- Card 3: Why Shop From Us (Trust Badges) -->
+                    <!-- Card 3: Action Desktop (Mobile is sticky bottom) -->
+                    <div class="product-detail-card product-action-card desktop-only">
+                        <div class="product-action-row" style="display: flex; gap: 12px; width: 100%; align-items: center;">
+                            <!-- Desktop Quantity Selector (Always visible, on left of Add to Cart) -->
+                            <div class="product-qty-capsule" id="productQtyCapsule" style="max-width: 120px; flex: 0 0 120px; display: flex;">
+                                <button class="product-qty-btn minus" aria-label="Decrease"><i class="fas fa-minus"></i></button>
+                                <span class="product-qty-val" style="font-size: 16px;">1</span>
+                                <button class="product-qty-btn plus" aria-label="Increase"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <!-- Desktop Add to Cart Button (Always visible) -->
+                            <button class="product-add-btn" id="mainAddToCartBtn" style="flex: 1;">Add to Cart</button>
+                            <!-- Desktop Buy Now Button (Always visible) -->
+                            <button class="product-buy-btn" id="mainBuyNowBtn" style="flex: 1;">Buy Now</button>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Why Shop From Us (Trust Badges) -->
                     <div class="product-detail-card product-trust-card">
                         <h3 class="product-detail-card-title">Why Shop From Us?</h3>
                         <div class="product-trust-list">
@@ -250,22 +266,6 @@
                                     <span>Packed hygienically to ensure maximum freshness.</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 4: Action Desktop (Mobile is sticky bottom) -->
-                    <div class="product-detail-card product-action-card desktop-only">
-                        <div class="product-action-row" style="display: flex; gap: 12px; width: 100%; align-items: center;">
-                            <!-- Desktop Quantity Selector (Always visible, on left of Add to Cart) -->
-                            <div class="product-qty-capsule" id="productQtyCapsule" style="max-width: 120px; flex: 0 0 120px; display: flex;">
-                                <button class="product-qty-btn minus" aria-label="Decrease"><i class="fas fa-minus"></i></button>
-                                <span class="product-qty-val" style="font-size: 16px;">1</span>
-                                <button class="product-qty-btn plus" aria-label="Increase"><i class="fas fa-plus"></i></button>
-                            </div>
-                            <!-- Desktop Add to Cart Button (Always visible) -->
-                            <button class="product-add-btn" id="mainAddToCartBtn" style="flex: 1;">Add to Cart</button>
-                            <!-- Desktop Buy Now Button (Always visible) -->
-                            <button class="product-buy-btn" id="mainBuyNowBtn" style="flex: 1;">Buy Now</button>
                         </div>
                     </div>
 
@@ -486,6 +486,11 @@
             </a>
         </div>
     </nav>
+
+    <!-- Floating WhatsApp Icon -->
+    <a href="https://wa.link/b3z7vx" target="_blank" class="floating-whatsapp" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- Slide-out Drawer backdrop & Drawer for Write Review -->
     <div class="product-drawer-backdrop" id="reviewDrawerBackdrop"></div>

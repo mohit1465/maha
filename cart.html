@@ -40,6 +40,9 @@
     
     <!-- Lordicon -->
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body data-page="cart">
@@ -236,6 +239,17 @@
                                                 </div>
                                                 <div class="check-mark"><i class="fas fa-check-circle"></i></div>
                                             </label>
+                                            <label class="payment-option">
+                                                <input type="radio" name="payment-method" value="online">
+                                                <div class="option-content">
+                                                    <i class="fas fa-credit-card"></i>
+                                                    <div class="option-details">
+                                                        <span class="option-title">Online Payment</span>
+                                                        <span class="option-desc">Pay securely with Razorpay</span>
+                                                    </div>
+                                                </div>
+                                                <div class="check-mark"><i class="fas fa-check-circle"></i></div>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -317,6 +331,18 @@
                     <p><i class="fas fa-clock"></i> Mon-Sat: 9:00 AM - 8:00 PM</p>
                 </div>
             </div>
+
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/maharajadryfruithisar/" target="_blank" class="social-icon" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.link/b3z7vx" target="_blank" class="social-icon" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -376,6 +402,12 @@
             </a>
         </div>
     </nav>
+
+    <!-- Floating WhatsApp Icon -->
+    <a href="https://wa.link/b3z7vx" target="_blank" class="floating-whatsapp" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <script src="js/script.js"></script>
     <script type="module" src="js/image-helper.js"></script>
     <script type="module" src="js/auth-state.js"></script>

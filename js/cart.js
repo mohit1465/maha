@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (paymentMethod === 'online') {
                     const options = {
-                        "key": "rzp_test_SbrDHadYKj1cvw", // User provided key
+                        "key": await getRazorpayKey(), // Fetch from Google Apps Script
                         "amount": finalTotal * 100, // Amount in paise
                         "currency": "INR",
                         "name": "Maharaja Dry Fruits",
@@ -865,6 +865,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitBtn.innerHTML = originalText;
             }
         });
+    }
+
+    // Fetch Razorpay key from Google Apps Script
+    async function getRazorpayKey() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbygbg52K2tJ_vI50Rvasq4KD_3LawEUNKqRHHWzgFa2rHQp6GWYY8hVffm-k2L3_34u2g/exec';
+        const apiKey = 'your-secret-api-key-here'; // Optional: Add if you enabled API key protection in the script
+        try {
+            const url = apiKey 
+                ? `${scriptURL}?action=getKey&apiKey=${apiKey}`
+                : `${scriptURL}?action=getKey`;
+            const response = await fetch(url);
+            const keyData = await response.json();
+            return keyData.keyId;
+        } catch (error) {
+            console.error('Failed to fetch Razorpay key:', error);
+            // Fallback to test key if script fails (remove in production)
+            return 'rzp_test_TGDabRgDerFP7c';
+        }
     }
 
     function showCartSkeletons() {
